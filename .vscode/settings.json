@@ -1,0 +1,172 @@
+{
+    "github.copilot.chat.codeGeneration.instructions": [
+        {
+            "text": "Setup-Copilot"
+        },
+        {
+            "file": "docs/setup-copilot.md"
+        },
+        {
+            "text": "Getting-Started"
+        },
+        {
+            "file": "docs/getting-started.md"
+        },
+        {
+            "text": "Contributing"
+        },
+        {
+            "file": "docs/contributing.md"
+        },
+        {
+            "text": "Routing"
+        },
+        {
+            "file": "docs/knowledge/flask-conventions/routing.md"
+        },
+        {
+            "text": "New Module"
+        },
+        {
+            "file": "docs/knowledge/morakot-standards/new module.md"
+        },
+        {
+            "text": "Database Schema"
+        },
+        {
+            "file": "docs/knowledge/morakot-standards/database schema.md"
+        },
+        {
+            "text": "Accounting Entry Month End Year End"
+        },
+        {
+            "file": "docs/knowledge/morakot-standards/accounting entry month end year end.md"
+        },
+        {
+            "text": "System Admin Settings Key"
+        },
+        {
+            "file": "docs/knowledge/morakot-standards/system admin settings key.md"
+        },
+        {
+            "text": "Morakot Database Tables"
+        },
+        {
+            "file": "docs/knowledge/morakot-standards/morakot database tables.md"
+        },
+        {
+            "text": "System Maintenance"
+        },
+        {
+            "file": "docs/knowledge/morakot-standards/system maintenance.md"
+        },
+        {
+            "text": "User Management"
+        },
+        {
+            "file": "docs/knowledge/morakot-standards/user management.md"
+        },
+        {
+            "text": "Customization"
+        },
+        {
+            "file": "docs/knowledge/morakot-standards/customization.md"
+        },
+        {
+            "text": "Batch Job"
+        },
+        {
+            "file": "docs/knowledge/morakot-standards/batch job.md"
+        },
+        {
+            "text": "Dashboard Builder"
+        },
+        {
+            "file": "docs/knowledge/morakot-standards/dashboard builder.md"
+        },
+        {
+            "text": "Pd Param Penalty"
+        },
+        {
+            "file": "docs/knowledge/morakot-standards/pd param penalty.md"
+        },
+        {
+            "text": "Static Method"
+        },
+        {
+            "file": "docs/knowledge/morakot-standards/static method.md"
+        },
+        {
+            "text": "Index"
+        },
+        {
+            "file": "docs/knowledge/morakot-standards/index.md"
+        },
+        {
+            "text": "Template Builder"
+        },
+        {
+            "file": "docs/knowledge/morakot-standards/template builder.md"
+        },
+        {
+            "text": "Report Builder"
+        },
+        {
+            "file": "docs/knowledge/morakot-standards/report builder.md"
+        },
+        {
+            "text": "Accounting Programer"
+        },
+        {
+            "file": "docs/knowledge/morakot-standards/accounting programer.md"
+        },
+        {
+            "text": "Copilot Getting Started"
+        },
+        {
+            "file": "docs/knowledge/morakot-standards/copilot getting started.md"
+        },
+        {
+            "text": "Morakot Unit Test Guideline"
+        },
+        {
+            "file": "docs/knowledge/morakot-standards/morakot unit test guideline.md"
+        },
+        {
+            "text": "Data Model Reference"
+        },
+        {
+            "file": "docs/knowledge/morakot-standards/data model reference.md"
+        },
+        {
+            "text": "Custom Report"
+        },
+        {
+            "file": "docs/knowledge/morakot-standards/custom report.md"
+        },
+        {
+            "text": "Pre-Termination Rule"
+        },
+        {
+            "file": "docs/knowledge/morakot-standards/pre-termination rule.md"
+        },
+        {
+            "text": "Unit Test Guideline"
+        },
+        {
+            "file": "docs/knowledge/python-standards/unit test guideline.md"
+        },
+        {
+            "text": "Style Guide"
+        },
+        {
+            "file": "docs/knowledge/python-standards/style guide.md"
+        },
+        {
+            "text": "Best Practice"
+        },
+        {
+            "file": "docs/knowledge/python-standards/best practice.md"
+        }
+    ]
+}
