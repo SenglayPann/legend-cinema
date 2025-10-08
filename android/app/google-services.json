@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "717156180391",
+    "project_id": "legend-cinema-d1874",
+    "storage_bucket": "legend-cinema-d1874.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:717156180391:android:043f49a6ac0fd387051682",
+        "android_client_info": {
+          "package_name": "com.example.test"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "717156180391-jkdb53sp9d127bhrnifiq359dhrklq3q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBx37JWcv4AnExqegEj_h_BK1LZAga0VgQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "717156180391-jkdb53sp9d127bhrnifiq359dhrklq3q.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "717156180391-fur2hl4cbgepttp9o1pdagdusbmmnnuf.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.test"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
