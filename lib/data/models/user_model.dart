@@ -1,0 +1,48 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+class UserModel {
+  final String id;
+  final String userName;
+  final String firstName;
+  final String lastName;
+  final String email;
+  final String phone;
+  final Timestamp createdAt;
+  final int bookingCount;
+
+  UserModel({
+    required this.id,
+    required this.userName,
+    required this.firstName,
+    required this.lastName,
+    required this.email,
+    required this.phone,
+    required this.createdAt,
+    required this.bookingCount,
+  });
+
+  factory UserModel.fromMap(Map<String, dynamic> data, String documentId) {
+    return UserModel(
+      id: documentId,
+      userName: data['name'] ?? '',
+      firstName: data['firstName'],
+      lastName: data['lastName'],
+      email: data['email'] ?? '',
+      phone: data['phone'] ?? '',
+      createdAt: data['createdAt'] ?? Timestamp.now(),
+      bookingCount: data['bookingCount'] ?? 0,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'userName': userName,
+      'firstName': firstName,
+      'lastName': lastName,
+      'email': email,
+      'phone': phone,
+      'createdAt': createdAt,
+      'bookingCount': bookingCount,
+    };
+  }
+}
