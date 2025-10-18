@@ -2,10 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CLIENT_ID</key>
-	<string>717156180391-fur2hl4cbgepttp9o1pdagdusbmmnnuf.apps.googleusercontent.com</string>
-	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.717156180391-fur2hl4cbgepttp9o1pdagdusbmmnnuf</string>
 	<key>API_KEY</key>
 	<string>AIzaSyD5qKduHE1bNlT1Zs9ws7b1t2jchjKnflk</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,7 +9,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.example.test</string>
+	<string>com.senglay.legendcinema</string>
 	<key>PROJECT_ID</key>
 	<string>legend-cinema-d1874</string>
 	<key>STORAGE_BUCKET</key>
@@ -29,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:717156180391:ios:0d01d9b17656cf78051682</string>
+	<string>1:717156180391:ios:8f27674e5024bcd0051682</string>
 </dict>
 </plist>
