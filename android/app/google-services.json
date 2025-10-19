@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:717156180391:android:966bf3cabb8a3cef051682",
+        "mobilesdk_app_id": "1:717156180391:android:56bd0fc89954a1d2051682",
         "android_client_info": {
-          "package_name": "comd.senglay.legendcinema"
+          "package_name": "com.senglay.legendcinema"
         }
       },
       "oauth_client": [
