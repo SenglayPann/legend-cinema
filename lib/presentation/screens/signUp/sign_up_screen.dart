@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../widgets/custom_input_field.dart';
+import '../../widgets/app_scaffold.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
@@ -64,26 +65,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
-    return Scaffold(
-      appBar: AppBar(
-        // title: const Text('Sign Up'),
-        centerTitle: true,
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Color.fromARGB(255, 131, 15, 6),
-                Color(0xFF090909), 
-              ],
-              stops: [0.3, 0.8]
-            ),
-          ),
-        ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
+    return 
+      AppScaffold(
+      // title: 'sign up',
       backgroundColor: const Color(0xFF090909),
       body: SafeArea(
         child: GestureDetector(
@@ -169,7 +153,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
                 ),
               ),
-              child: const Text('Get OTP', style: TextStyle(fontSize: 16, color: Color(0xFF8D9192))),
+              child: Text('Get OTP', style: TextStyle(fontSize: 16, color: _isPhoneValid ? Colors.white : Color(0xFF8D9192))),
             ),
           ),
         ),

@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
       routes: getRoutes(), 
       
       // 2. Set the initial route for the application
-      initialRoute: '/', 
+      initialRoute: '/signUp', 
 
       // 3. Define the screen to display if a named route is not found (optional but good practice)
       onUnknownRoute: (settings) {
