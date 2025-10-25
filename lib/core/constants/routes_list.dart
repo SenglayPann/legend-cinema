@@ -2,7 +2,7 @@ import 'package:flutter/widgets.dart';
 import '../../presentation/screens/splash/splash_screen.dart'; // Create these screens
 import '../../presentation/screens/signUp/sign_up_screen.dart';
 import '../../presentation/screens/otpVerification/otp_verification.dart';
-import '../../presentation/screens/signUpInformation/signUpInformation.dart';
+import '../../presentation/screens/signUpInformation/sign_up_information_screen.dart';
 import '../../presentation/screens/example_screen.dart';
 
 // 1. Define the model for a single route object
