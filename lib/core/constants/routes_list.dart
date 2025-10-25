@@ -2,6 +2,8 @@ import 'package:flutter/widgets.dart';
 import '../../presentation/screens/splash/splash_screen.dart'; // Create these screens
 import '../../presentation/screens/signUp/sign_up_screen.dart';
 import '../../presentation/screens/otpVerification/otp_verification.dart';
+import '../../presentation/screens/signUpInformation/signUpInformation.dart';
+import '../../presentation/screens/example_screen.dart';
 
 // 1. Define the model for a single route object
 class AppRoute {
@@ -16,5 +18,7 @@ final List<AppRoute> appRoutes = [
   AppRoute(name: '/', component: SplashScreen()),
   AppRoute(name: '/signUp', component: SignUpScreen()),
   AppRoute(name: '/otpVerification', component: OtpVerificationScreen()),
+  AppRoute(name: '/signUpInformation', component: SignUpInformationScreen()),
+  AppRoute(name: '/example', component: ExampleScreen()),
   // Add more routes here...
 ];

@@ -9,6 +9,7 @@ class CustomInputField extends StatelessWidget {
   final String? Function(String?)? validator;
   final Widget? prefix;
   final bool obscureText;
+  final bool quickClear;
   final int? maxLength;
 
   const CustomInputField({
@@ -20,6 +21,7 @@ class CustomInputField extends StatelessWidget {
     this.validator,
     this.prefix,
     this.obscureText = false,
+    this.quickClear = true,
     this.maxLength,
   }) : super(key: key);
 
@@ -64,7 +66,7 @@ class CustomInputField extends StatelessWidget {
               )
             : null,
         contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
-        suffixIcon: controller.text.isNotEmpty
+        suffixIcon: controller.text.isNotEmpty && quickClear
         ? IconButton(
             onPressed: () {
               controller.clear();
