@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../widgets/custom_input_field.dart';
 import '../../widgets/app_scaffold.dart';
+import '../../widgets/loading_overlay.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
@@ -43,11 +46,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
      setState(() {});
   }
 
-  void _onGetOtp() {
+  void _onGetOtp() async {
     if (_formKey.currentState?.validate() ?? false) {
       final phoneNumber = '+855${_phoneController.text}';
       debugPrint('Requesting OTP for: $phoneNumber');
       // TODO: Navigate or call API...
+
+      LoadingOverlay().show(context, message: 'Sending OTP...');
+      try {
+        await Future.delayed(const Duration(seconds: 5))
+            .timeout(const Duration(seconds: 3));
+      } on TimeoutException catch (_) {
+        print('⏰ Operation timed out!');
+        LoadingOverlay().hide(context);
+      }
     }
   }
 
