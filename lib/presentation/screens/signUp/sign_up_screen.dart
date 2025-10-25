@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:legend_cinema/presentation/screens/otpVerification/otp_verification.dart';
+import 'package:legend_cinema/presentation/widgets/custom_button.dart';
 import '../../widgets/custom_input_field.dart';
 import '../../widgets/app_scaffold.dart';
 import '../../widgets/loading_overlay.dart';
@@ -159,23 +160,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
           child: SizedBox(
             height: 48,
-            child: ElevatedButton(
+            child: CustomButton(
+              text: 'Get OTP',
               onPressed: _isPhoneValid ? _onGetOtp : null,
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                  (states) {
-                    if (states.contains(MaterialState.disabled)) {
-                      return Color.fromARGB(255, 46, 47, 48); // color when disabled
-                    }
-                    return Colors.red; // color when enabled
-                  },
-                ),
-                foregroundColor: MaterialStateProperty.all(Colors.white),
-                shape: MaterialStateProperty.all(
-                  RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-                ),
-              ),
-              child: Text('Get OTP', style: TextStyle(fontSize: 16, color: _isPhoneValid ? Colors.white : Color(0xFF8D9192))),
             ),
           ),
         ),
