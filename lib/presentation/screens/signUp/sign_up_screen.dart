@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:legend_cinema/presentation/screens/otpVerification/otp_verification.dart';
 import '../../widgets/custom_input_field.dart';
 import '../../widgets/app_scaffold.dart';
 import '../../widgets/loading_overlay.dart';
@@ -59,6 +60,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
       } on TimeoutException catch (_) {
         print('⏰ Operation timed out!');
         LoadingOverlay().hide(context);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => OtpVerificationScreen(
+              phoneNumber: '${_phoneController.text}',
+            ),
+          ),
+        );
+
       }
     }
   }
