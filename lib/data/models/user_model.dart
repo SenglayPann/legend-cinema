@@ -21,12 +21,13 @@ class UserModel {
     required this.bookingCount,
   });
 
+  // Factory constructor for creating a UserModel from a Firestore document map
   factory UserModel.fromMap(Map<String, dynamic> data, String documentId) {
     return UserModel(
       id: documentId,
       userName: data['name'] ?? '',
-      firstName: data['firstName'],
-      lastName: data['lastName'],
+      firstName: data['firstName'] ?? '',
+      lastName: data['lastName'] ?? '',
       email: data['email'] ?? '',
       phone: data['phone'] ?? '',
       createdAt: data['createdAt'] ?? Timestamp.now(),
@@ -34,6 +35,7 @@ class UserModel {
     );
   }
 
+  // Convert a UserModel instance to a Firestore-compatible map
   Map<String, dynamic> toMap() {
     return {
       'userName': userName,
@@ -44,5 +46,35 @@ class UserModel {
       'createdAt': createdAt,
       'bookingCount': bookingCount,
     };
+  }
+
+  // Convert a UserModel instance to a JSON-serializable map for Shared Preferences
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'userName': userName,
+      'firstName': firstName,
+      'lastName': lastName,
+      'email': email,
+      'phone': phone,
+      // Convert Timestamp to ISO 8601 string for storage
+      'createdAt': createdAt.toDate().toIso8601String(),
+      'bookingCount': bookingCount,
+    };
+  }
+
+  // Factory constructor for creating a UserModel from a JSON map from Shared Preferences
+  factory UserModel.fromJson(Map<String, dynamic> json) {
+    return UserModel(
+      id: json['id'],
+      userName: json['userName'] ?? '',
+      firstName: json['firstName'] ?? '',
+      lastName: json['lastName'] ?? '',
+      email: json['email'] ?? '',
+      phone: json['phone'] ?? '',
+      // Convert ISO 8601 string back to Timestamp
+      createdAt: Timestamp.fromDate(DateTime.parse(json['createdAt'])),
+      bookingCount: json['bookingCount'] ?? 0,
+    );
   }
 }

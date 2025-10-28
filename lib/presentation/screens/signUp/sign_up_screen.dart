@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:legend_cinema/data/services/auth_services.dart';
 import 'package:legend_cinema/presentation/screens/otpVerification/otp_verification.dart';
+import 'package:legend_cinema/presentation/widgets/custom_alert.dart';
 import 'package:legend_cinema/presentation/widgets/custom_button.dart';
 import '../../widgets/custom_input_field.dart';
 import '../../widgets/app_scaffold.dart';
@@ -19,6 +21,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
   bool _isPhoneValid = false;
   final TextEditingController _phoneController = TextEditingController();
+  final _authService = AuthServices();
 
   @override
   void initState() {
@@ -48,31 +51,78 @@ class _SignUpScreenState extends State<SignUpScreen> {
      setState(() {});
   }
 
-  void _onGetOtp() async {
-    if (_formKey.currentState?.validate() ?? false) {
-      final phoneNumber = '+855${_phoneController.text}';
-      debugPrint('Requesting OTP for: $phoneNumber');
-      // TODO: Navigate or call API...
+  // On auto verified
+  void _onAutoVerified(credential) async {
+    // Android auto-verification — directly sign in
+    final userCredential = await _authService.signInWithSmsCode(
+      verificationId: credential.verificationId ?? '',
+      smsCode: credential.smsCode ?? '',
+    );
+    await _authService.postSignIn(userCredential);
 
-      LoadingOverlay().show(context, message: 'Sending OTP...');
-      try {
-        await Future.delayed(const Duration(seconds: 5))
-            .timeout(const Duration(seconds: 3));
-      } on TimeoutException catch (_) {
-        print('⏰ Operation timed out!');
-        LoadingOverlay().hide(context);
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => OtpVerificationScreen(
-              phoneNumber: '${_phoneController.text}',
-            ),
-          ),
-        );
+    final isNewUser = userCredential.additionalUserInfo?.isNewUser ?? false;
 
-      }
+    LoadingOverlay().hide(context);
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('✅ Verification successful!')),
+    );
+
+    await Future.delayed(const Duration(milliseconds: 300));
+
+    if (isNewUser) {
+      Navigator.pushNamed(context, '/signUpInformation');
+    } else {
+      Navigator.of(context).pushNamedAndRemoveUntil('/example', (_) => false);
     }
   }
+
+  // on code sent
+  void _onCodeSent(verificationId, resendToken) {
+
+    LoadingOverlay().hide(context);
+
+    // Navigate to OTP verification screen
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => OtpVerificationScreen(
+          phoneNumber: _phoneController.text,
+          verificationId: verificationId,
+          resendToken: resendToken,
+        ),
+      ),
+    );
+  }
+
+  // On failed
+  void _onFailed(e) {
+    LoadingOverlay().hide(context);
+    CustomAlert.show(context, title: 'Failed', message: e.message ?? 'Failed to sent OTP code.');
+  }
+
+  // On Timeout
+  void _onTimeout(verificationId) {
+    LoadingOverlay().hide(context);
+    
+    CustomAlert.show(context, title: 'Failed', message: 'OTP request timed out');
+  }
+
+  // Get OTP
+  void _onGetOtp() async {
+    final phoneNumber = '+855${_phoneController.text.trim()}';
+
+    LoadingOverlay().show(context, message: '');
+    
+
+    await _authService.verifyPhone(
+      phone: phoneNumber,
+      onAutoVerified: (credential) => _onAutoVerified(credential),
+      onCodeSent: (verificationId, resendToken) => _onCodeSent(verificationId, resendToken),
+      onFailed: (e) => _onFailed(e),
+      onTimeout: (verificationId) => _onTimeout(verificationId),
+    );
+  }
+
 
   String? _validatePhone(String? value) {
     if (value == null || value.trim().isEmpty) {

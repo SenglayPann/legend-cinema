@@ -17,7 +17,7 @@ class AppRoute {
 final List<AppRoute> appRoutes = [
   AppRoute(name: '/', component: SplashScreen()),
   AppRoute(name: '/signUp', component: SignUpScreen()),
-  AppRoute(name: '/otpVerification', component: OtpVerificationScreen()),
+  // AppRoute(name: '/otpVerification', component: OtpVerificationScreen()),
   AppRoute(name: '/signUpInformation', component: SignUpInformationScreen()),
   AppRoute(name: '/example', component: ExampleScreen()),
   // Add more routes here...
