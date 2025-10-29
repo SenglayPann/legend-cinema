@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:legend_cinema/presentation/state/auth_state.dart';
+import 'package:provider/provider.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -43,6 +45,21 @@ class _SplashScreenState extends State<SplashScreen>
         curve: const Interval(0.0, 0.4, curve: Curves.easeOut),
       ),
     );
+
+    _gradientController.addStatusListener((status) async {
+      if (status == AnimationStatus.completed && mounted) {
+        final auth = context.read<AuthState>();
+
+        // Small delay (optional) to let animation breathe
+        await Future.delayed(const Duration(milliseconds: 1000));
+
+        if (auth.currentUser?.phone != null) {
+          Navigator.of(context).pushNamedAndRemoveUntil('/example', (_) => false);
+        } else {
+          Navigator.of(context).pushNamedAndRemoveUntil('/signUp', (_) => false);
+        }
+      }
+    });
 
     _slideAnimation = TweenSequence<double>([
       TweenSequenceItem(

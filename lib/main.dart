@@ -45,7 +45,7 @@ class MyApp extends StatelessWidget {
     ),
       title: 'Structured Routing Demo',
       routes: getRoutes(), 
-      initialRoute: '/signUp', 
+      initialRoute: '/', 
       onUnknownRoute: (settings) {
         return MaterialPageRoute(
           builder: (context) => const Scaffold(

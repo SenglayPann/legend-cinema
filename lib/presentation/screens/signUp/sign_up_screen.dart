@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:legend_cinema/data/services/auth_services.dart';
 import 'package:legend_cinema/presentation/screens/otpVerification/otp_verification.dart';
+import 'package:legend_cinema/presentation/state/auth_state.dart';
 import 'package:legend_cinema/presentation/widgets/custom_alert.dart';
 import 'package:legend_cinema/presentation/widgets/custom_button.dart';
+import 'package:provider/provider.dart';
 import '../../widgets/custom_input_field.dart';
 import '../../widgets/app_scaffold.dart';
 import '../../widgets/loading_overlay.dart';
@@ -58,13 +60,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
       verificationId: credential.verificationId ?? '',
       smsCode: credential.smsCode ?? '',
     );
-    await _authService.postSignIn(userCredential);
+
+    final user = await _authService.postSignIn(userCredential);
+    context.read<AuthState>().setUser(user); 
 
     final isNewUser = userCredential.additionalUserInfo?.isNewUser ?? false;
 
     LoadingOverlay().hide(context);
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('✅ Verification successful!')),
+      const SnackBar(content: Text('Verification successful!')),
     );
 
     await Future.delayed(const Duration(milliseconds: 300));
