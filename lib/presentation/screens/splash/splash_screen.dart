@@ -1,4 +1,6 @@
+import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
+import 'package:legend_cinema/data/services/auth_services.dart';
 import 'package:legend_cinema/presentation/state/auth_state.dart';
 import 'package:provider/provider.dart';
 
@@ -17,6 +19,7 @@ class _SplashScreenState extends State<SplashScreen>
   late Animation<double> _slideAnimation;
   late Animation<double> _logoSlideAnimation;
   late Animation<double> _logoScaleAnimation;
+  final AuthServices _authService = AuthServices();
 
   @override
   void initState() {
@@ -45,21 +48,32 @@ class _SplashScreenState extends State<SplashScreen>
         curve: const Interval(0.0, 0.4, curve: Curves.easeOut),
       ),
     );
-
     _gradientController.addStatusListener((status) async {
       if (status == AnimationStatus.completed && mounted) {
         final auth = context.read<AuthState>();
+        dynamic user;
+
+        if (auth.currentUser?.id != null) {
+          user = await _authService.getUserById(auth.currentUser?.id ?? '');
+        }
+
+        developer.log('-------->> $user', name: 'SplashScreen');
+        print('-------->> $user');
 
         // Small delay (optional) to let animation breathe
         await Future.delayed(const Duration(milliseconds: 1000));
 
-        if (auth.currentUser?.phone != null) {
+        // ensure the State is still mounted before using the BuildContext
+        if (!mounted) return;
+
+        if (user != null) {
           Navigator.of(context).pushNamedAndRemoveUntil('/example', (_) => false);
         } else {
           Navigator.of(context).pushNamedAndRemoveUntil('/signUp', (_) => false);
         }
       }
     });
+    // });
 
     _slideAnimation = TweenSequence<double>([
       TweenSequenceItem(

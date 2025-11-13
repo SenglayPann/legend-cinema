@@ -82,7 +82,14 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     await Future.delayed(const Duration(milliseconds: 300));
 
     if (isNewUser) {
-      Navigator.pushNamed(context, '/signUpInformation');
+      Navigator.pushNamed(
+        context,
+        '/signUpInformation',
+        arguments: {
+          'phoneNumber': widget.phoneNumber,
+          'userId': user?.id ?? userCredential.user?.uid ?? '',
+        },
+      );
     } else {
       Navigator.of(context).pushNamedAndRemoveUntil('/example', (_) => false);
     }

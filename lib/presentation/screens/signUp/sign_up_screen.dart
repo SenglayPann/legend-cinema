@@ -74,7 +74,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
     await Future.delayed(const Duration(milliseconds: 300));
 
     if (isNewUser) {
-      Navigator.pushNamed(context, '/signUpInformation');
+      Navigator.pushNamed(
+        context,
+        '/signUpInformation',
+        arguments: {
+          'phoneNumber': _phoneController.text.trim(),
+          'userId': user?.id ?? userCredential.user?.uid ?? '',
+        },
+      );
     } else {
       Navigator.of(context).pushNamedAndRemoveUntil('/example', (_) => false);
     }

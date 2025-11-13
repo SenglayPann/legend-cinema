@@ -46,33 +46,43 @@ class AuthServices {
   // ───────────────────────────────────────────────────────────────
   // 🔹 Post sign-in logic — create or update user record
  // The user model returned from postSignIn now contains the full data
-Future<UserModel> postSignIn(UserCredential userCredential) async {
-  final user = userCredential.user;
-  if (user == null) {
-    throw Exception('User is null after sign-in.');
-  }
-  final userDocRef = _firestore.collection('users').doc(user.uid);
-  final userSnapshot = await userDocRef.get();
+  Future<UserModel> postSignIn(UserCredential userCredential) async {
+    final user = userCredential.user;
 
-  if (userSnapshot.exists) {
-      // Existing user: return the data from Firestore.
-      return UserModel.fromMap(userSnapshot.data()!, user.uid);
-  } else {
-      // New user: create a new user and return it.
+    if (user == null) {
+      throw Exception('User is null after sign-in.');
+    }
+    final userDocRef = _firestore.collection('users').doc(user.uid);
+    final userSnapshot = await userDocRef.get();
+
+    if (userSnapshot.exists) {
+        // Existing user: return the data from Firestore.
+        return UserModel.fromMap(userSnapshot.data()!, user.uid);
+    } else {
+    // New user: create a new user and return it.
       final newUser = UserModel(
-          id: user.uid,
-          userName: user.displayName ?? '',
-          firstName: '',
-          lastName: '',
-          email: user.email ?? '',
-          phone: user.phoneNumber ?? '',
-          createdAt: Timestamp.now(),
-          bookingCount: 0,
+        id: user.uid,
+        userName: user.displayName ?? '',
+        firstName: '',
+        lastName: '',
+        email: user.email ?? '',
+        phone: user.phoneNumber ?? '',
+        createdAt: Timestamp.now(),
+        bookingCount: 0,
       );
       await userDocRef.set(newUser.toMap());
       return newUser;
+    }
   }
-}
+
+  Future<UserModel?> getUserById(String uid) async {
+    final doc = await _firestore.collection('users').doc(uid).get();
+    if (!doc.exists) return null;
+    final data = doc.data();
+    if (data == null) return null;
+    return UserModel.fromMap(data, doc.id);
+  }
+
 
   // // ───────────────────────────────────────────────────────────────
   // // 🔹 Optional: get current logged-in user model

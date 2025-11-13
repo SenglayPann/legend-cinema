@@ -1,6 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:legend_cinema/presentation/widgets/custom_alert.dart';
+import 'package:provider/provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:legend_cinema/presentation/state/auth_state.dart';
+import 'package:legend_cinema/data/models/user_model.dart';
 import 'package:legend_cinema/presentation/widgets/custom_button.dart';
 import 'package:legend_cinema/presentation/widgets/custom_date_input_field.dart';
 import 'package:legend_cinema/presentation/widgets/custom_input_field.dart';
@@ -8,8 +13,9 @@ import '../../widgets/app_scaffold.dart';
 
 class SignUpInformationScreen extends StatefulWidget {
   final String? phoneNumber;
+  final String? userId;
 
-  const SignUpInformationScreen({Key? key, this.phoneNumber}) : super(key: key);
+  const SignUpInformationScreen({Key? key, this.phoneNumber, this.userId}) : super(key: key);
 
   @override
   State<SignUpInformationScreen> createState() => _SignUpInformationScreenState();
@@ -61,13 +67,81 @@ class _SignUpInformationScreenState extends State<SignUpInformationScreen> {
       return;
     }
 
-    // TODO: Handle next step (e.g., upload profile, go to next screen)
-    debugPrint('Continue with: $firstName $lastName');
+    // Start a small loading state
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
+
+    _updateUserProfile(firstName, lastName);
+  }
+
+  Future<void> _updateUserProfile(String firstName, String lastName) async {
+    try {
+      final authState = context.read<AuthState>();
+
+      // Determine userId (from widget or current auth state)
+      final userId = widget.userId ?? authState.currentUser?.id;
+      if (userId == null || userId.isEmpty) {
+        CustomAlert.show(context, title: 'Failed', message: 'User ID not available.');
+        return;
+      }
+
+      final docRef = FirebaseFirestore.instance.collection('users').doc(userId);
+
+      final birthText = _birthDateController.text.trim();
+      dynamic birthValue;
+      final parsed = DateTime.tryParse(birthText);
+      if (parsed != null) {
+        birthValue = Timestamp.fromDate(parsed);
+      } else if (birthText.isNotEmpty) {
+        // store raw string if parsing fails
+        birthValue = birthText;
+      } else {
+        birthValue = null;
+      }
+
+      final updateData = <String, dynamic>{
+        'firstName': firstName,
+        'lastName': lastName,
+        'userName': '$firstName $lastName',
+        if (birthValue != null) 'dateOfBirth': birthValue,
+      };
+
+      // Update the existing Firestore document (merge semantics)
+      await docRef.set(updateData, SetOptions(merge: true));
+
+      // Read back the updated document
+      final snapshot = await docRef.get();
+      if (!snapshot.exists) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to update user profile.')), 
+        );
+        return;
+      }
+
+      final updatedUser = UserModel.fromMap(snapshot.data()!, snapshot.id);
+
+      // Update app-wide AuthState (this will save to SharedPreferences)
+      authState.setUser(updatedUser);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Profile updated successfully.')), 
+      );
+
+      // Navigate to example screen (main area)
+      Navigator.of(context).pushNamedAndRemoveUntil('/example', (_) => false);
+    } catch (e, st) {
+      debugPrint('Error updating profile: $e\n$st');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error updating profile: $e')),
+      );
+    }
   }
 
   void _onSkip() {
-    // TODO: Navigate to next screen or home
-    debugPrint('User skipped setup');
+    Navigator.of(context).pushNamedAndRemoveUntil('/example', (_) => false);
   }
 
   @override

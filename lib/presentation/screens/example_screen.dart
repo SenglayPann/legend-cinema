@@ -12,7 +12,8 @@ class ExampleScreen extends StatelessWidget {
     final auth = context.watch<AuthState>();
 
     print('-------> auth');
-    print(auth.currentUser);
+    print(auth.currentUser?.phone);
+    print(auth.currentUser?.dateOfBirth);
 
     return AppScaffold(
       backgroundColor: const Color(0xFF090909),
