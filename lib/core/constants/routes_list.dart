@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import '../../presentation/screens/splash/splash_screen.dart'; // Create these screens
+import '../../presentation/screens/home/home_screen.dart';
 
 // 1. Define the model for a single route object
 class AppRoute {
@@ -14,6 +15,11 @@ const List<AppRoute> appRoutes = [
   AppRoute(
     name: '/', 
     component: SplashScreen()
+  ),
+  //route of home_screen
+  AppRoute(
+    name: '/home',
+    component: HomeScreen()
   ),
   // Add more routes here...
 ];
