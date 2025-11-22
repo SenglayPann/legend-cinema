@@ -43,3 +43,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# firebase apiKey
+/scripts/legend-cinema-d1874-firebase-adminsdk-fbsvc-634cff0bd3.json
+/scripts/node_modules

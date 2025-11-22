@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import '../../presentation/screens/splash/splash_screen.dart'; // Create these screens
+import '../../presentation/screens/home/home_screen.dart';
 import '../../presentation/screens/signUp/sign_up_screen.dart';
 import '../../presentation/screens/otpVerification/otp_verification.dart';
 import '../../presentation/screens/signUpInformation/sign_up_information_screen.dart';
@@ -20,5 +21,6 @@ final List<AppRoute> appRoutes = [
   // AppRoute(name: '/otpVerification', component: OtpVerificationScreen()),
   AppRoute(name: '/signUpInformation', component: SignUpInformationScreen()),
   AppRoute(name: '/example', component: ExampleScreen()),
+  AppRoute(name: '/home', component: HomeScreen()),
   // Add more routes here...
 ];

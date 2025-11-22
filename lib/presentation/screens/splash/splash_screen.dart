@@ -1,5 +1,6 @@
 import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
+import 'package:legend_cinema/presentation/screens/home/home_screen.dart';
 import 'package:legend_cinema/data/services/auth_services.dart';
 import 'package:legend_cinema/presentation/state/auth_state.dart';
 import 'package:provider/provider.dart';
@@ -57,9 +58,6 @@ class _SplashScreenState extends State<SplashScreen>
           user = await _authService.getUserById(auth.currentUser?.id ?? '');
         }
 
-        developer.log('-------->> $user', name: 'SplashScreen');
-        print('-------->> $user');
-
         // Small delay (optional) to let animation breathe
         await Future.delayed(const Duration(milliseconds: 1000));
 
@@ -67,7 +65,7 @@ class _SplashScreenState extends State<SplashScreen>
         if (!mounted) return;
 
         if (user != null) {
-          Navigator.of(context).pushNamedAndRemoveUntil('/example', (_) => false);
+          Navigator.of(context).pushNamedAndRemoveUntil('/home', (_) => false);
         } else {
           Navigator.of(context).pushNamedAndRemoveUntil('/signUp', (_) => false);
         }
@@ -78,23 +76,23 @@ class _SplashScreenState extends State<SplashScreen>
     _slideAnimation = TweenSequence<double>([
       TweenSequenceItem(
         tween: Tween<double>(begin: 0, end: 150)
-            .chain(CurveTween(curve: Curves.easeOut)), // Custom curve for first part
+            .chain(CurveTween(curve: Curves.easeOut)),
         weight: 40,
       ),
       TweenSequenceItem(
         tween: Tween<double>(begin: 150, end: 150)
-            .chain(CurveTween(curve: Curves.easeOut)), // Custom curve for first part
+            .chain(CurveTween(curve: Curves.easeOut)),
         weight: 20,
       ),
       TweenSequenceItem(
         tween: Tween<double>(begin: 150, end: -150)
-            .chain(CurveTween(curve: Curves.easeOut)), // Different curve for second part
+            .chain(CurveTween(curve: Curves.easeOut)),
         weight: 30,
       ),
     ]).animate(
       CurvedAnimation(
         parent: _gradientController,
-        curve: const Interval(0.4, 1.0), // Entire sequence runs from 0.4 to 1.0
+        curve: const Interval(0.4, 1.0),
       ),
     );
 
@@ -106,7 +104,6 @@ class _SplashScreenState extends State<SplashScreen>
       duration: const Duration(milliseconds: 2500),
     );
 
-    // Logo slides from bottom to center
     _logoSlideAnimation = Tween<double>(begin: 700, end: 0).animate(
       CurvedAnimation(
         parent: _logoController,
@@ -114,7 +111,6 @@ class _SplashScreenState extends State<SplashScreen>
       ),
     );
 
-    // Logo scales up then down
     _logoScaleAnimation = TweenSequence<double>([
       TweenSequenceItem(
         tween: Tween<double>(begin: 1.0, end: 1.2)
@@ -137,6 +133,16 @@ class _SplashScreenState extends State<SplashScreen>
     Future.delayed(const Duration(milliseconds: 1000), () {
       _logoController.forward();
     });
+
+    // Navigate to HomeScreen after splash duration (4s)
+    // Future.delayed(const Duration(milliseconds: 4000), () {
+    //   if (mounted) {
+    //     Navigator.pushReplacement(
+    //       context,
+    //       MaterialPageRoute(builder: (context) => const HomeScreen()),
+    //     );
+    //   }
+    // });
   }
 
   @override
@@ -160,7 +166,6 @@ class _SplashScreenState extends State<SplashScreen>
         builder: (context, child) {
           return Stack(
             children: [
-              // Blue gradient (bottom-left)
               Positioned(
                 bottom: 0,
                 left: -(230 + _slideAnimation.value),
@@ -177,15 +182,14 @@ class _SplashScreenState extends State<SplashScreen>
                       ),
                     ),
                   ),
-                )
+                ),
               ),
-              // Red gradient (bottom-right)
               Positioned(
                 bottom: 0,
                 right: (_slideAnimation.value - 230),
                 child: Transform.translate(
                   offset: Offset(0, _verticalSlideAnimation.value),
-                    child: Container(
+                  child: Container(
                     width: gradientWidth,
                     height: gradientHeight,
                     decoration: const BoxDecoration(
@@ -196,9 +200,8 @@ class _SplashScreenState extends State<SplashScreen>
                       ),
                     ),
                   ),
-                )
+                ),
               ),
-              // Animated logo
               Center(
                 child: Transform.translate(
                   offset: Offset(0, _logoSlideAnimation.value),
