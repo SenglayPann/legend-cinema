@@ -46,7 +46,7 @@ class MyApp extends StatelessWidget {
     ),
       title: 'Structured Routing Demo',
       routes: getRoutes(), 
-      initialRoute: '/', 
+      initialRoute: '/home', 
       onUnknownRoute: (settings) {
         return MaterialPageRoute(
           builder: (context) => const Scaffold(

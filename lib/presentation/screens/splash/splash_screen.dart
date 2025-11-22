@@ -58,9 +58,6 @@ class _SplashScreenState extends State<SplashScreen>
           user = await _authService.getUserById(auth.currentUser?.id ?? '');
         }
 
-        developer.log('-------->> $user', name: 'SplashScreen');
-        print('-------->> $user');
-
         // Small delay (optional) to let animation breathe
         await Future.delayed(const Duration(milliseconds: 1000));
 
@@ -68,7 +65,7 @@ class _SplashScreenState extends State<SplashScreen>
         if (!mounted) return;
 
         if (user != null) {
-          Navigator.of(context).pushNamedAndRemoveUntil('/example', (_) => false);
+          Navigator.of(context).pushNamedAndRemoveUntil('/home', (_) => false);
         } else {
           Navigator.of(context).pushNamedAndRemoveUntil('/signUp', (_) => false);
         }
@@ -138,14 +135,14 @@ class _SplashScreenState extends State<SplashScreen>
     });
 
     // Navigate to HomeScreen after splash duration (4s)
-    Future.delayed(const Duration(milliseconds: 4000), () {
-      if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
-        );
-      }
-    });
+    // Future.delayed(const Duration(milliseconds: 4000), () {
+    //   if (mounted) {
+    //     Navigator.pushReplacement(
+    //       context,
+    //       MaterialPageRoute(builder: (context) => const HomeScreen()),
+    //     );
+    //   }
+    // });
   }
 
   @override
