@@ -8,23 +8,20 @@ import 'package:provider/provider.dart';
 import './presentation/state/cart_state.dart';
 import 'presentation/screens/home/home_screen.dart';
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   // 1. Create and initialize a SINGLE instance of AuthState
   final authState = AuthState();
   await authState.loadUserFromStorage();
-  
+
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => CartState()),
         // 2. Provide the initialized instance to the widget tree
-        ChangeNotifierProvider.value(value: authState)
+        ChangeNotifierProvider.value(value: authState),
       ],
       child: const MyApp(),
     ),
@@ -38,22 +35,20 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
-      pageTransitionsTheme: PageTransitionsTheme(
-        builders: {
-          TargetPlatform.android: CustomPageTransitionBuilder(),
-          TargetPlatform.iOS: CustomPageTransitionBuilder(),
-        },
+        pageTransitionsTheme: PageTransitionsTheme(
+          builders: {
+            TargetPlatform.android: CustomPageTransitionBuilder(),
+            TargetPlatform.iOS: CustomPageTransitionBuilder(),
+          },
+        ),
       ),
-    ),
       title: 'Structured Routing Demo',
-      routes: getRoutes(), 
-      initialRoute: '/home', 
+      routes: getRoutes(),
+      initialRoute: '/',
       onUnknownRoute: (settings) {
         return MaterialPageRoute(
           builder: (context) => const Scaffold(
-            body: Center(
-              child: Text('404 - Route Not Found'),
-            ),
+            body: Center(child: Text('404 - Route Not Found')),
           ),
         );
       },

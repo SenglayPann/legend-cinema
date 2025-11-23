@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:legend_cinema/presentation/screens/more/more_screen.dart';
 import '../../presentation/screens/splash/splash_screen.dart'; // Create these screens
 import '../../presentation/screens/home/home_screen.dart';
 import '../../presentation/screens/signUp/sign_up_screen.dart';
@@ -8,7 +9,7 @@ import '../../presentation/screens/example_screen.dart';
 
 // 1. Define the model for a single route object
 class AppRoute {
-  final String name;      // e.g., '/home'
+  final String name; // e.g., '/home'
   final Widget component; // The screen widget
 
   const AppRoute({required this.name, required this.component});
@@ -22,5 +23,6 @@ final List<AppRoute> appRoutes = [
   AppRoute(name: '/signUpInformation', component: SignUpInformationScreen()),
   AppRoute(name: '/example', component: ExampleScreen()),
   AppRoute(name: '/home', component: HomeScreen()),
+  AppRoute(name: '/more', component: MoreScreen()),
   // Add more routes here...
 ];
