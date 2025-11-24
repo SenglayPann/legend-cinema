@@ -17,7 +17,7 @@ class AppScaffold extends StatelessWidget {
     required this.body,
     this.showBackButton = true,
     this.actions,
-    this.appBarStartColor = Colors.red,
+    this.appBarStartColor = const Color(0xFFB71C1C),
     this.appBarEndColor = const Color(0xFF090909),
     this.backgroundColor = Colors.black,
     this.bottomNavigationBar,
@@ -27,7 +27,7 @@ class AppScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-        title: title, // ✅ just pass directly
+        title: title,
         showBackButton: showBackButton,
         actions: actions,
         startColor: appBarStartColor,

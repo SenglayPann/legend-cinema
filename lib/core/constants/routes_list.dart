@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:legend_cinema/presentation/screens/more/more_screen.dart';
+import 'package:legend_cinema/presentation/screens/offer/offer_screen.dart';
 import '../../presentation/screens/splash/splash_screen.dart'; // Create these screens
 import '../../presentation/screens/home/home_screen.dart';
 import '../../presentation/screens/signUp/sign_up_screen.dart';
@@ -24,5 +25,6 @@ final List<AppRoute> appRoutes = [
   AppRoute(name: '/example', component: ExampleScreen()),
   AppRoute(name: '/home', component: HomeScreen()),
   AppRoute(name: '/more', component: MoreScreen()),
+  AppRoute(name: '/offer', component: OfferScreen()),
   // Add more routes here...
 ];

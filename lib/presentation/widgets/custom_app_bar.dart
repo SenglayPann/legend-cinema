@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -8,6 +10,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Color startColor;
   final Color endColor;
   final List<double> stops;
+  final double blurSigmaX;
+  final double blurSigmaY;
 
   const CustomAppBar({
     Key? key,
@@ -17,7 +21,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.showBackButton = true,
     this.startColor = const Color(0xFF111112), // dark color
     this.endColor = Colors.red, // gradient end color
-    this.stops = const [0.3, 0.8]
+    this.stops = const [0.0, 1.0],
+    this.blurSigmaX = 10.0, // Default blur amount
+    this.blurSigmaY = 10.0, // Default blur amount
   }) : super(key: key);
 
   @override
@@ -25,33 +31,42 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final Text titleTextWidget = Text(
+      title!,
+      style: const TextStyle(
+        color: Colors.white,
+        fontWeight: FontWeight.w600,
+        fontSize: 24.0,
+      ), // Increased font size
+    );
+
     return AppBar(
       automaticallyImplyLeading: false, // disables default back button
       leading: showBackButton
           ? IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
+              icon: const Icon(
+                Icons.arrow_back_ios_new_rounded,
+                color: Colors.white,
+              ),
               onPressed: () => Navigator.of(context).maybePop(),
             )
           : null,
-      title: title != null
-          ? Text(
-              title!,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-              ),
-            )
-          : null,
-
-      centerTitle: centerTitle,
+      title: title != null ? titleTextWidget : null,
+      centerTitle: showBackButton, // Center title only if back button is shown
+      titleSpacing: showBackButton ? NavigationToolbar.kMiddleSpacing : 16.0,
       actions: actions,
-      flexibleSpace: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [startColor, endColor],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            stops: stops
+      flexibleSpace: ClipRect(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: blurSigmaX, sigmaY: blurSigmaY),
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [startColor, endColor],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                stops: stops,
+              ),
+            ),
           ),
         ),
       ),
