@@ -1,0 +1,17 @@
+{
+  "name": "legend-cinema-migrate",
+  "version": "1.0.0",
+  "description": "Firestore migration helper for Legend Cinema",
+  "main": "migrate_movies.js",
+  "scripts": {
+    "migrate-movie": "node migrate_movies.js",
+    "migrate-cinema": "node migrate_cinemas.js",
+    "migrate-fnb": "node migrate_fnb.js",
+    "migrate-hall": "node migrate_halls.js",
+    "get-cinemas": "node get_cinemas.js",
+    "get-cinemas-kvp": "node get_cinemas_kvp.js"
+  },
+  "dependencies": {
+    "firebase-admin": "^11.0.0"
+  }
+}

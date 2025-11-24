@@ -14,11 +14,7 @@ class ShowtimeModel {
   final String showDate;
   final String showTime;
   final String endTime;
-  final Pricing pricing;
-  final int availableSeats;
-  final int totalSeats;
   final List<String> features;
-  final bool isActive;
 
   ShowtimeModel({
     required this.id,
@@ -34,11 +30,7 @@ class ShowtimeModel {
     required this.showDate,
     required this.showTime,
     required this.endTime,
-    required this.pricing,
-    required this.availableSeats,
-    required this.totalSeats,
     required this.features,
-    required this.isActive,
   });
 
   factory ShowtimeModel.fromMap(Map<String, dynamic> data, String id) {
@@ -56,11 +48,7 @@ class ShowtimeModel {
       showDate: data['showDate'] ?? '',
       showTime: data['showTime'] ?? '',
       endTime: data['endTime'] ?? '',
-      pricing: Pricing.fromMap(data['pricing'] ?? {}),
-      availableSeats: data['availableSeats'] ?? 0,
-      totalSeats: data['totalSeats'] ?? 0,
       features: List<String>.from(data['features'] ?? []),
-      isActive: data['isActive'] ?? true,
     );
   }
 
@@ -78,11 +66,7 @@ class ShowtimeModel {
       'showDate': showDate,
       'showTime': showTime,
       'endTime': endTime,
-      'pricing': pricing.toMap(),
-      'availableSeats': availableSeats,
-      'totalSeats': totalSeats,
       'features': features,
-      'isActive': isActive,
     };
   }
 }

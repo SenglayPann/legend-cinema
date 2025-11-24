@@ -8,7 +8,7 @@ class CartItem {
   CartItem({required this.item, this.quantity = 1});
 
   double get totalPrice =>
-      (item.discountPrice ?? item.price) * quantity;
+      item.price * quantity;
 }
 
 class CartState extends ChangeNotifier {

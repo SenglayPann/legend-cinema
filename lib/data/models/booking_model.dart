@@ -8,7 +8,6 @@ class BookingModel {
   final String showtimeId;
   final String movieId;
   final String movieTitle;
-  final String moviePosterUrl;
   final String cinemaId;
   final String cinemaName;
   final String hallId;
@@ -39,7 +38,6 @@ class BookingModel {
     required this.showtimeId,
     required this.movieId,
     required this.movieTitle,
-    required this.moviePosterUrl,
     required this.cinemaId,
     required this.cinemaName,
     required this.hallId,
@@ -72,7 +70,6 @@ class BookingModel {
       showtimeId: data['showtimeId'] ?? '',
       movieId: data['movieId'] ?? '',
       movieTitle: data['movieTitle'] ?? '',
-      moviePosterUrl: data['moviePosterUrl'] ?? '',
       cinemaId: data['cinemaId'] ?? '',
       cinemaName: data['cinemaName'] ?? '',
       hallId: data['hallId'] ?? '',
@@ -107,7 +104,6 @@ class BookingModel {
       'showtimeId': showtimeId,
       'movieId': movieId,
       'movieTitle': movieTitle,
-      'moviePosterUrl': moviePosterUrl,
       'cinemaId': cinemaId,
       'cinemaName': cinemaName,
       'hallId': hallId,
@@ -134,7 +130,6 @@ class BookingModel {
 }
 
 class BookingSeat {
-  final String seatId;
   final String seatNumber;
   final String row;
   final int col;
@@ -142,7 +137,6 @@ class BookingSeat {
   final double price;
 
   BookingSeat({
-    required this.seatId,
     required this.seatNumber,
     required this.row,
     required this.col,
@@ -152,21 +146,19 @@ class BookingSeat {
 
   factory BookingSeat.fromMap(Map<String, dynamic> data) {
     return BookingSeat(
-      seatId: data['seatId'] ?? '',
       seatNumber: data['seatNumber'] ?? '',
       row: data['row'] ?? '',
-      col: data['col'] ?? 0,
+      col: data['col'] ?? '',
       type: data['type'] ?? '',
       price: (data['price'] ?? 0).toDouble(),
     );
   }
 
   Map<String, dynamic> toMap() => {
-        'seatId': seatId,
-        'seatNumber': seatNumber,
-        'row': row,
-        'col': col,
-        'type': type,
-        'price': price,
-      };
+    'seatNumber': seatNumber,
+    'row': row,
+    'col': col,
+    'type': type,
+    'price': price,
+  };
 }

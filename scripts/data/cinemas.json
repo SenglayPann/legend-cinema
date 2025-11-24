@@ -1,0 +1,226 @@
+[
+  {
+    "id": "2ReQah8P9OxA9shoAYSe",
+    "name": "Legend Cinema – Sihanoukville",
+    "address": "PGB-5-021, 4th Floor of Prince, Sihanoukville, Cambodia",
+    "city": "Sihanoukville",
+    "openHour": "09:30",
+    "closeHour": "22:30",
+    "facilities": [
+      "Giant Screen",
+      "Gold Class",
+      "Regular"
+    ],
+    "hallCount": 3,
+    "location": {
+      "lat": 10.62,
+      "lng": 103.522
+    }
+  },
+  {
+    "id": "5HceqnKMAAjzvy3xncbZ",
+    "name": "Legend Cinema – Noro Mall",
+    "address": "5th floor, Chip Mong Noro Mall, Preah Norodom Blvd (41), Phnom Penh",
+    "city": "Phnom Penh",
+    "openHour": "09:30",
+    "closeHour": "22:30",
+    "facilities": [
+      "Regular",
+      "Gold Class"
+    ],
+    "hallCount": 3,
+    "location": {
+      "lat": 11.5501,
+      "lng": 104.9342
+    }
+  },
+  {
+    "id": "5TeOb0LcvSMBP4KA43K1",
+    "name": "Legend Cinema – Siem Reap",
+    "address": "Level 3, The Heritage Walk, Corner of National Road 6 & Oum Chhay St, Svay Dongkoum, Krong Siem Reap, Cambodia",
+    "city": "Siem Reap",
+    "openHour": "09:30",
+    "closeHour": "22:30",
+    "facilities": [
+      "Regular",
+      "Gold Class"
+    ],
+    "hallCount": 5,
+    "location": {
+      "lat": 13.363,
+      "lng": 103.857
+    }
+  },
+  {
+    "id": "AVDkSLDhYTDYadvzQSOs",
+    "name": "Legend Cinema – K Mall",
+    "address": "2nd Floor, K Mall, Veng Sreng Blvd, Phnom Penh",
+    "city": "Phnom Penh",
+    "openHour": "09:30",
+    "closeHour": "22:30",
+    "facilities": [
+      "Giant Screen",
+      "Gold Class",
+      "Regular"
+    ],
+    "hallCount": 3,
+    "location": {
+      "lat": 11.5865,
+      "lng": 104.8272
+    }
+  },
+  {
+    "id": "AntZftXHrxw6gX6hjri4",
+    "name": "Legend Cinema – City Mall",
+    "address": "Level 3, City Mall, Monireth Boulevard (St 217), Sangkat Vealvong, Khan 7 Makara, Phnom Penh",
+    "city": "Phnom Penh",
+    "openHour": "09:30",
+    "closeHour": "22:30",
+    "facilities": [
+      "Regular",
+      "Gold Class"
+    ],
+    "hallCount": 3,
+    "location": {
+      "lat": 11.5545,
+      "lng": 104.9127
+    }
+  },
+  {
+    "id": "BfSOTmx2YQON4whsodwe",
+    "name": "Legend Cinema – Olympia Mall",
+    "address": "6th Floor, Olympia Mall, Monireth Blvd (217), Sangkat Veal Vong, Khan 7 Makara, Phnom Penh",
+    "city": "Phnom Penh",
+    "openHour": "09:30",
+    "closeHour": "22:30",
+    "facilities": [
+      "Regular",
+      "Gold Class",
+      "Kids Hall"
+    ],
+    "hallCount": 3,
+    "location": {
+      "lat": 11.5538,
+      "lng": 104.9191
+    }
+  },
+  {
+    "id": "Ef5YBta9AuoQtVWdvicu",
+    "name": "Legend Premium Cinema – Exchange Square",
+    "address": "Street 106, Corner of Street 61, Sangkat Wat Phnom, Phnom Penh",
+    "city": "Phnom Penh",
+    "openHour": "09:30",
+    "closeHour": "22:30",
+    "facilities": [
+      "Diamond Class",
+      "Premium Hall"
+    ],
+    "hallCount": 2,
+    "location": {
+      "lat": 11.574,
+      "lng": 104.912
+    }
+  },
+  {
+    "id": "R6WPvEaWYCN4mMt9nLDj",
+    "name": "Legend Cinema – Toul Kork",
+    "address": "TK Avenue Mall, Street 315, Sangkat Beongkok 1, Khan Toul Kork, Phnom Penh",
+    "city": "Phnom Penh",
+    "openHour": "09:30",
+    "closeHour": "22:30",
+    "facilities": [
+      "Regular"
+    ],
+    "hallCount": 3,
+    "location": {
+      "lat": 11.5755,
+      "lng": 104.866
+    }
+  },
+  {
+    "id": "bfr3rKld9EumdBPKDzS1",
+    "name": "Legend Cinema – Meanchey",
+    "address": "3rd Floor, New Steung Mean Chey Market, Veng Sreng Blvd, Sangkat Steung Mean Chey, Khan Mean Chey, Phnom Penh",
+    "city": "Phnom Penh",
+    "openHour": "09:30",
+    "closeHour": "22:30",
+    "facilities": [
+      "Regular"
+    ],
+    "hallCount": 1,
+    "location": {
+      "lat": 11.537,
+      "lng": 104.86
+    }
+  },
+  {
+    "id": "gwfGLztp8injVyHJdsJC",
+    "name": "Legend Cinema – Midtown Mall",
+    "address": "1st Floor, Midtown Mall, St 2004 Corner 13B, Phnom Penh",
+    "city": "Phnom Penh",
+    "openHour": "09:30",
+    "closeHour": "22:30",
+    "facilities": [
+      "Regular",
+      "Gold Class"
+    ],
+    "hallCount": 2,
+    "location": {
+      "lat": 11.567,
+      "lng": 104.901
+    }
+  },
+  {
+    "id": "kyERtx3xdh7684AC6dK0",
+    "name": "Legend Cinema – SenSok",
+    "address": "4th Floor, Chip Mong SenSok Mall, Okhna Mong Reththey Street, Khan Sen Sok, Phnom Penh",
+    "city": "Phnom Penh",
+    "openHour": "09:30",
+    "closeHour": "22:30",
+    "facilities": [
+      "Regular",
+      "Gold Class",
+      "Kids Hall"
+    ],
+    "hallCount": 3,
+    "location": {
+      "lat": 11.588,
+      "lng": 104.861
+    }
+  },
+  {
+    "id": "oms5ajLAY1xloqGNL60F",
+    "name": "Legend Cinema – Eden Garden",
+    "address": "City Center Boulevard, Sangkat Srah Chak, Khan Daun Penh, Phnom Penh",
+    "city": "Phnom Penh",
+    "openHour": "09:30",
+    "closeHour": "22:30",
+    "facilities": [
+      "Regular",
+      "Gold Class",
+      "Coca-Cola Hall"
+    ],
+    "hallCount": 3,
+    "location": {
+      "lat": 11.5577,
+      "lng": 104.9134
+    }
+  },
+  {
+    "id": "x3sKzRcAYrivWHZjdrCe",
+    "name": "Legend Cinema – 271 Mega Mall",
+    "address": "3rd Floor, Chip Mong Mega Mall, St 271, Phum Prek Ta Nu, Sangkat Chak Angrae Leu, Khan Mean Chey, Phnom Penh",
+    "city": "Phnom Penh",
+    "openHour": "09:30",
+    "closeHour": "22:30",
+    "facilities": [
+      "Regular",
+      "Gold Class"
+    ],
+    "hallCount": 2,
+    "location": {
+      "lat": 11.5223,
+      "lng": 104.93
+    }
+  }
+]
