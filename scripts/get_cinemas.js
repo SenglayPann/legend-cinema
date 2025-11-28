@@ -50,6 +50,7 @@ async function run() {
         closeHour: data.closeHour,
         facilities: data.facilities || [],
         hallCount: data.hallCount || 0,
+        imageUrl: data.imageUrl,
         location: {
           lat: data.location._latitude,
           lng: data.location._longitude,
