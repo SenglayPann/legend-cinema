@@ -12,84 +12,96 @@ class MoreScreen extends StatelessWidget {
       title: "Account",
       showBackButton: false,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Login + Signup (Hidden if logged in)
             if (!isLoggedIn) ...[
-              Row(
-                children: [
-                  Expanded(
-                    child: _roundedButton(
-                      title: "Login",
-                      icon: Icons.login_rounded,
-                      onTap: () => Navigator.pushNamed(context, '/login'),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: _roundedButton(
+                        title: "Login",
+                        icon: Icons.login_rounded,
+                        onTap: () => Navigator.pushNamed(context, '/login'),
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _roundedButton(
-                      title: "Signup",
-                      icon: Icons.person_add_alt_1_outlined,
-                      onTap: () => Navigator.pushNamed(context, '/signUp'),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _roundedButton(
+                        title: "Signup",
+                        icon: Icons.person_add_alt_1_outlined,
+                        onTap: () => Navigator.pushNamed(context, '/signUp'),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               const SizedBox(height: 20),
             ],
 
             // Membership Card
-            Container(
-              decoration: BoxDecoration(
-                color: const Color(0xFF1E1E1E),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text(
-                          "Legend Membership",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1E1E1E),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: Colors.white12,
+                    width: 1,
+                  ), // Added border
+                ),
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: const [
+                          Text(
+                            "Legend Membership",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
                           ),
-                        ),
-                        SizedBox(height: 8),
-                        Text(
-                          "Getting many benefits from our membership card. Take one now at your nearby Legend Cinema!",
-                          style: TextStyle(color: Colors.white70, fontSize: 13),
-                        ),
-                        SizedBox(height: 12),
-                        // Learn more button and Activate button
-                        Row(
-                          children: [
-                            _LearnMoreButton(),
-                            SizedBox(width: 10),
-                            _ActivateButton(), // New Activate button
-                          ],
-                        ),
-                      ],
+                          SizedBox(height: 8),
+                          Text(
+                            "Getting many benefits from our membership card. Take one now at your nearby Legend Cinema!",
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 13,
+                            ),
+                          ),
+                          SizedBox(height: 12),
+                          // Learn more button and Activate button
+                          Row(
+                            children: [
+                              _ActivateButton(), // New Activate button
+                              SizedBox(width: 10),
+                              _LearnMoreButton(),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Container(
-                    width: 80,
-                    height: 80,
-                    alignment: Alignment.center,
-                    child: Icon(
-                      Icons.card_membership, // Updated icon
-                      color: Colors.redAccent,
-                      size: 56,
+                    const SizedBox(width: 12),
+                    Container(
+                      width: 80,
+                      height: 80,
+                      alignment: Alignment.center,
+                      child: Icon(
+                        Icons.card_membership, // Updated icon
+                        color: Colors.redAccent,
+                        size: 56,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
 
@@ -201,7 +213,7 @@ class MoreScreen extends StatelessWidget {
 
   Widget _sectionTitle(String title) {
     return Padding(
-      padding: const EdgeInsets.only(top: 8.0, bottom: 6),
+      padding: const EdgeInsets.only(top: 8.0, bottom: 6, left: 16, right: 16),
       child: Text(
         title,
         style: const TextStyle(
@@ -291,7 +303,7 @@ class _MenuSection extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: const Color(0xFF151515),
-        borderRadius: BorderRadius.circular(8),
+        // borderRadius: BorderRadius.circular(8), // Removed for full width
       ),
       clipBehavior: Clip.antiAlias, // Clip children to rounded corners
       child: Column(children: children),
@@ -310,11 +322,14 @@ class _LearnMoreButton extends StatelessWidget {
         // Handle learn more action
       },
       style: OutlinedButton.styleFrom(
-        foregroundColor: Colors.redAccent, // Text color
-        side: const BorderSide(color: Color(0xFFCC0000)), // Border color
+        foregroundColor: Colors.white, // Text color
+        side: const BorderSide(
+          color: Colors.white,
+          width: 0.8,
+        ), // Smaller border width
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         padding: const EdgeInsets.symmetric(horizontal: 14),
-        minimumSize: const Size(0, 36), // Maintain height
+        minimumSize: const Size(0, 28), // Maintain height
       ),
       child: const Text(
         "Learn More",
@@ -339,7 +354,7 @@ class _ActivateButton extends StatelessWidget {
         foregroundColor: Colors.white, // Text color
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         padding: const EdgeInsets.symmetric(horizontal: 14),
-        minimumSize: const Size(0, 36), // Maintain height
+        minimumSize: const Size(0, 28), // Maintain height
       ),
       child: const Text(
         "Activate",
