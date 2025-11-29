@@ -164,7 +164,7 @@ class _BannerCarouselState extends State<BannerCarousel> {
                                 children: [
                                   const Text(
                                     "21 Nov 2025",
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 14,
                                       fontWeight: FontWeight.normal,

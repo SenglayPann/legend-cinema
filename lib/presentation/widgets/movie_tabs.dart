@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import './movie_grid.dart';
-import '../widgets/date_bar.dart';
 import '../widgets/tab_selector.dart';
 
 class MovieTabs extends StatelessWidget {

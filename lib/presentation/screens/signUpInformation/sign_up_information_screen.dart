@@ -15,7 +15,7 @@ class SignUpInformationScreen extends StatefulWidget {
   final String? phoneNumber;
   final String? userId;
 
-  const SignUpInformationScreen({Key? key, this.phoneNumber, this.userId}) : super(key: key);
+  const SignUpInformationScreen({super.key, this.phoneNumber, this.userId});
 
   @override
   State<SignUpInformationScreen> createState() => _SignUpInformationScreenState();

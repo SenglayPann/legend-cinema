@@ -1,6 +1,4 @@
-import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
-import 'package:legend_cinema/presentation/screens/home/home_screen.dart';
 import 'package:legend_cinema/data/services/auth_services.dart';
 import 'package:legend_cinema/presentation/state/auth_state.dart';
 import 'package:provider/provider.dart';

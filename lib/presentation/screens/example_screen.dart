@@ -4,7 +4,7 @@ import 'package:legend_cinema/presentation/state/auth_state.dart';
 import '../widgets/app_scaffold.dart';
 
 class ExampleScreen extends StatelessWidget {
-  const ExampleScreen({Key? key}) : super(key: key);
+  const ExampleScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

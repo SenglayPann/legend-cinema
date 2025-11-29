@@ -11,7 +11,7 @@ class CustomDateInputField extends StatefulWidget {
   final DateTime? lastDate;
 
   const CustomDateInputField({
-    Key? key,
+    super.key,
     required this.controller,
     required this.labelText,
     this.validator,
@@ -19,7 +19,7 @@ class CustomDateInputField extends StatefulWidget {
     this.initialDate,
     this.firstDate,
     this.lastDate,
-  }) : super(key: key);
+  });
 
   @override
   State<CustomDateInputField> createState() => _CustomDateInputFieldState();
@@ -42,8 +42,7 @@ class _CustomDateInputFieldState extends State<CustomDateInputField> {
               primary: Colors.red, // red accent for date picker
               surface: Color(0xFF1C1C1C),
               onSurface: Colors.white,
-            ),
-            dialogBackgroundColor: const Color(0xFF090909),
+            ), dialogTheme: DialogThemeData(backgroundColor: const Color(0xFF090909)),
           ),
           child: child!,
         );

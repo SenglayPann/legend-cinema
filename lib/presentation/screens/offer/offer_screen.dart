@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import '../../widgets/app_scaffold.dart';
 
 class OfferScreen extends StatefulWidget {
-  const OfferScreen({Key? key}) : super(key: key);
+  const OfferScreen({super.key});
 
   @override
   State<OfferScreen> createState() => _OfferScreenState();

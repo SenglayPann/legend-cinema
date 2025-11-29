@@ -12,7 +12,7 @@ class AppScaffold extends StatelessWidget {
   final Widget? bottomNavigationBar;
 
   const AppScaffold({
-    Key? key,
+    super.key,
     this.title,
     required this.body,
     this.showBackButton = true,
@@ -21,7 +21,7 @@ class AppScaffold extends StatelessWidget {
     this.appBarEndColor = const Color(0xFF090909),
     this.backgroundColor = Colors.black,
     this.bottomNavigationBar,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -13,7 +13,7 @@ class CustomInputField extends StatelessWidget {
   final int? maxLength;
 
   const CustomInputField({
-    Key? key,
+    super.key,
     required this.controller,
     required this.labelText,
     required this.keyboardType,
@@ -23,7 +23,7 @@ class CustomInputField extends StatelessWidget {
     this.obscureText = false,
     this.quickClear = true,
     this.maxLength,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

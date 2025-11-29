@@ -3,9 +3,6 @@ import 'package:flutter/material.dart';
 import '../../widgets/movie_tabs.dart';
 import '../../widgets/app_bar.dart';
 import '../../widgets/banner_carousel.dart';
-import '../../widgets/tab_selector.dart';
-import '../../widgets/date_bar.dart';
-import '../../widgets/movie_grid.dart';
 import '../../widgets/bottom_nav.dart';
 import '../../widgets/cinema_selector_dialog.dart';
 

@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import '../../widgets/app_scaffold.dart';
 
 class CinemaScreen extends StatefulWidget {
-  const CinemaScreen({Key? key}) : super(key: key);
+  const CinemaScreen({super.key});
 
   @override
   State<CinemaScreen> createState() => _CinemaScreenState();

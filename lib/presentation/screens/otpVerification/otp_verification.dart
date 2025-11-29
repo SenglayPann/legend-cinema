@@ -17,11 +17,11 @@ class OtpVerificationScreen extends StatefulWidget {
   final int? resendToken;
 
   const OtpVerificationScreen({
-    Key? key,
+    super.key,
     required this.phoneNumber,
     required this.verificationId,
     this.resendToken,
-  }) : super(key: key);
+  });
 
   @override
   State<OtpVerificationScreen> createState() => _OtpVerificationScreenState();
@@ -87,7 +87,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
         '/signUpInformation',
         arguments: {
           'phoneNumber': widget.phoneNumber,
-          'userId': user?.id ?? userCredential.user?.uid ?? '',
+          'userId': user.id ?? userCredential.user?.uid ?? '',
         },
       );
     } else {

@@ -333,7 +333,7 @@ class _MenuSection extends StatelessWidget {
 }
 
 class _LearnMoreButton extends StatelessWidget {
-  const _LearnMoreButton({super.key});
+  const _LearnMoreButton();
 
   @override
   Widget build(BuildContext context) {
@@ -358,7 +358,7 @@ class _LearnMoreButton extends StatelessWidget {
 }
 
 class _ActivateButton extends StatelessWidget {
-  const _ActivateButton({super.key});
+  const _ActivateButton();
 
   @override
   Widget build(BuildContext context) {

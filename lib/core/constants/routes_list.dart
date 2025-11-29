@@ -5,7 +5,6 @@ import 'package:legend_cinema/presentation/screens/offer/offer_screen.dart';
 import '../../presentation/screens/splash/splash_screen.dart'; // Create these screens
 import '../../presentation/screens/home/home_screen.dart';
 import '../../presentation/screens/signUp/sign_up_screen.dart';
-import '../../presentation/screens/otpVerification/otp_verification.dart';
 import '../../presentation/screens/signUpInformation/sign_up_information_screen.dart';
 import '../../presentation/screens/example_screen.dart';
 

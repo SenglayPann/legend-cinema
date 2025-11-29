@@ -14,7 +14,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final double blurSigmaY;
 
   const CustomAppBar({
-    Key? key,
+    super.key,
     this.title,
     this.centerTitle = true,
     this.actions,
@@ -24,7 +24,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.stops = const [0.0, 1.0],
     this.blurSigmaX = 10.0, // Default blur amount
     this.blurSigmaY = 10.0, // Default blur amount
-  }) : super(key: key);
+  });
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);

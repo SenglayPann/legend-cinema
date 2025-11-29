@@ -13,7 +13,7 @@ import '../../widgets/app_scaffold.dart';
 import '../../widgets/loading_overlay.dart';
 
 class SignUpScreen extends StatefulWidget {
-  const SignUpScreen({Key? key}) : super(key: key);
+  const SignUpScreen({super.key});
 
   @override
   State<SignUpScreen> createState() => _SignUpScreenState();
@@ -79,7 +79,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         '/signUpInformation',
         arguments: {
           'phoneNumber': _phoneController.text.trim(),
-          'userId': user?.id ?? userCredential.user?.uid ?? '',
+          'userId': user.id ?? userCredential.user?.uid ?? '',
         },
       );
     } else {

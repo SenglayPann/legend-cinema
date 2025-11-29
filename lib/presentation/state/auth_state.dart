@@ -5,7 +5,7 @@ import 'package:legend_cinema/data/models/user_model.dart';
 
 class AuthState extends ChangeNotifier {
   UserModel? _currentUser;
-  bool _isLoading = false;
+  final bool _isLoading = false;
 
   UserModel? get currentUser => _currentUser;
   bool get isLoading => _isLoading;
