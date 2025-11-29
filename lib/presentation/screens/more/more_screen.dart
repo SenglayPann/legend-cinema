@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../widgets/app_scaffold.dart';
 
 class MoreScreen extends StatelessWidget {
   final bool isLoggedIn; // Added to simulate login state
@@ -6,202 +7,193 @@ class MoreScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: const Color(0xFF0F0F0F),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFCC0000),
-        elevation: 0,
-        title: const Text("Account"),
-      ),
-      bottomNavigationBar: _buildBottomNav(),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Login + Signup (Hidden if logged in)
-              if (!isLoggedIn) ...[
-                Row(
-                  children: [
-                    Expanded(
-                      child: _roundedButton(
-                        title: "Login",
-                        icon: Icons.login_rounded,
-                        onTap: () => Navigator.pushNamed(context, '/login'),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _roundedButton(
-                        title: "Signup",
-                        icon: Icons.person_add_alt_1_outlined,
-                        onTap: () => Navigator.pushNamed(context, '/signUp'),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-              ],
-
-              // Membership Card
-              Container(
-                decoration: BoxDecoration(
-                  color: const Color(0xFF1E1E1E),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                padding: const EdgeInsets.all(16),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          Text(
-                            "Legend Membership",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          Text(
-                            "Getting many benefits from our membership card. Take one now at your nearby Legend Cinema!",
-                            style: TextStyle(
-                              color: Colors.white70,
-                              fontSize: 13,
-                            ),
-                          ),
-                          SizedBox(height: 12),
-                          // Learn more button and Activate button
-                          Row(
-                            children: [
-                              _LearnMoreButton(),
-                              SizedBox(width: 10),
-                              _ActivateButton(), // New Activate button
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Container(
-                      width: 80,
-                      height: 80,
-                      alignment: Alignment.center,
-                      child: Icon(
-                        Icons.card_membership, // Updated icon
-                        color: Colors.redAccent,
-                        size: 56,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 20),
-
-              // Tickets Section
-              _sectionTitle("Tickets"),
-              _MenuSection(
+      title: "Account",
+      showBackButton: false,
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Login + Signup (Hidden if logged in)
+            if (!isLoggedIn) ...[
+              Row(
                 children: [
-                  _menuTile(
-                    context,
-                    title: "Purchase",
-                    icon: Icons.confirmation_number,
-                    route: null,
+                  Expanded(
+                    child: _roundedButton(
+                      title: "Login",
+                      icon: Icons.login_rounded,
+                      onTap: () => Navigator.pushNamed(context, '/login'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _roundedButton(
+                      title: "Signup",
+                      icon: Icons.person_add_alt_1_outlined,
+                      onTap: () => Navigator.pushNamed(context, '/signUp'),
+                    ),
                   ),
                 ],
               ),
               const SizedBox(height: 20),
-
-              // Languages Section
-              _sectionTitle("Languages"),
-              _MenuSection(
-                children: [
-                  _menuTile(
-                    context,
-                    title: "English",
-                    icon: Icons.language,
-                    route: null,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-
-              // What's new? Section
-              _sectionTitle("What's new?"),
-              _MenuSection(
-                children: [
-                  _menuTile(
-                    context,
-                    title: "News & Activity",
-                    icon: Icons.new_releases,
-                    route: null,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-
-              // Notifications Section
-              _sectionTitle("Notifications"),
-              _MenuSection(
-                children: [
-                  _menuTile(
-                    context,
-                    title: "Notifications",
-                    icon: Icons.notifications,
-                    route: null,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-
-              // About us Section
-              _sectionTitle("About us"),
-              _MenuSection(
-                children: [
-                  _menuTile(
-                    context,
-                    title: "About us",
-                    icon: Icons.info,
-                    route: null,
-                  ),
-                  _menuTile(
-                    context,
-                    title: "Contact us",
-                    icon: Icons.call,
-                    route: null,
-                  ),
-                  _menuTile(
-                    context,
-                    title: "Privacy Policy",
-                    icon: Icons.privacy_tip,
-                    route: null,
-                  ),
-                  _menuTile(
-                    context,
-                    title: "Term & Conditions",
-                    icon: Icons.article,
-                    route: null,
-                  ),
-                  if (isLoggedIn)
-                    _menuTile(
-                      context,
-                      title: "Logout",
-                      icon: Icons.logout,
-                      onTap: () {
-                        // Handle logout logic here
-                        print("User logged out");
-                      },
-                    ),
-                ],
-              ),
-
-              const SizedBox(height: 48),
             ],
-          ),
+
+            // Membership Card
+            Container(
+              decoration: BoxDecoration(
+                color: const Color(0xFF1E1E1E),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: const [
+                        Text(
+                          "Legend Membership",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          "Getting many benefits from our membership card. Take one now at your nearby Legend Cinema!",
+                          style: TextStyle(color: Colors.white70, fontSize: 13),
+                        ),
+                        SizedBox(height: 12),
+                        // Learn more button and Activate button
+                        Row(
+                          children: [
+                            _LearnMoreButton(),
+                            SizedBox(width: 10),
+                            _ActivateButton(), // New Activate button
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Container(
+                    width: 80,
+                    height: 80,
+                    alignment: Alignment.center,
+                    child: Icon(
+                      Icons.card_membership, // Updated icon
+                      color: Colors.redAccent,
+                      size: 56,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            // Tickets Section
+            _sectionTitle("Tickets"),
+            _MenuSection(
+              children: [
+                _menuTile(
+                  context,
+                  title: "Purchase",
+                  icon: Icons.confirmation_number,
+                  route: null,
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+
+            // Languages Section
+            _sectionTitle("Languages"),
+            _MenuSection(
+              children: [
+                _menuTile(
+                  context,
+                  title: "English",
+                  icon: Icons.language,
+                  route: null,
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+
+            // What's new? Section
+            _sectionTitle("What's new?"),
+            _MenuSection(
+              children: [
+                _menuTile(
+                  context,
+                  title: "News & Activity",
+                  icon: Icons.new_releases,
+                  route: null,
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+
+            // Notifications Section
+            _sectionTitle("Notifications"),
+            _MenuSection(
+              children: [
+                _menuTile(
+                  context,
+                  title: "Notifications",
+                  icon: Icons.notifications,
+                  route: null,
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+
+            // About us Section
+            _sectionTitle("About us"),
+            _MenuSection(
+              children: [
+                _menuTile(
+                  context,
+                  title: "About us",
+                  icon: Icons.info,
+                  route: null,
+                ),
+                _menuTile(
+                  context,
+                  title: "Contact us",
+                  icon: Icons.call,
+                  route: null,
+                ),
+                _menuTile(
+                  context,
+                  title: "Privacy Policy",
+                  icon: Icons.privacy_tip,
+                  route: null,
+                ),
+                _menuTile(
+                  context,
+                  title: "Term & Conditions",
+                  icon: Icons.article,
+                  route: null,
+                ),
+                if (isLoggedIn)
+                  _menuTile(
+                    context,
+                    title: "Logout",
+                    icon: Icons.logout,
+                    onTap: () {
+                      // Handle logout logic here
+                      print("User logged out");
+                    },
+                  ),
+              ],
+            ),
+
+            const SizedBox(height: 48),
+          ],
         ),
       ),
     );
@@ -285,31 +277,6 @@ class MoreScreen extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-
-  static Widget _buildBottomNav() {
-    return BottomNavigationBar(
-      backgroundColor: const Color(0xFF0B0B0B),
-      selectedItemColor: Colors.redAccent,
-      unselectedItemColor: Colors.grey,
-      type: BottomNavigationBarType.fixed,
-      items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: "Home"),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.local_offer_outlined),
-          label: "Offers",
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.location_on_outlined),
-          label: "Cinema",
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.fastfood_outlined),
-          label: "F&B",
-        ),
-        BottomNavigationBarItem(icon: Icon(Icons.grid_view), label: "More"),
-      ],
     );
   }
 }

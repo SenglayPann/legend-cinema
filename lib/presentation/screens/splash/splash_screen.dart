@@ -30,23 +30,28 @@ class _SplashScreenState extends State<SplashScreen>
       duration: const Duration(milliseconds: 3800),
     );
 
-    _verticalSlideAnimation = TweenSequence<double>([
-      TweenSequenceItem(
-        tween: Tween<double>(begin: 700, end: 0)
-            .chain(CurveTween(curve: Curves.easeOut)),
-        weight: 70,
-      ),
-      TweenSequenceItem(
-        tween: Tween<double>(begin: 0, end: 0)
-            .chain(CurveTween(curve: Curves.easeIn)),
-        weight: 30,
-      ),
-    ]).animate(
-      CurvedAnimation(
-        parent: _gradientController,
-        curve: const Interval(0.0, 0.4, curve: Curves.easeOut),
-      ),
-    );
+    _verticalSlideAnimation =
+        TweenSequence<double>([
+          TweenSequenceItem(
+            tween: Tween<double>(
+              begin: 700,
+              end: 0,
+            ).chain(CurveTween(curve: Curves.easeOut)),
+            weight: 70,
+          ),
+          TweenSequenceItem(
+            tween: Tween<double>(
+              begin: 0,
+              end: 0,
+            ).chain(CurveTween(curve: Curves.easeIn)),
+            weight: 30,
+          ),
+        ]).animate(
+          CurvedAnimation(
+            parent: _gradientController,
+            curve: const Interval(0.0, 0.4, curve: Curves.easeOut),
+          ),
+        );
     _gradientController.addStatusListener((status) async {
       if (status == AnimationStatus.completed && mounted) {
         final auth = context.read<AuthState>();
@@ -63,36 +68,43 @@ class _SplashScreenState extends State<SplashScreen>
         if (!mounted) return;
 
         if (user != null) {
-          Navigator.of(context).pushNamedAndRemoveUntil('/home', (_) => false);
+          Navigator.of(context).pushNamedAndRemoveUntil('/main', (_) => false);
         } else {
-          Navigator.of(context).pushNamedAndRemoveUntil('/signUp', (_) => false);
+          Navigator.of(context).pushNamedAndRemoveUntil('/main', (_) => false);
         }
       }
     });
     // });
 
-    _slideAnimation = TweenSequence<double>([
-      TweenSequenceItem(
-        tween: Tween<double>(begin: 0, end: 150)
-            .chain(CurveTween(curve: Curves.easeOut)),
-        weight: 40,
-      ),
-      TweenSequenceItem(
-        tween: Tween<double>(begin: 150, end: 150)
-            .chain(CurveTween(curve: Curves.easeOut)),
-        weight: 20,
-      ),
-      TweenSequenceItem(
-        tween: Tween<double>(begin: 150, end: -150)
-            .chain(CurveTween(curve: Curves.easeOut)),
-        weight: 30,
-      ),
-    ]).animate(
-      CurvedAnimation(
-        parent: _gradientController,
-        curve: const Interval(0.4, 1.0),
-      ),
-    );
+    _slideAnimation =
+        TweenSequence<double>([
+          TweenSequenceItem(
+            tween: Tween<double>(
+              begin: 0,
+              end: 150,
+            ).chain(CurveTween(curve: Curves.easeOut)),
+            weight: 40,
+          ),
+          TweenSequenceItem(
+            tween: Tween<double>(
+              begin: 150,
+              end: 150,
+            ).chain(CurveTween(curve: Curves.easeOut)),
+            weight: 20,
+          ),
+          TweenSequenceItem(
+            tween: Tween<double>(
+              begin: 150,
+              end: -150,
+            ).chain(CurveTween(curve: Curves.easeOut)),
+            weight: 30,
+          ),
+        ]).animate(
+          CurvedAnimation(
+            parent: _gradientController,
+            curve: const Interval(0.4, 1.0),
+          ),
+        );
 
     _gradientController.forward();
 
@@ -109,23 +121,28 @@ class _SplashScreenState extends State<SplashScreen>
       ),
     );
 
-    _logoScaleAnimation = TweenSequence<double>([
-      TweenSequenceItem(
-        tween: Tween<double>(begin: 1.0, end: 1.2)
-            .chain(CurveTween(curve: Curves.easeOut)),
-        weight: 50,
-      ),
-      TweenSequenceItem(
-        tween: Tween<double>(begin: 1.2, end: 1.0)
-            .chain(CurveTween(curve: Curves.easeIn)),
-        weight: 50,
-      ),
-    ]).animate(
-      CurvedAnimation(
-        parent: _logoController,
-        curve: const Interval(0.7, 1.0, curve: Curves.easeInOut),
-      ),
-    );
+    _logoScaleAnimation =
+        TweenSequence<double>([
+          TweenSequenceItem(
+            tween: Tween<double>(
+              begin: 1.0,
+              end: 1.2,
+            ).chain(CurveTween(curve: Curves.easeOut)),
+            weight: 50,
+          ),
+          TweenSequenceItem(
+            tween: Tween<double>(
+              begin: 1.2,
+              end: 1.0,
+            ).chain(CurveTween(curve: Curves.easeIn)),
+            weight: 50,
+          ),
+        ]).animate(
+          CurvedAnimation(
+            parent: _logoController,
+            curve: const Interval(0.7, 1.0, curve: Curves.easeInOut),
+          ),
+        );
 
     // Start logo animation
     Future.delayed(const Duration(milliseconds: 1000), () {

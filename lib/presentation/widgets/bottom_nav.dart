@@ -29,7 +29,7 @@ class BottomNav extends StatelessWidget {
               _item(Icons.local_offer_outlined, "Offers", 1),
               _item(Icons.location_on_outlined, "Cinemas", 2),
               _item(Icons.fastfood, "F&B", 3),
-              _item(Icons.more_horiz, "More", 4),
+              _item(Icons.grid_view, "More", 4),
             ],
           ),
         ),
@@ -45,15 +45,16 @@ class BottomNav extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, color: active ? Colors.red : Colors.white70),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: TextStyle(
-              color: active ? Colors.red : Colors.white70,
-              fontSize: 12,
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 3),
+            decoration: BoxDecoration(
+              color: active ? Colors.red : Colors.transparent,
+              borderRadius: BorderRadius.circular(16),
             ),
+            child: Icon(icon, color: Colors.white),
           ),
+          const SizedBox(height: 4),
+          Text(label, style: TextStyle(color: Colors.white, fontSize: 12)),
         ],
       ),
     );

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../../widgets/movie_tabs.dart';
 import '../../widgets/app_bar.dart';
 import '../../widgets/banner_carousel.dart';
-import '../../widgets/bottom_nav.dart';
 import '../../widgets/cinema_selector_dialog.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -16,7 +15,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedTabIndex = 0;
 
-  int _selectedBottomIndex = 0;
   late ScrollController _scrollController;
   final ValueNotifier<bool> _isScrolledNotifier = ValueNotifier(false);
 
@@ -220,22 +218,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ],
-        ),
-      ),
-
-      bottomNavigationBar: BottomNav(
-        selectedIndex: _selectedBottomIndex,
-        onTap: (i) => setState(() => _selectedBottomIndex = i),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // TODO: Implement action for the ticket button
-        },
-        backgroundColor: Colors.red,
-        shape: const CircleBorder(),
-        child: Transform.rotate(
-          angle: -45 * (3.1415926535 / 180), // 45 degrees to radians
-          child: const Icon(CupertinoIcons.ticket_fill, color: Colors.white),
         ),
       ),
     );

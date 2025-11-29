@@ -8,6 +8,7 @@ import '../../presentation/screens/home/home_screen.dart';
 import '../../presentation/screens/signUp/sign_up_screen.dart';
 import '../../presentation/screens/signUpInformation/sign_up_information_screen.dart';
 import '../../presentation/screens/example_screen.dart';
+import '../../presentation/screens/main/main_screen.dart';
 
 // 1. Define the model for a single route object
 class AppRoute {
@@ -29,5 +30,6 @@ final List<AppRoute> appRoutes = [
   AppRoute(name: '/offer', component: OfferScreen()),
   AppRoute(name: '/cinema', component: CinemaScreen()),
   AppRoute(name: '/fnb', component: FnBScreen()),
+  AppRoute(name: '/main', component: MainScreen()),
   // Add more routes here...
 ];
