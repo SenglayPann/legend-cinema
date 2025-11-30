@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import '../../data/models/movie_model.dart';
+import '../../data/models/offer_model.dart';
 import './movie_grid.dart';
 import '../widgets/tab_selector.dart';
 
 class MovieTabs extends StatelessWidget {
-  final List<Map<String, String>> nowShowing;
-  final List<Map<String, String>> comingSoon;
+  final List<MovieModel> nowShowing;
+  final List<MovieModel> comingSoon;
+  final List<OfferModel> offers;
   final int selectedTabIndex;
   final ValueChanged<int> onTabChanged;
 
@@ -12,6 +15,7 @@ class MovieTabs extends StatelessWidget {
     super.key,
     required this.nowShowing,
     required this.comingSoon,
+    required this.offers,
     required this.selectedTabIndex,
     required this.onTabChanged,
   });
@@ -41,37 +45,18 @@ class MovieTabs extends StatelessWidget {
         /// -------------------------------
         /// STACK WITH FADE TRANSITION
         /// -------------------------------
-        Stack(
+        AnimatedCrossFade(
+          firstChild: MovieGrid(
+            movies: nowShowing,
+            isComingSoon: false,
+            offers: offers,
+          ),
+          secondChild: MovieGrid(movies: comingSoon, isComingSoon: true),
+          crossFadeState: isComingSoon
+              ? CrossFadeState.showSecond
+              : CrossFadeState.showFirst,
+          duration: const Duration(milliseconds: 300),
           alignment: Alignment.topCenter,
-          children: [
-            // Now Showing
-            AnimatedOpacity(
-              opacity: isComingSoon ? 0 : 1,
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeInOut,
-              child: IgnorePointer(
-                ignoring: isComingSoon,
-                child:
-                    isComingSoon // Make height 0 when disabled
-                    ? const SizedBox.shrink()
-                    : MovieGrid(movies: nowShowing, isComingSoon: false),
-              ),
-            ),
-
-            // Coming Soon
-            AnimatedOpacity(
-              opacity: isComingSoon ? 1 : 0,
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeInOut,
-              child: IgnorePointer(
-                ignoring: !isComingSoon,
-                child:
-                    !isComingSoon // Make height 0 when disabled
-                    ? const SizedBox.shrink()
-                    : MovieGrid(movies: comingSoon, isComingSoon: true),
-              ),
-            ),
-          ],
         ),
       ],
     );

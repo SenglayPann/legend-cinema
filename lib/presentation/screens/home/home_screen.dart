@@ -1,5 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import '../../../data/models/movie_model.dart';
+import '../../../data/models/cinema_model.dart';
+import '../../../data/services/movie_service.dart';
+import '../../../data/services/cinema_service.dart';
+import '../../../data/models/offer_model.dart';
+import '../../../data/services/offer_service.dart';
 import '../../widgets/movie_tabs.dart';
 import '../../widgets/app_bar.dart';
 import '../../widgets/banner_carousel.dart';
@@ -17,6 +23,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
   late ScrollController _scrollController;
   final ValueNotifier<bool> _isScrolledNotifier = ValueNotifier(false);
+  final MovieService _movieService = MovieService();
+  final CinemaService _cinemaService = CinemaService();
+  final OfferService _offerService = OfferService();
+
+  List<MovieModel> banners = [];
+  List<CinemaModel> cinemaLocations = [];
+  List<MovieModel> nowShowing = [];
+  List<MovieModel> comingSoon = [];
+  List<OfferModel> offers = [];
+  bool isLoading = true;
+
+  String _selectedCinema = "All Cinemas";
 
   @override
   void initState() {
@@ -29,6 +47,35 @@ class _HomeScreenState extends State<HomeScreen> {
           _isScrolledNotifier.value = false;
         }
       });
+    _fetchData();
+  }
+
+  Future<void> _fetchData() async {
+    try {
+      final fetchedBanners = await _movieService.getBanners();
+      final fetchedCinemas = await _cinemaService.getCinemas();
+      final fetchedNowShowing = await _movieService.getNowShowingMovies();
+      final fetchedComingSoon = await _movieService.getComingSoonMovies();
+      final fetchedOffers = await _offerService.getOffers();
+
+      if (mounted) {
+        setState(() {
+          banners = fetchedBanners;
+          cinemaLocations = fetchedCinemas;
+          nowShowing = fetchedNowShowing;
+          comingSoon = fetchedComingSoon;
+          offers = fetchedOffers;
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      print("Error fetching home data: $e");
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    }
   }
 
   @override
@@ -37,70 +84,14 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
-  String _selectedCinema = "All Cinemas";
-
-  final List<String> banners = [
-    "https://drive.usercontent.google.com/download?id=1ztoZ6bbMpDJktu1TbzKr2VCx0pDVyDKJ",
-    "https://drive.usercontent.google.com/download?id=12NMWqbh1TUoKuIbP9e3Btk8cki8ovTqf",
-    "https://drive.usercontent.google.com/download?id=1COV9Skff636oRdfwloS7hHU03ptZN5YO",
-  ];
-
-  final List<String> cinemaLocations = [
-    'All Cinemas',
-    'Legend Midtown Mall',
-    'Legend Olympia',
-    'Legend Meanchey',
-    'Legend Eden Garden',
-    'Legend Toul Kork',
-    'Legend Exchange Square',
-    'Legend City Mall',
-    'Legend Heritage Walk',
-    'Legend P.S. Mall',
-  ];
-
-  final List<Map<String, String>> nowShowing = const [
-    {
-      'title': 'Hotel 2005',
-      'date': '24 Oct, 2025',
-      'rating': 'G',
-      'poster':
-          'https://drive.usercontent.google.com/download?id=1ztoZ6bbMpDJktu1TbzKr2VCx0pDVyDKJ',
-    },
-    {
-      'title': 'Panggilan dari Kubur',
-      'date': '24 Oct, 2025',
-      'rating': 'NC13',
-      'poster':
-          'https://drive.usercontent.google.com/download?id=12NMWqbh1TUoKuIbP9e3Btk8cki8ovTqf',
-    },
-    {
-      'title': 'The Annivesary',
-      'date': '29 Oct, 2025',
-      'rating': 'PG13',
-      'poster':
-          'https://drive.usercontent.google.com/download?id=1COV9Skff636oRdfwloS7hHU03ptZN5YO',
-    },
-  ];
-  final List<Map<String, String>> comingSoon = const [
-    {
-      'title': 'Malam Terlarang',
-      'date': '27 Oct, 2025',
-      'rating': 'R16',
-      'poster':
-          'https://drive.usercontent.google.com/download?id=1ztoZ6bbMpDJktu1TbzKr2VCx0pDVyDKJ',
-    },
-    {
-      'title': 'The Reborn',
-      'date': '29 Oct, 2025',
-      'rating': 'R16',
-      'poster':
-          'https://drive.usercontent.google.com/download?id=12NMWqbh1TUoKuIbP9e3Btk8cki8ovTqf',
-    },
-  ];
-
   @override
   Widget build(BuildContext context) {
-    final movies = _selectedTabIndex == 0 ? nowShowing : comingSoon;
+    if (isLoading) {
+      return const Scaffold(
+        backgroundColor: Color.fromARGB(255, 11, 11, 11),
+        body: Center(child: CircularProgressIndicator(color: Colors.red)),
+      );
+    }
 
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 11, 11, 11),
@@ -128,10 +119,10 @@ class _HomeScreenState extends State<HomeScreen> {
             MovieTabs(
               nowShowing: nowShowing,
               comingSoon: comingSoon,
+              offers: offers,
               selectedTabIndex: _selectedTabIndex,
               onTabChanged: (i) => setState(() => _selectedTabIndex = i),
             ),
-
             const SizedBox(height: 16),
 
             Stack(
@@ -217,6 +208,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ],
             ),
+            SizedBox(height: 70),
           ],
         ),
       ),

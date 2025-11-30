@@ -1,126 +1,150 @@
 import 'package:flutter/material.dart';
-import 'package:legend_cinema/presentation/widgets/shared/promotion_card.dart';
-import 'package:legend_cinema/presentation/widgets/shared/movie_card.dart';
-import './date_bar.dart';
+import '../../data/models/movie_model.dart';
+import '../../data/models/offer_model.dart';
+import 'shared/movie_card.dart';
+import 'shared/promotion_card.dart';
+import 'date_bar.dart';
+import '../screens/movie_detail/movie_detail_screen.dart';
 
-class MovieGrid extends StatelessWidget {
-  final List<Map<String, String>> movies;
+class MovieGrid extends StatefulWidget {
+  final List<MovieModel> movies;
+  final String selectedCinema;
   final bool isComingSoon;
+  final List<OfferModel> offers;
 
   const MovieGrid({
     super.key,
     required this.movies,
-    required this.isComingSoon,
+    this.selectedCinema = 'All Cinemas',
+    this.isComingSoon = false,
+    this.offers = const [],
   });
 
   @override
+  State<MovieGrid> createState() => _MovieGridState();
+}
+
+class _MovieGridState extends State<MovieGrid> {
+  DateTime _selectedDate = DateTime.now();
+
+  void _onDateSelected(DateTime date) {
+    setState(() {
+      _selectedDate = date;
+    });
+  }
+
+  List<MovieModel> _getFilteredMovies() {
+    if (!widget.isComingSoon) {
+      // For "Now Showing", we assume movies are available daily as we lack showtime data.
+      // So we return all movies regardless of the selected day.
+      return widget.movies;
+    } else {
+      // For "Coming Soon", filter by month and year.
+      return widget.movies.where((movie) {
+        final releaseDate = movie.releaseDate.toDate();
+        return releaseDate.year == _selectedDate.year &&
+            releaseDate.month == _selectedDate.month;
+      }).toList();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final filteredMovies = _getFilteredMovies();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        DateBar(isNowShowing: !isComingSoon),
-
+        DateBar(
+          isNowShowing: !widget.isComingSoon,
+          onDateSelected: _onDateSelected,
+        ),
         const SizedBox(height: 16),
-
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Text(
-            isComingSoon ? "Coming Soon" : "Now Showing",
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-              fontWeight: FontWeight.w900,
+        if (filteredMovies.isEmpty)
+          const Center(
+            child: Padding(
+              padding: EdgeInsets.all(20.0),
+              child: Text(
+                "No movies available",
+                style: TextStyle(color: Colors.white54),
+              ),
             ),
+          )
+        else
+          GridView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              childAspectRatio: 0.65, // Adjusted for better card proportions
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 16,
+            ),
+            itemCount: filteredMovies.length,
+            itemBuilder: (context, index) {
+              final movie = filteredMovies[index];
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => MovieDetailScreen(
+                        movieId: movie.id,
+                        cinemaName: widget.selectedCinema,
+                      ),
+                    ),
+                  );
+                },
+                child: MovieCard(
+                  movie: movie,
+                  isComingSoon: widget.isComingSoon,
+                ),
+              );
+            },
           ),
-        ),
 
-        const SizedBox(height: 16),
-
-        GridView.builder(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: movies.length,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            mainAxisSpacing: 16,
-            crossAxisSpacing: 16,
-            childAspectRatio: 0.6,
-          ),
-          itemBuilder: (_, i) =>
-              MovieCard(movie: movies[i], isComingSoon: isComingSoon),
-        ),
-
-        const SizedBox(height: 24),
-
-        /// ----------------------------------------------------
-        ///  HORIZONTAL PROMO LIST (Only when NOW SHOWING)
-        /// ----------------------------------------------------
-        if (!isComingSoon)
+        // Promotion Section (Only for Now Showing)
+        if (!widget.isComingSoon && widget.offers.isNotEmpty) ...[
+          const SizedBox(height: 24),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  "Promotions",
-                  style: const TextStyle(
+                const Text(
+                  "Promotion",
+                  style: TextStyle(
                     color: Colors.white,
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                TextButton(
-                  onPressed: () {
-                    // TODO: Implement navigation to promotions list
-                  },
-                  child: const Text(
-                    "See All",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  height: 180,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: widget.offers.length,
+                    separatorBuilder: (_, __) => const SizedBox(width: 12),
+                    itemBuilder: (context, index) {
+                      final offer = widget.offers[index];
+                      return SizedBox(
+                        width: 280,
+                        child: PromotionCard(
+                          imageUrl: offer.imageUrl,
+                          description: offer.description,
+                          onTap: () {},
+                        ),
+                      );
+                    },
                   ),
                 ),
               ],
             ),
           ),
-
-        if (!isComingSoon) const SizedBox(height: 12),
-
-        if (!isComingSoon)
-          SizedBox(
-            height: 230, // controls promo card size (required)
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              itemCount: promoItems.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 16),
-              itemBuilder: (_, i) => SizedBox(
-                width: 320, // width for 4:3 ratio (4 wide : 3 tall)
-                child: AspectRatio(
-                  aspectRatio: 4 / 3,
-                  child: PromotionCard(
-                    imageUrl: promoItems[i],
-                    description: "Buy 1 Free 1 – Today Only!",
-                  ),
-                ),
-              ),
-            ),
-          ),
-
-        const SizedBox(height: 24),
+        ],
       ],
     );
   }
 }
-
-/// Dummy promo images — replace with your real promo data
-final List<String> promoItems = [
-  "https://drive.google.com/uc?export=view&id=1LWjgVwkLrjzJ0qjHwRXBEmS60L3_uIQc",
-  "https://drive.google.com/uc?export=view&id=1_CFDFIEmdDw8dhUC7tGUNxUoiOUkYC8d",
-  "https://drive.google.com/uc?export=view&id=1iBb3YOxLLZXzyX60Ka514KReYHDTzZeD",
-  "https://drive.google.com/uc?export=view&id=1d0olAMXLZE8Wlhu0Hr7wWg3DixUOl5-f",
-  "https://drive.google.com/uc?export=view&id=1w8XokFqASBsOF4cZ3jepUPQ-KpyZ-CMB",
-];

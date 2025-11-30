@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import '../../../data/models/movie_model.dart';
 
 class MovieCard extends StatelessWidget {
-  final Map<String, String> movie;
+  final MovieModel movie;
   final bool isComingSoon;
 
   const MovieCard({super.key, required this.movie, required this.isComingSoon});
@@ -16,11 +18,24 @@ class MovieCard extends StatelessWidget {
             child: Stack(
               children: [
                 // Movie poster
-                Image.network(
-                  movie["poster"]!,
-                  fit: BoxFit.cover,
+                // Movie poster
+                CachedNetworkImage(
+                  imageUrl: movie.posterUrl,
                   height: double.infinity,
                   width: double.infinity,
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) => Container(
+                    color: Colors.grey[900],
+                    child: const Center(
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  ),
+                  errorWidget: (context, url, error) => Container(
+                    color: Colors.grey[900],
+                    child: const Center(
+                      child: Icon(Icons.broken_image, color: Colors.white),
+                    ),
+                  ),
                 ),
 
                 // Advance Ticket label
@@ -52,7 +67,12 @@ class MovieCard extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-        Text(movie["title"]!, style: const TextStyle(color: Colors.white)),
+        Text(
+          movie.title,
+          style: const TextStyle(color: Colors.white),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
       ],
     );
   }

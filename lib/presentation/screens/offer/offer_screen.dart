@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../widgets/app_scaffold.dart';
+
+import '../../../data/models/offer_model.dart';
+import '../../../data/services/offer_service.dart';
 
 class OfferScreen extends StatefulWidget {
   const OfferScreen({super.key});
@@ -10,16 +14,46 @@ class OfferScreen extends StatefulWidget {
 }
 
 class _OfferScreenState extends State<OfferScreen> {
-  final List<String> _offerImageUrls = const [
-    'https://drive.google.com/uc?export=view&id=1LWjgVwkLrjzJ0qjHwRXBEmS60L3_uIQc',
-    'https://drive.google.com/uc?export=view&id=1_CFDFIEmdDw8dhUC7tGUNxUoiOUkYC8d',
-    'https://drive.google.com/uc?export=view&id=1iBb3YOxLLZXzyX60Ka514KReYHDTzZeD',
-    'https://drive.google.com/uc?export=view&id=1d0olAMXLZE8Wlhu0Hr7wWg3DixUOl5-f',
-    'https://drive.google.com/uc?export=view&id=1w8XokFqASBsOF4cZ3jepUPQ-KpyZ-CMB',
-  ];
+  final OfferService _offerService = OfferService();
+  List<OfferModel> _offers = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchOffers();
+  }
+
+  Future<void> _fetchOffers() async {
+    try {
+      final offers = await _offerService.getOffers();
+      if (mounted) {
+        setState(() {
+          _offers = offers;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      print("Error fetching offers: $e");
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const AppScaffold(
+        backgroundColor: Color(0xFF090909),
+        showBackButton: false,
+        title: 'Offers',
+        body: Center(child: CircularProgressIndicator(color: Colors.red)),
+      );
+    }
+
     return AppScaffold(
       backgroundColor: const Color(0xFF090909),
       showBackButton: false,
@@ -30,18 +64,19 @@ class _OfferScreenState extends State<OfferScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // 1. Banner (6:3 ratio -> 2:1) - Full Width, No Rounded Corners
-              AspectRatio(
-                aspectRatio: 2 / 1,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.grey[800],
-                    image: DecorationImage(
-                      image: NetworkImage(_offerImageUrls[1]),
-                      fit: BoxFit.cover,
+              if (_offers.isNotEmpty)
+                AspectRatio(
+                  aspectRatio: 2 / 1,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey[800],
+                      image: DecorationImage(
+                        image: NetworkImage(_offers[2].imageUrl),
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
                 ),
-              ),
 
               // 2. "What's we offer" Title
               const Padding(
@@ -56,13 +91,14 @@ class _OfferScreenState extends State<OfferScreen> {
                 ),
               ),
 
-              // 3. 5 Vertical Cards
+              // 3. Vertical Cards
               ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                itemCount: _offerImageUrls.length,
+                itemCount: _offers.length,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 itemBuilder: (context, index) {
+                  final offer = _offers[index];
                   return Container(
                     margin: const EdgeInsets.only(bottom: 16),
                     decoration: BoxDecoration(
@@ -99,7 +135,9 @@ class _OfferScreenState extends State<OfferScreen> {
                                   color: Colors.grey[900],
                                   borderRadius: BorderRadius.circular(8),
                                   image: DecorationImage(
-                                    image: NetworkImage(_offerImageUrls[index]),
+                                    image: CachedNetworkImageProvider(
+                                      offer.imageUrl,
+                                    ),
                                     fit: BoxFit.cover,
                                   ),
                                 ),
@@ -114,7 +152,9 @@ class _OfferScreenState extends State<OfferScreen> {
                               bottom: 12.0,
                             ),
                             child: Text(
-                              'Offer Title ${index + 1}',
+                              offer.description,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 16,

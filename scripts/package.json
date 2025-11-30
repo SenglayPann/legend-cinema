@@ -9,7 +9,8 @@
     "migrate-fnb": "node migrate_fnb.js",
     "migrate-hall": "node migrate_halls.js",
     "get-cinemas": "node get_cinemas.js",
-    "get-cinemas-kvp": "node get_cinemas_kvp.js"
+    "get-cinemas-kvp": "node get_cinemas_kvp.js",
+    "migrate-offer": "node migrate_offers.js"
   },
   "dependencies": {
     "firebase-admin": "^11.0.0"

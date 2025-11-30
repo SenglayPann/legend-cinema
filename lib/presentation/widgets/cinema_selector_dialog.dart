@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import '../../data/models/cinema_model.dart';
 
 class CinemaSelectorDialog extends StatelessWidget {
-  final List<String> cinemas;
+  final List<CinemaModel> cinemas;
   final String currentSelection;
   final Function(String) onSelected;
 
@@ -44,24 +45,34 @@ class CinemaSelectorDialog extends StatelessWidget {
 
           Expanded(
             child: ListView.builder(
-              itemCount: cinemas.length,
+              itemCount: cinemas.length + 1,
               itemBuilder: (_, i) {
-                final cinema = cinemas[i];
+                final isAllCinemas = i == 0;
+                final cinemaName = isAllCinemas
+                    ? "All Cinemas"
+                    : cinemas[i - 1].name;
+                final isSelected = cinemaName == currentSelection;
 
                 return GestureDetector(
                   onTap: () {
-                    onSelected(cinema);
+                    onSelected(cinemaName);
                     Navigator.pop(context);
                   },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
-                    margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 16,
+                      horizontal: 20,
+                    ),
+                    margin: const EdgeInsets.symmetric(
+                      vertical: 4,
+                      horizontal: 16,
+                    ),
                     decoration: BoxDecoration(
-                      color: cinema == currentSelection
+                      color: isSelected
                           ? Colors.red.withOpacity(0.2)
                           : const Color(0xFF2C2C2C),
                       borderRadius: BorderRadius.circular(12),
-                      border: cinema == currentSelection
+                      border: isSelected
                           ? Border.all(color: Colors.red, width: 1.5)
                           : null,
                     ),
@@ -69,11 +80,14 @@ class CinemaSelectorDialog extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          cinema,
-                          style: const TextStyle(color: Colors.white, fontSize: 16),
+                          cinemaName,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                          ),
                         ),
-                        if (cinema == currentSelection)
-                          const Icon(Icons.check, color: Colors.red)
+                        if (isSelected)
+                          const Icon(Icons.check, color: Colors.red),
                       ],
                     ),
                   ),

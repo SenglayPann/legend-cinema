@@ -2,9 +2,13 @@ import 'dart:ui';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import '../../data/models/movie_model.dart';
+import '../screens/trailer/trailer_player_screen.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class BannerCarousel extends StatefulWidget {
-  final List<String> banners;
+  final List<MovieModel> banners;
 
   final String selectedCinema;
   final VoidCallback onCinemaTap;
@@ -25,7 +29,12 @@ class _BannerCarouselState extends State<BannerCarousel> {
 
   @override
   Widget build(BuildContext context) {
-    final String backdropImage = widget.banners[_currentIndex];
+    if (widget.banners.isEmpty) {
+      return const SizedBox.shrink();
+    }
+    final MovieModel currentMovie = widget.banners[_currentIndex];
+    final String backdropImage = currentMovie
+        .posterUrl; // Use poster as backdrop if no specific backdrop url
 
     return Stack(
       children: [
@@ -36,7 +45,11 @@ class _BannerCarouselState extends State<BannerCarousel> {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              Image.network(backdropImage, fit: BoxFit.cover),
+              Image.network(
+                backdropImage,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => Container(color: Colors.black),
+              ),
               // blur overlay
               BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
@@ -78,44 +91,59 @@ class _BannerCarouselState extends State<BannerCarousel> {
             CarouselSlider.builder(
               itemCount: widget.banners.length,
               itemBuilder: (context, index, realIndex) {
+                final movie = widget.banners[index];
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8), // spacing
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(14),
-                    child: Stack(
-                      children: [
-                        // Banner Image
-                        Image.network(
-                          widget.banners[index],
-                          // height: double.infinity,
-                          width: double.infinity,
-                          fit: BoxFit.fill,
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              TrailerPlayerScreen(trailerUrl: movie.trailerUrl),
                         ),
-
-                        // Bottom gradient overlay
-                        Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                Colors.transparent,
-                                Colors.black.withOpacity(0.65),
-                              ],
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
+                      );
+                    },
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(14),
+                      child: Stack(
+                        children: [
+                          // Banner Image
+                          CachedNetworkImage(
+                            imageUrl: movie.posterUrl,
+                            height: double.infinity,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) =>
+                                Container(color: Colors.grey[900]),
+                            errorWidget: (context, url, error) => Container(
+                              color: Colors.grey[900],
+                              child: const Center(
+                                child: Icon(
+                                  Icons.broken_image,
+                                  color: Colors.white,
+                                ),
+                              ),
                             ),
                           ),
-                        ),
 
-                        // Play button
-                        Positioned.fill(
-                          child: Center(
-                            child: GestureDetector(
-                              onTap: () {
-                                // TODO: Implement play action
-                                print(
-                                  'Play button tapped for banner: ${widget.banners[index]}',
-                                );
-                              },
+                          // Bottom gradient overlay
+                          Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  Colors.transparent,
+                                  Colors.black.withOpacity(0.65),
+                                ],
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                              ),
+                            ),
+                          ),
+
+                          // Play button (Visual only, tap handled by parent)
+                          Positioned.fill(
+                            child: Center(
                               child: Container(
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
@@ -138,68 +166,70 @@ class _BannerCarouselState extends State<BannerCarousel> {
                               ),
                             ),
                           ),
-                        ),
 
-                        // Title + Buy Button
-                        Positioned(
-                          bottom: 20,
-                          left: 20,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                "The Anniversary",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.w800,
-                                ),
-                              ),
-
-                              const SizedBox(height: 4),
-
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  const Text(
-                                    "21 Nov 2025",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.normal,
-                                    ),
+                          // Title + Buy Button
+                          Positioned(
+                            bottom: 20,
+                            left: 20,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  movie.title,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.w800,
                                   ),
+                                ),
 
-                                  const SizedBox(
-                                    width: 8,
-                                  ), // spacing between date and rating
+                                const SizedBox(height: 4),
 
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 6,
-                                      vertical: 2,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    child: const Text(
-                                      "PG-13",
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w800,
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      DateFormat(
+                                        'd MMM yyyy',
+                                      ).format(movie.releaseDate.toDate()),
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.normal,
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            ],
+
+                                    const SizedBox(
+                                      width: 8,
+                                    ), // spacing between date and rating
+
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 6,
+                                        vertical: 2,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                      child: Text(
+                                        movie.rating,
+                                        style: const TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w800,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                        _BuyButton(),
-                      ],
+                          const _BuyButton(),
+                        ],
+                      ),
                     ),
                   ),
                 );

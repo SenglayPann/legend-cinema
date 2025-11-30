@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class PromotionCard extends StatelessWidget {
   final String imageUrl;
@@ -23,10 +24,13 @@ class PromotionCard extends StatelessWidget {
           children: [
             /// Background image
             Expanded(
-              child: Image.network(
-                imageUrl,
+              child: CachedNetworkImage(
+                imageUrl: imageUrl,
                 fit: BoxFit.cover,
                 width: double.infinity,
+                placeholder: (context, url) =>
+                    Container(color: Colors.grey[300]),
+                errorWidget: (context, url, error) => const Icon(Icons.error),
               ),
             ),
 
@@ -38,8 +42,10 @@ class PromotionCard extends StatelessWidget {
               height: 50,
               child: Text(
                 description,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
-                  fontSize: 14,
+                  fontSize: 12,
                   color: Colors.black87,
                   fontWeight: FontWeight.w600,
                 ),

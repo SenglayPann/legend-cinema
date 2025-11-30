@@ -5,6 +5,7 @@ import 'package:legend_cinema/presentation/screens/fnb/fnb_screen.dart';
 import 'package:legend_cinema/presentation/screens/home/home_screen.dart';
 import 'package:legend_cinema/presentation/screens/more/more_screen.dart';
 import 'package:legend_cinema/presentation/screens/offer/offer_screen.dart';
+import '../purchase/purchase_screen.dart';
 import '../../widgets/bottom_nav.dart';
 
 class MainScreen extends StatefulWidget {
@@ -43,7 +44,10 @@ class _MainScreenState extends State<MainScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // TODO: Implement action for the ticket button
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const PurchaseScreen()),
+          );
         },
         backgroundColor: Colors.red,
         shape: const CircleBorder(),
