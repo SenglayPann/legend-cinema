@@ -4,6 +4,7 @@ import '../../data/models/offer_model.dart';
 import 'shared/movie_card.dart';
 import 'shared/promotion_card.dart';
 import 'date_bar.dart';
+import '../screens/offer/offer_detail_screen.dart';
 import '../screens/movie_detail/movie_detail_screen.dart';
 
 class MovieGrid extends StatefulWidget {
@@ -129,12 +130,20 @@ class _MovieGridState extends State<MovieGrid> {
                     separatorBuilder: (_, __) => const SizedBox(width: 12),
                     itemBuilder: (context, index) {
                       final offer = widget.offers[index];
+
                       return SizedBox(
                         width: 280,
                         child: PromotionCard(
                           imageUrl: offer.imageUrl,
                           description: offer.description,
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => OfferDetailScreen(offer: offer),
+                              ),
+                            );
+                          },
                         ),
                       );
                     },
