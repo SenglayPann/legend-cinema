@@ -10,6 +10,7 @@ import '../../widgets/movie_tabs.dart';
 import '../../widgets/app_bar.dart';
 import '../../widgets/banner_carousel.dart';
 import '../../widgets/cinema_selector_dialog.dart';
+import '../../widgets/custom_button.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -179,28 +180,15 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                         const SizedBox(height: 10),
-                        ElevatedButton(
+                        CustomButton(
+                          text: "Explore more",
                           onPressed: () {
                             // TODO: Implement navigation or action
                           },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 10,
-                            ),
-                          ),
-                          child: const Text(
-                            "Explore more",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16, // Bigger text
-                              fontWeight: FontWeight.bold, // Bolder text
-                            ),
-                          ),
+                          width: 160,
+                          height: 40,
+                          borderRadius: 30,
+                          fontSize: 16,
                         ),
                       ],
                     ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../widgets/app_scaffold.dart';
+import '../../widgets/custom_button.dart';
 
 class MoreScreen extends StatelessWidget {
   final bool isLoggedIn; // Added to simulate login state
@@ -22,18 +23,21 @@ class MoreScreen extends StatelessWidget {
                 child: Row(
                   children: [
                     Expanded(
-                      child: _roundedButton(
-                        title: "Login",
-                        icon: Icons.login_rounded,
-                        onTap: () => Navigator.pushNamed(context, '/login'),
+                      child: CustomButton(
+                        text: "Login",
+                        onPressed: () => Navigator.pushNamed(context, '/login'),
+                        height: 48,
+                        borderRadius: 30,
                       ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: _roundedButton(
-                        title: "Signup",
-                        icon: Icons.person_add_alt_1_outlined,
-                        onTap: () => Navigator.pushNamed(context, '/signUp'),
+                      child: CustomButton(
+                        text: "Signup",
+                        onPressed: () =>
+                            Navigator.pushNamed(context, '/signUp'),
+                        height: 48,
+                        borderRadius: 30,
                       ),
                     ),
                   ],
@@ -255,39 +259,6 @@ class MoreScreen extends StatelessWidget {
         onTap:
             onTap ??
             (route != null ? () => Navigator.pushNamed(context, route) : null),
-      ),
-    );
-  }
-
-  static Widget _roundedButton({
-    required String title,
-    required IconData icon,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        height: 48,
-        decoration: BoxDecoration(
-          color: const Color(0xFFCC0000),
-          borderRadius: BorderRadius.circular(30),
-        ),
-        child: Center(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, color: Colors.white),
-              const SizedBox(width: 8),
-              Text(
-                title,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
