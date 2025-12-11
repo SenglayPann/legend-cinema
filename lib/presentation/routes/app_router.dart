@@ -11,3 +11,18 @@ AppRoutesMap getRoutes() {
       route.name: (context) => route.component,
   };
 }
+
+// presentation/routes/app_router.dart
+
+import 'package:flutter/material.dart';
+// ... other screen imports ...
+import 'package:legend_cinema/presentation/screens/cinemascreen/cinema_screen.dart'; 
+
+Map<String, WidgetBuilder> getRoutes() {
+  return {
+    // ... existing routes ...
+    
+    // --- ADD THIS LINE ---
+    '/cinema': (context) => const CinemaScreen(), 
+  };
+}
