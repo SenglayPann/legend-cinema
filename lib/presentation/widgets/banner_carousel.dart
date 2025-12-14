@@ -7,6 +7,8 @@ import '../../data/models/movie_model.dart';
 import '../screens/trailer/trailer_player_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
+import 'cinema_dropdown_selector.dart';
+
 class BannerCarousel extends StatefulWidget {
   final List<MovieModel> banners;
 
@@ -65,27 +67,9 @@ class _BannerCarouselState extends State<BannerCarousel> {
         Column(
           children: [
             SizedBox(height: 100),
-            GestureDetector(
+            CinemaDropdownSelector(
+              selectedCinema: widget.selectedCinema,
               onTap: widget.onCinemaTap,
-              child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16),
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                height: 45,
-                decoration: BoxDecoration(
-                  color: const Color.fromARGB(80, 255, 255, 255),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      widget.selectedCinema,
-                      style: const TextStyle(color: Colors.white, fontSize: 18),
-                    ),
-                    const Icon(Icons.keyboard_arrow_down, color: Colors.white),
-                  ],
-                ),
-              ),
             ),
             const SizedBox(height: 16),
             CarouselSlider.builder(

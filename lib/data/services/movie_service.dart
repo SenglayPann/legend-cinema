@@ -66,4 +66,18 @@ class MovieService {
       return [];
     }
   }
+
+  // Fetch Movie by ID
+  Future<MovieModel?> getMovieById(String id) async {
+    try {
+      final doc = await _firestore.collection('movies').doc(id).get();
+      if (doc.exists) {
+        return MovieModel.fromMap(doc.data()!, doc.id);
+      }
+      return null;
+    } catch (e) {
+      print("Error fetching movie by id: $e");
+      return null;
+    }
+  }
 }
