@@ -9,9 +9,13 @@ import '../../../data/models/movie_model.dart';
 import '../../../data/models/showtime_model.dart';
 import '../../../data/services/movie_service.dart';
 import '../../../data/services/showtime_service.dart';
-import '../trailer/trailer_player_screen.dart';
 import '../../widgets/date_bar.dart';
 import '../../widgets/cinema_dropdown_selector.dart';
+import '../../widgets/movie_detail/movie_header.dart';
+import '../../widgets/movie_detail/movie_tag.dart';
+import '../../widgets/movie_detail/movie_info_icon.dart';
+import '../../widgets/movie_detail/expandable_description.dart';
+import '../../widgets/movie_detail/cinema_showtime_list_tile.dart';
 
 class MovieDetailScreen extends StatefulWidget {
   final String movieId;
@@ -36,7 +40,6 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
   List<String> _availableCinemas = ['All Cinemas'];
 
   bool _isLoading = true;
-  bool _isDescriptionExpanded = false;
 
   DateTime _selectedDate = DateTime.now();
   late String _selectedCinema;
@@ -213,7 +216,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // 1. Poster & Trailer Entry
-                _buildHeader(_movie!),
+                MovieHeader(movie: _movie!),
 
                 Container(
                   color: Colors.black, // Background for readability
@@ -240,7 +243,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                             // Tags / Screen Types
                             Row(
                               children: [
-                                _buildTag("2D"),
+                                const MovieTag(text: "2D"),
                                 const SizedBox(width: 8),
                               ],
                             ),
@@ -250,28 +253,28 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                _buildIconInfo(
-                                  Icons.category,
-                                  _movie!.genres.isNotEmpty
+                                MovieInfoIcon(
+                                  icon: Icons.category,
+                                  text: _movie!.genres.isNotEmpty
                                       ? _movie!.genres.first
                                       : "Action",
                                 ),
                                 const SizedBox(height: 8),
-                                _buildIconInfo(
-                                  Icons.access_time,
-                                  "${_movie!.duration} min",
+                                MovieInfoIcon(
+                                  icon: Icons.access_time,
+                                  text: "${_movie!.duration} min",
                                 ),
                                 const SizedBox(height: 8),
-                                _buildIconInfo(
-                                  Icons.calendar_today,
-                                  DateFormat(
+                                MovieInfoIcon(
+                                  icon: Icons.calendar_today,
+                                  text: DateFormat(
                                     'd MMM yyyy',
                                   ).format(_movie!.releaseDate.toDate()),
                                 ),
                                 const SizedBox(height: 8),
-                                _buildIconInfo(
-                                  Icons.visibility_off,
-                                  _movie!.rating,
+                                MovieInfoIcon(
+                                  icon: Icons.visibility_off,
+                                  text: _movie!.rating,
                                 ),
                               ],
                             ),
@@ -295,7 +298,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                       ),
 
                       // 3. Description
-                      _buildDescription(_movie!.description),
+                      ExpandableDescription(description: _movie!.description),
 
                       // 4. Cinema Selector (Filter)
                       _buildCinemaSelector(),
@@ -323,166 +326,6 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
               ],
             ),
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildHeader(MovieModel movie) {
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        // 2:1 Ratio
-        AspectRatio(
-          aspectRatio: 2 / 1,
-          child: CachedNetworkImage(
-            imageUrl: movie.posterUrl,
-            fit: BoxFit.cover,
-            errorWidget: (_, __, ___) => Container(color: Colors.grey[900]),
-          ),
-        ),
-        // Gradient
-        Positioned.fill(
-          child: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Colors.transparent,
-                  Colors.black.withOpacity(0.1),
-                  Colors.black, // Stronger at bottom
-                ],
-                stops: const [0.0, 0.7, 1.0],
-              ),
-            ),
-          ),
-        ),
-        // Play Button
-        GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) =>
-                    TrailerPlayerScreen(trailerUrl: movie.trailerUrl),
-              ),
-            );
-          },
-          child: Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.red.withOpacity(0.8),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(Icons.play_arrow, size: 40, color: Colors.white),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildTag(String text) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.white54),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Text(
-        text,
-        style: const TextStyle(color: Colors.white, fontSize: 12),
-      ),
-    );
-  }
-
-  Widget _buildIconInfo(IconData icon, String text) {
-    return Row(
-      children: [
-        Icon(icon, color: Colors.red, size: 18),
-        const SizedBox(width: 4),
-        Text(text, style: const TextStyle(color: Colors.white70, fontSize: 12)),
-      ],
-    );
-  }
-
-  Widget _buildDescription(String description) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            "Synopsis",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 8),
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                _isDescriptionExpanded = !_isDescriptionExpanded;
-              });
-            },
-            child: Stack(
-              children: [
-                // Text Content
-                Text(
-                  description,
-                  maxLines: _isDescriptionExpanded ? null : 3,
-                  overflow: _isDescriptionExpanded
-                      ? TextOverflow.visible
-                      : TextOverflow.ellipsis,
-                  style: const TextStyle(color: Colors.white70, height: 1.5),
-                ),
-
-                // Gradient Overlay + Arrow Down (Only when minimized)
-                if (!_isDescriptionExpanded)
-                  Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    child: Container(
-                      height: 60,
-                      alignment: Alignment.bottomCenter,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Colors.transparent,
-                            Colors.black.withOpacity(0.9),
-                            Colors.black,
-                          ],
-                        ),
-                      ),
-                      child: const Icon(
-                        Icons.keyboard_arrow_down,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-
-                // Arrow Up (Only when maximized, positioned below text effectively)
-                // Since Stack matches largest child, we need to ensure this doesn't overlap weirdly
-                // Actually, putting it in the stack might trigger layout issues if the text is the sizing factor.
-                // Better approach: Text is one child. If maximized, we append the button below in the COLUMN, not the Stack.
-              ],
-            ),
-          ),
-          // Arrow Up (Visible only when expanded)
-          if (_isDescriptionExpanded)
-            Center(
-              child: IconButton(
-                onPressed: () {
-                  setState(() => _isDescriptionExpanded = false);
-                },
-                icon: const Icon(Icons.keyboard_arrow_up, color: Colors.white),
-              ),
-            ),
         ],
       ),
     );
@@ -625,151 +468,11 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
 
     return Column(
       children: grouped.entries.map((entry) {
-        return _CinemaExpansionTile(
+        return CinemaShowtimeListTile(
           cinemaName: entry.key,
           showtimes: entry.value,
         );
       }).toList(),
     );
-  }
-}
-
-class _CinemaExpansionTile extends StatefulWidget {
-  final String cinemaName;
-  final List<ShowtimeModel> showtimes;
-
-  const _CinemaExpansionTile({
-    required this.cinemaName,
-    required this.showtimes,
-  });
-
-  @override
-  State<_CinemaExpansionTile> createState() => _CinemaExpansionTileState();
-}
-
-class _CinemaExpansionTileState extends State<_CinemaExpansionTile> {
-  bool _isExpanded = true;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.transparent, // Body is transparent
-        borderRadius: BorderRadius.circular(12),
-        // removed border or solid color
-      ),
-      child: Column(
-        children: [
-          // Header (Title only background)
-          GestureDetector(
-            onTap: () => setState(() => _isExpanded = !_isExpanded),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(
-                  0.1,
-                ), // Low black opacity for title
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    widget.cinemaName,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                  Icon(
-                    _isExpanded
-                        ? Icons.keyboard_arrow_up
-                        : Icons.keyboard_arrow_down,
-                    color: Colors.white,
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          // Body (Transparent)
-          if (_isExpanded)
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.transparent, // Explicitly transparent
-                borderRadius: const BorderRadius.vertical(
-                  bottom: Radius.circular(12),
-                ),
-              ),
-              child: Column(children: _buildCinemaShowtimes(widget.showtimes)),
-            ),
-        ],
-      ),
-    );
-  }
-
-  List<Widget> _buildCinemaShowtimes(List<ShowtimeModel> showtimes) {
-    final subGroup = <String, List<ShowtimeModel>>{};
-    for (var s in showtimes) {
-      final key = "${s.screenType} - ${s.features.join(', ')}";
-      if (!subGroup.containsKey(key)) {
-        subGroup[key] = [];
-      }
-      subGroup[key]!.add(s);
-    }
-
-    return subGroup.entries.map((entry) {
-      final label = entry.key;
-      final times = entry.value;
-
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              label, // "2D - English"
-              style: const TextStyle(color: Colors.white70, fontSize: 13),
-            ),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 16,
-              runSpacing: 8,
-              children: times.map((t) {
-                return Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.1),
-                    border: Border.all(color: Colors.white.withOpacity(0.5)),
-                    borderRadius: BorderRadius.circular(32),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(32),
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 32,
-                          vertical: 8,
-                        ),
-                        child: Text(
-                          t.showTime,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.normal,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 8),
-            const Divider(color: Colors.white10),
-          ],
-        ),
-      );
-    }).toList();
   }
 }
