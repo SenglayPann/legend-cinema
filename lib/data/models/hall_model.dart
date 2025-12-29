@@ -24,14 +24,14 @@ class HallModel {
   factory HallModel.fromMap(Map<String, dynamic> data, String id) {
     return HallModel(
       id: id,
-      cinemaId: data['cinemaId'],
+      cinemaId: data['cinemaId'] ?? '',
       screenType: data['screenType'] ?? '',
       seatLayout: SeatLayout.fromMap(data['seatLayout'] ?? {}),
       twinSeatLayout: SeatLayout.fromMap(data['twinSeatLayout'] ?? {}),
       vipSeatLayout: SeatLayout.fromMap(data['VipSeatLayout'] ?? {}),
-      seatPrice: data['seatPrice'],
-      vipSeatPrice: data['vipSeatPrice'],
-      twinSeatPrice: data['TwinSeatPrice'],
+      seatPrice: (data['seatPrice'] ?? 0).toDouble(),
+      vipSeatPrice: (data['vipSeatPrice'] ?? 0).toDouble(),
+      twinSeatPrice: (data['TwinSeatPrice'] ?? 0).toDouble(),
     );
   }
 
@@ -53,10 +53,7 @@ class SeatLayout {
   final int numberOfRow;
   final int numberOfColumn;
 
-  SeatLayout({
-    required this.numberOfRow,
-    required this.numberOfColumn,
-  });
+  SeatLayout({required this.numberOfRow, required this.numberOfColumn});
 
   factory SeatLayout.fromMap(Map<String, dynamic> data) {
     return SeatLayout(
@@ -66,9 +63,6 @@ class SeatLayout {
   }
 
   Map<String, dynamic> toMap() {
-    return {
-      'numberOfRow': numberOfRow,
-      'numberOfColumn': numberOfColumn,
-    };
+    return {'numberOfRow': numberOfRow, 'numberOfColumn': numberOfColumn};
   }
 }

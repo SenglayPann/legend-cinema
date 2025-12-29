@@ -10,6 +10,7 @@
     "migrate-hall": "node migrate_halls.js",
     "get-cinemas": "node get_cinemas.js",
     "get-cinemas-kvp": "node get_cinemas_kvp.js",
+    "get-movies": "node get_movies.js",
     "migrate-offer": "node migrate_offers.js",
     "migrate-showtimes": "node migrate_showtimes.js"
   },
