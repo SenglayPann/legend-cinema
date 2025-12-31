@@ -6,11 +6,12 @@ import '../../../data/models/hall_model.dart';
 import '../../../data/models/showtime_model.dart';
 import '../../../data/services/hall_service.dart';
 import '../../state/seat_selection_state.dart';
+import '../../widgets/seat_layout/auto_scrolling_carousel.dart';
+import '../../widgets/seat_layout/booking_details_cart.dart';
+import '../../widgets/seat_layout/seat_layout_bottom_bar.dart';
 import '../../widgets/seat_layout/seat_widget.dart';
 import '../../widgets/seat_layout/screen_indicator.dart';
-import '../../widgets/glass_container.dart';
-import '../../widgets/gradient_divider.dart';
-import '../../widgets/custom_button.dart';
+import '../../widgets/seat_layout/selected_seats_section.dart';
 
 class SeatLayoutScreen extends StatefulWidget {
   final ShowtimeModel showtime;
@@ -214,7 +215,7 @@ class _SeatLayoutScreenState extends State<SeatLayoutScreen>
                     // Movie title carousel
                     SizedBox(
                       height: 20,
-                      child: _AutoScrollingCarousel(
+                      child: AutoScrollingCarousel(
                         items: [widget.showtime.movieTitle],
                         separator: '',
                         textStyle: const TextStyle(
@@ -228,7 +229,7 @@ class _SeatLayoutScreenState extends State<SeatLayoutScreen>
                     // Info carousel
                     SizedBox(
                       height: 18,
-                      child: _AutoScrollingCarousel(
+                      child: AutoScrollingCarousel(
                         items: [
                           widget.showtime.showDate,
                           widget.showtime.showTime,
@@ -287,98 +288,6 @@ class _SeatLayoutScreenState extends State<SeatLayoutScreen>
   }
 
   // _SeatLayoutScreenState methods continue after carousel widget
-}
-
-/// Auto-scrolling carousel widget - scrolls one round, pauses 5 seconds, loops infinitely
-class _AutoScrollingCarousel extends StatefulWidget {
-  final List<String> items;
-  final String separator;
-  final TextStyle? textStyle;
-  final TextStyle? separatorStyle;
-
-  const _AutoScrollingCarousel({
-    required this.items,
-    this.separator = ' | ',
-    this.textStyle,
-    this.separatorStyle,
-  });
-
-  @override
-  State<_AutoScrollingCarousel> createState() => _AutoScrollingCarouselState();
-}
-
-class _AutoScrollingCarouselState extends State<_AutoScrollingCarousel> {
-  late ScrollController _scrollController;
-  Timer? _scrollTimer;
-
-  @override
-  void initState() {
-    super.initState();
-    _scrollController = ScrollController();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _startScrollCycle();
-    });
-  }
-
-  void _startScrollCycle() {
-    if (!mounted || !_scrollController.hasClients) return;
-
-    final maxScroll = _scrollController.position.maxScrollExtent;
-    if (maxScroll <= 0) return; // Content fits, no scrolling needed
-
-    // Scroll from start to end
-    _scrollController.jumpTo(0);
-    _scrollTimer = Timer.periodic(const Duration(milliseconds: 30), (timer) {
-      if (!mounted || !_scrollController.hasClients) {
-        timer.cancel();
-        return;
-      }
-
-      final current = _scrollController.offset;
-      if (current >= maxScroll) {
-        timer.cancel();
-        // Pause 5 seconds at end, then restart
-        Future.delayed(const Duration(seconds: 5), () {
-          if (mounted) _startScrollCycle();
-        });
-      } else {
-        _scrollController.jumpTo(current + 0.8);
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _scrollTimer?.cancel();
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final defaultTextStyle = const TextStyle(
-      color: Colors.white70,
-      fontSize: 12,
-      fontWeight: FontWeight.w500,
-    );
-
-    // Build content string with separators
-    final content = widget.items.join(widget.separator);
-    // Duplicate content with spacing for seamless infinite scroll
-    final spacer = '  ';
-    final duplicatedContent = '$content$spacer$content$spacer$content$spacer';
-
-    return SingleChildScrollView(
-      controller: _scrollController,
-      scrollDirection: Axis.horizontal,
-      physics: const NeverScrollableScrollPhysics(),
-      child: Text(
-        duplicatedContent,
-        style: widget.textStyle ?? defaultTextStyle,
-        maxLines: 1,
-      ),
-    );
-  }
 }
 
 // Mixin containing seat layout building methods
@@ -506,380 +415,47 @@ mixin _SeatLayoutBuilders on State<SeatLayoutScreen> {
         builder: (context, state, _) {
           return Container(
             color: Colors.transparent,
-            child: _buildSelectedSeatsSection(state),
+            child: SelectedSeatsSection(selectedSeats: state.selectedSeats),
           );
         },
       ),
-    );
-  }
-
-  Widget _buildSelectedSeatsSection(SeatSelectionState state) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Selected Seats title
-          const Text(
-            'Selected Seats',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 8),
-          // Selected seats list
-          if (state.selectedSeats.isEmpty)
-            const Text(
-              'Tap on seats to select',
-              style: TextStyle(color: Colors.white38, fontSize: 12),
-            )
-          else
-            Wrap(
-              spacing: 6,
-              runSpacing: 6,
-              children: state.selectedSeats.map((seat) {
-                return Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.green.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.green, width: 1),
-                  ),
-                  child: Text(
-                    seat.label,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                );
-              }).toList(),
-            ),
-          const SizedBox(height: 12),
-          // Divider
-          const GradientDivider(),
-          const SizedBox(height: 12),
-          // Seat types and prices
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _buildSeatTypePrice('Standard', '\$8', Colors.white70),
-                _buildSeatTypePrice('VIP', '\$12', Colors.amber),
-                _buildSeatTypePrice('Twin', '\$20', Colors.purple),
-              ],
-            ),
-          ),
-          const SizedBox(height: 12),
-          // Divider
-          const GradientDivider(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSeatTypePrice(String type, String price, Color color) {
-    return Column(
-      children: [
-        Text(
-          type,
-          style: TextStyle(
-            color: color,
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        const SizedBox(height: 2),
-        Text(
-          price,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ],
     );
   }
 
   Widget _buildSlideUpCart(BuildContext context, double bottomBarHeight) {
-    return AnimatedPositioned(
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-      left: 0,
-      right: 0,
-      bottom: _isCartExpanded ? 0 : -MediaQuery.of(context).size.height,
-      child: Consumer<SeatSelectionState>(
-        builder: (context, state, _) {
-          return Container(
-            constraints: BoxConstraints(
-              maxHeight: MediaQuery.of(context).size.height * 0.6,
-            ),
-            decoration: const BoxDecoration(
-              color: Colors.black,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-            ),
-            padding: EdgeInsets.only(
-              left: 16,
-              right: 16,
-              top: 16,
-              bottom: bottomBarHeight + 16,
-            ),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Header row
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'Booking Details',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      GlassContainer(
-                        width: 32,
-                        height: 32,
-                        padding: EdgeInsets.zero,
-                        borderRadius: BorderRadius.circular(16),
-                        child: IconButton(
-                          padding: EdgeInsets.zero,
-                          iconSize: 18,
-                          icon: const Icon(Icons.close, color: Colors.white),
-                          onPressed: _toggleCartDetails,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  const GradientDivider(),
-                  const SizedBox(height: 16),
-
-                  // Selected seats section
-                  const Text(
-                    'Selected Seats',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  if (state.selectedSeats.isEmpty)
-                    const Text(
-                      'No seats selected',
-                      style: TextStyle(color: Colors.white54),
-                    )
-                  else
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: state.selectedSeats.map((seat) {
-                        return Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.red.withOpacity(0.3),
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: Colors.red),
-                          ),
-                          child: Text(
-                            seat.label,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  const SizedBox(height: 16),
-                  const GradientDivider(),
-                  const SizedBox(height: 16),
-
-                  // Price breakdown
-                  const Text(
-                    'Price Breakdown',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  _buildPriceRow(
-                    'Standard',
-                    state.seatCountByType[SeatType.regular] ?? 0,
-                    _hall!.seatPrice,
-                  ),
-                  _buildPriceRow(
-                    'VIP',
-                    state.seatCountByType[SeatType.vip] ?? 0,
-                    _hall!.vipSeatPrice,
-                  ),
-                  _buildPriceRow(
-                    'Twin',
-                    state.seatCountByType[SeatType.twin] ?? 0,
-                    _hall!.twinSeatPrice,
-                  ),
-                  const SizedBox(height: 16),
-                  const GradientDivider(),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildPriceRow(String type, int count, double price) {
-    if (count == 0) return const SizedBox.shrink();
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text('$type x$count', style: const TextStyle(color: Colors.white70)),
-          Text(
-            '\$${(count * price).toStringAsFixed(2)}',
-            style: const TextStyle(
-              color: Colors.red,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
-      ),
+    return Consumer<SeatSelectionState>(
+      builder: (context, state, _) {
+        return BookingDetailsCart(
+          isExpanded: _isCartExpanded,
+          bottomBarHeight: bottomBarHeight,
+          selectedSeats: state.selectedSeats,
+          seatCountByType: state.seatCountByType,
+          hall: _hall!,
+          onClose: _toggleCartDetails,
+        );
+      },
     );
   }
 
   Widget _buildBottomBar(BuildContext context, double bottomBarHeight) {
-    return Positioned(
-      left: 0,
-      right: 0,
-      bottom: 0,
-      child: Consumer<SeatSelectionState>(
-        builder: (context, state, _) {
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Bottom bar content (with black background extending to bottom)
-              Container(
-                color: Colors.black,
-                child: SafeArea(
-                  top: false,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        // Summary section
-                        Row(
-                          children: [
-                            Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                const Icon(
-                                  Icons.confirmation_number_outlined,
-                                  size: 40,
-                                  color: Colors.white,
-                                ),
-                                Container(
-                                  padding: const EdgeInsets.all(0),
-                                  decoration: BoxDecoration(
-                                    color: Colors.black,
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Text(
-                                    state.selectedCount.toString(),
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(width: 4),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Text(
-                                  'Summary',
-                                  style: TextStyle(
-                                    color: Colors.white54,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                                Text(
-                                  '\$${state.totalPrice.toStringAsFixed(2)}',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(width: 8),
-                            GestureDetector(
-                              onTap: _toggleCartDetails,
-                              child: Icon(
-                                _isCartExpanded
-                                    ? Icons.keyboard_arrow_down
-                                    : Icons.keyboard_arrow_up,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        // Continue button
-                        CustomButton(
-                          text: 'Continue',
-                          onPressed: state.selectedCount > 0
-                              ? () {
-                                  // TODO: Navigate to checkout/summary
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                        'Proceeding with ${state.selectedCount} seats for \$${state.totalPrice.toStringAsFixed(2)}',
-                                      ),
-                                    ),
-                                  );
-                                }
-                              : () {},
-                          width: 140,
-                          height: 48,
-                        ),
-                      ],
-                    ),
-                  ),
+    return Consumer<SeatSelectionState>(
+      builder: (context, state, _) {
+        return SeatLayoutBottomBar(
+          selectedCount: state.selectedCount,
+          totalPrice: state.totalPrice,
+          isCartExpanded: _isCartExpanded,
+          onToggleCart: _toggleCartDetails,
+          onContinue: () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  'Proceeding with ${state.selectedCount} seats for \$${state.totalPrice.toStringAsFixed(2)}',
                 ),
               ),
-            ],
-          );
-        },
-      ),
+            );
+          },
+        );
+      },
     );
   }
 }
