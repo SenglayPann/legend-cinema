@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
+import '../../data/models/fnb_model.dart';
 import '../../data/models/hall_model.dart';
 import '../../data/models/showtime_model.dart';
 import '../../data/services/booking_service.dart';
@@ -118,6 +119,56 @@ class SeatSelectionState extends ChangeNotifier {
       counts[seat.type] = (counts[seat.type] ?? 0) + 1;
     }
     return counts;
+  }
+
+  // ============ FnB Cart ============
+  final Map<String, int> _fnbQuantities = {}; // FnB id -> quantity
+  final Map<String, FnbModel> _fnbItems = {}; // FnB id -> model
+
+  Map<String, int> get fnbQuantities => Map.unmodifiable(_fnbQuantities);
+  Map<String, FnbModel> get fnbItems => Map.unmodifiable(_fnbItems);
+
+  int get fnbTotalItems =>
+      _fnbQuantities.values.fold(0, (sum, qty) => sum + qty);
+
+  double get fnbTotalPrice {
+    double total = 0;
+    for (var entry in _fnbQuantities.entries) {
+      final item = _fnbItems[entry.key];
+      if (item != null) {
+        total += item.price * entry.value;
+      }
+    }
+    return total;
+  }
+
+  double get grandTotal => totalPrice + fnbTotalPrice;
+
+  bool get hasFnbItems => _fnbQuantities.isNotEmpty;
+
+  int getFnbQuantity(String fnbId) => _fnbQuantities[fnbId] ?? 0;
+
+  void addFnbItem(FnbModel item) {
+    _fnbItems[item.id] = item;
+    _fnbQuantities[item.id] = (_fnbQuantities[item.id] ?? 0) + 1;
+    notifyListeners();
+  }
+
+  void removeFnbItem(String fnbId) {
+    final current = _fnbQuantities[fnbId] ?? 0;
+    if (current > 1) {
+      _fnbQuantities[fnbId] = current - 1;
+    } else {
+      _fnbQuantities.remove(fnbId);
+      _fnbItems.remove(fnbId);
+    }
+    notifyListeners();
+  }
+
+  void clearFnbCart() {
+    _fnbQuantities.clear();
+    _fnbItems.clear();
+    notifyListeners();
   }
 
   /// Initialize seats based on hall layout and fetch booked seats

@@ -70,7 +70,9 @@ class _SplashScreenState extends State<SplashScreen>
         if (user != null) {
           Navigator.of(context).pushNamedAndRemoveUntil('/main', (_) => false);
         } else {
-          Navigator.of(context).pushNamedAndRemoveUntil('/main', (_) => false);
+          Navigator.of(
+            context,
+          ).pushNamedAndRemoveUntil('/signUp', (_) => false);
         }
       }
     });

@@ -6,9 +6,11 @@ class ShowtimeService {
 
   Future<List<ShowtimeModel>> getShowtimesForMovie(String movieId) async {
     try {
+      final now = Timestamp.now();
       final snapshot = await _firestore
           .collection('showtimes')
           .where('movieId', isEqualTo: movieId)
+          .where('showDateTime', isGreaterThanOrEqualTo: now)
           .orderBy('showDateTime')
           .get();
 

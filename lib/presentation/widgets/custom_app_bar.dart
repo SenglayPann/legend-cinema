@@ -31,14 +31,17 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Text titleTextWidget = Text(
-      title!,
-      style: const TextStyle(
-        color: Colors.white,
-        fontWeight: FontWeight.w600,
-        fontSize: 24.0,
-      ), // Increased font size
-    );
+    Widget? titleTextWidget;
+    if (title != null) {
+      titleTextWidget = Text(
+        title!,
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.w600,
+          fontSize: 24.0,
+        ),
+      );
+    }
 
     return AppBar(
       automaticallyImplyLeading: false, // disables default back button
@@ -51,7 +54,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               onPressed: () => Navigator.of(context).maybePop(),
             )
           : null,
-      title: title != null ? titleTextWidget : null,
+      title: titleTextWidget,
       centerTitle: showBackButton, // Center title only if back button is shown
       titleSpacing: showBackButton ? NavigationToolbar.kMiddleSpacing : 16.0,
       actions: actions,

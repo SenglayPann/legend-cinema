@@ -8,6 +8,7 @@ class SeatLayoutBottomBar extends StatelessWidget {
   final bool isCartExpanded;
   final VoidCallback onToggleCart;
   final VoidCallback onContinue;
+  final String buttonText;
 
   const SeatLayoutBottomBar({
     super.key,
@@ -16,6 +17,7 @@ class SeatLayoutBottomBar extends StatelessWidget {
     required this.isCartExpanded,
     required this.onToggleCart,
     required this.onContinue,
+    this.buttonText = 'Continue',
   });
 
   @override
@@ -105,7 +107,7 @@ class SeatLayoutBottomBar extends StatelessWidget {
 
                     // Continue button
                     CustomButton(
-                      text: 'Continue',
+                      text: buttonText,
                       onPressed: selectedCount > 0 ? onContinue : () {},
                       width: 140,
                       height: 48,

@@ -12,6 +12,7 @@ import '../../widgets/seat_layout/seat_layout_bottom_bar.dart';
 import '../../widgets/seat_layout/seat_widget.dart';
 import '../../widgets/seat_layout/screen_indicator.dart';
 import '../../widgets/seat_layout/selected_seats_section.dart';
+import '../fnb_checkout/fnb_selection_screen.dart';
 
 class SeatLayoutScreen extends StatefulWidget {
   final ShowtimeModel showtime;
@@ -358,45 +359,50 @@ mixin _SeatLayoutBuilders on State<SeatLayoutScreen> {
       children: [
         // Seat rows
         ...seats.map(
-          (row) => Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Row label
-              SizedBox(
-                width: 20,
-                child: Text(
-                  row.isNotEmpty ? row.first.row : '',
-                  style: const TextStyle(color: Colors.white38, fontSize: 11),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              // Seats with gaps for twin seats
-              ...row.asMap().entries.expand((entry) {
-                final index = entry.key;
-                final seat = entry.value;
-                final widgets = <Widget>[
-                  SeatWidget(
-                    seat: seat,
-                    onTap: () => state.toggleSeat(seat),
-                    size: seatSize,
+          (row) => FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Row label
+                SizedBox(
+                  width: 20,
+                  child: Text(
+                    row.isNotEmpty ? row.first.row : '',
+                    style: const TextStyle(color: Colors.white38, fontSize: 11),
+                    textAlign: TextAlign.center,
                   ),
-                ];
-                // Add gap after every 2nd twin seat (pairs)
-                if (isTwin && (index + 1) % 2 == 0 && index < row.length - 1) {
-                  widgets.add(SizedBox(width: seatSize));
-                }
-                return widgets;
-              }),
-              // Row label (right side)
-              SizedBox(
-                width: 20,
-                child: Text(
-                  row.isNotEmpty ? row.first.row : '',
-                  style: const TextStyle(color: Colors.white38, fontSize: 11),
-                  textAlign: TextAlign.center,
                 ),
-              ),
-            ],
+                // Seats with gaps for twin seats
+                ...row.asMap().entries.expand((entry) {
+                  final index = entry.key;
+                  final seat = entry.value;
+                  final widgets = <Widget>[
+                    SeatWidget(
+                      seat: seat,
+                      onTap: () => state.toggleSeat(seat),
+                      size: seatSize,
+                    ),
+                  ];
+                  // Add gap after every 2nd twin seat (pairs)
+                  if (isTwin &&
+                      (index + 1) % 2 == 0 &&
+                      index < row.length - 1) {
+                    widgets.add(SizedBox(width: seatSize));
+                  }
+                  return widgets;
+                }),
+                // Row label (right side)
+                SizedBox(
+                  width: 20,
+                  child: Text(
+                    row.isNotEmpty ? row.first.row : '',
+                    style: const TextStyle(color: Colors.white38, fontSize: 11),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ],
@@ -446,13 +452,17 @@ mixin _SeatLayoutBuilders on State<SeatLayoutScreen> {
           isCartExpanded: _isCartExpanded,
           onToggleCart: _toggleCartDetails,
           onContinue: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  'Proceeding with ${state.selectedCount} seats for \$${state.totalPrice.toStringAsFixed(2)}',
+            if (state.selectedCount > 0) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ChangeNotifierProvider.value(
+                    value: state,
+                    child: FnbSelectionScreen(showtime: widget.showtime),
+                  ),
                 ),
-              ),
-            );
+              );
+            }
           },
         );
       },

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../data/models/fnb_model.dart';
 import '../../../data/models/hall_model.dart';
 import '../../state/seat_selection_state.dart';
 import '../glass_container.dart';
@@ -12,6 +13,8 @@ class BookingDetailsCart extends StatelessWidget {
   final Map<SeatType, int> seatCountByType;
   final HallModel hall;
   final VoidCallback onClose;
+  final Map<String, FnbModel> fnbItems;
+  final Map<String, int> fnbQuantities;
 
   const BookingDetailsCart({
     super.key,
@@ -21,6 +24,8 @@ class BookingDetailsCart extends StatelessWidget {
     required this.seatCountByType,
     required this.hall,
     required this.onClose,
+    this.fnbItems = const {},
+    this.fnbQuantities = const {},
   });
 
   @override
@@ -80,9 +85,9 @@ class BookingDetailsCart extends StatelessWidget {
               const GradientDivider(),
               const SizedBox(height: 16),
 
-              // Selected seats section
+              // Tickets section
               const Text(
-                'Selected Seats',
+                'Tickets',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 16,
@@ -92,65 +97,30 @@ class BookingDetailsCart extends StatelessWidget {
               const SizedBox(height: 12),
               if (selectedSeats.isEmpty)
                 const Text(
-                  'No seats selected',
+                  'No tickets selected',
                   style: TextStyle(color: Colors.white54),
                 )
               else
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: selectedSeats.map((seat) {
-                    return Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.red.withOpacity(0.3),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Colors.red),
-                      ),
-                      child: Text(
-                        seat.label,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                ),
+                ..._buildTicketList(),
               const SizedBox(height: 16),
               const GradientDivider(),
-              const SizedBox(height: 16),
 
-              // Price breakdown
-              const Text(
-                'Price Breakdown',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+              // Foods & Drinks section (only if there are items)
+              if (fnbQuantities.isNotEmpty) ...[
+                const SizedBox(height: 16),
+                const Text(
+                  'Foods & Drinks',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 12),
-              _buildPriceRow(
-                'Standard',
-                seatCountByType[SeatType.regular] ?? 0,
-                hall.seatPrice,
-              ),
-              _buildPriceRow(
-                'VIP',
-                seatCountByType[SeatType.vip] ?? 0,
-                hall.vipSeatPrice,
-              ),
-              _buildPriceRow(
-                'Twin',
-                seatCountByType[SeatType.twin] ?? 0,
-                hall.twinSeatPrice,
-              ),
-              const SizedBox(height: 16),
-              const GradientDivider(),
+                const SizedBox(height: 12),
+                ..._buildFnbList(),
+                const SizedBox(height: 16),
+                const GradientDivider(),
+              ],
             ],
           ),
         ),
@@ -158,20 +128,146 @@ class BookingDetailsCart extends StatelessWidget {
     );
   }
 
-  Widget _buildPriceRow(String type, int count, double price) {
-    if (count == 0) return const SizedBox.shrink();
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text('$type x$count', style: const TextStyle(color: Colors.white70)),
-          Text(
-            '\$${(count * price).toStringAsFixed(2)}',
-            style: const TextStyle(
-              color: Colors.red,
-              fontWeight: FontWeight.bold,
+  List<Widget> _buildFnbList() {
+    return fnbQuantities.entries.map((entry) {
+      final item = fnbItems[entry.key];
+      if (item == null) return const SizedBox.shrink();
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '${item.name} x${entry.value}',
+              style: const TextStyle(color: Colors.white70, fontSize: 12),
             ),
+            const SizedBox(height: 4),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  item.name,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  '\$${(item.price * entry.value).toStringAsFixed(2)}',
+                  style: const TextStyle(
+                    color: Colors.red,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+    }).toList();
+  }
+
+  String _getSeatTypeName(SeatType type) {
+    switch (type) {
+      case SeatType.regular:
+        return 'Standard';
+      case SeatType.vip:
+        return 'VIP';
+      case SeatType.twin:
+        return 'Twin';
+    }
+  }
+
+  double _getSeatPrice(SeatType type) {
+    switch (type) {
+      case SeatType.regular:
+        return hall.seatPrice;
+      case SeatType.vip:
+        return hall.vipSeatPrice;
+      case SeatType.twin:
+        return hall.twinSeatPrice;
+    }
+  }
+
+  List<Widget> _buildTicketList() {
+    final List<Widget> items = [];
+    final Set<String> processedTwinLabels = {};
+
+    for (final seat in selectedSeats) {
+      if (seat.type == SeatType.twin) {
+        // Skip if already processed as part of a pair
+        if (processedTwinLabels.contains(seat.label)) continue;
+
+        // Find the twin pair (seats with same row, adjacent columns)
+        final pairSeat = selectedSeats.where((s) {
+          if (s.type != SeatType.twin || s.label == seat.label) return false;
+          // Check if same row and adjacent
+          return s.row == seat.row &&
+              (s.column == seat.column + 1 || s.column == seat.column - 1);
+        }).firstOrNull;
+
+        if (pairSeat != null) {
+          processedTwinLabels.add(seat.label);
+          processedTwinLabels.add(pairSeat.label);
+          items.add(
+            _buildTicketItem(
+              'Twin',
+              '${seat.label}, ${pairSeat.label}',
+              hall.twinSeatPrice,
+            ),
+          );
+        } else {
+          // Single twin seat (edge case)
+          items.add(_buildTicketItem('Twin', seat.label, hall.twinSeatPrice));
+        }
+      } else {
+        // Regular or VIP seat
+        items.add(
+          _buildTicketItem(
+            _getSeatTypeName(seat.type),
+            seat.label,
+            _getSeatPrice(seat.type),
+          ),
+        );
+      }
+    }
+
+    return items;
+  }
+
+  Widget _buildTicketItem(String typeName, String seatLabel, double price) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Seats ($typeName x1)',
+            style: const TextStyle(color: Colors.white70, fontSize: 12),
+          ),
+          const SizedBox(height: 4),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                seatLabel,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                '\$${price.toStringAsFixed(2)}',
+                style: const TextStyle(
+                  color: Colors.red,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
           ),
         ],
       ),

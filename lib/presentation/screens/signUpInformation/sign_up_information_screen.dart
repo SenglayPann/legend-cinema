@@ -18,7 +18,8 @@ class SignUpInformationScreen extends StatefulWidget {
   const SignUpInformationScreen({super.key, this.phoneNumber, this.userId});
 
   @override
-  State<SignUpInformationScreen> createState() => _SignUpInformationScreenState();
+  State<SignUpInformationScreen> createState() =>
+      _SignUpInformationScreenState();
 }
 
 class _SignUpInformationScreenState extends State<SignUpInformationScreen> {
@@ -28,7 +29,7 @@ class _SignUpInformationScreenState extends State<SignUpInformationScreen> {
 
   bool _isFormValid = false;
 
-   @override
+  @override
   void initState() {
     super.initState();
     _firstNameController.addListener(_validateForm);
@@ -45,7 +46,8 @@ class _SignUpInformationScreenState extends State<SignUpInformationScreen> {
   }
 
   void _validateForm() {
-    final isValid = _firstNameController.text.trim().isNotEmpty &&
+    final isValid =
+        _firstNameController.text.trim().isNotEmpty &&
         _lastNameController.text.trim().isNotEmpty &&
         _birthDateController.text.trim().isNotEmpty;
 
@@ -84,7 +86,11 @@ class _SignUpInformationScreenState extends State<SignUpInformationScreen> {
       // Determine userId (from widget or current auth state)
       final userId = widget.userId ?? authState.currentUser?.id;
       if (userId == null || userId.isEmpty) {
-        CustomAlert.show(context, title: 'Failed', message: 'User ID not available.');
+        CustomAlert.show(
+          context,
+          title: 'Failed',
+          message: 'User ID not available.',
+        );
         return;
       }
 
@@ -116,7 +122,7 @@ class _SignUpInformationScreenState extends State<SignUpInformationScreen> {
       final snapshot = await docRef.get();
       if (!snapshot.exists) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to update user profile.')), 
+          const SnackBar(content: Text('Failed to update user profile.')),
         );
         return;
       }
@@ -127,27 +133,27 @@ class _SignUpInformationScreenState extends State<SignUpInformationScreen> {
       authState.setUser(updatedUser);
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Profile updated successfully.')), 
+        const SnackBar(content: Text('Profile updated successfully.')),
       );
 
       // Navigate to example screen (main area)
-      Navigator.of(context).pushNamedAndRemoveUntil('/example', (_) => false);
+      Navigator.of(context).pushNamedAndRemoveUntil('/main', (_) => false);
     } catch (e, st) {
       debugPrint('Error updating profile: $e\n$st');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error updating profile: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error updating profile: $e')));
     }
   }
 
   void _onSkip() {
-    Navigator.of(context).pushNamedAndRemoveUntil('/example', (_) => false);
+    Navigator.of(context).pushNamedAndRemoveUntil('/main', (_) => false);
   }
 
   @override
   Widget build(BuildContext context) {
-    final displayNumber = widget.phoneNumber ??
-        (kDebugMode ? '123456789' : 'Unknown number');
+    final displayNumber =
+        widget.phoneNumber ?? (kDebugMode ? '123456789' : 'Unknown number');
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
 
     return AppScaffold(
@@ -170,7 +176,11 @@ class _SignUpInformationScreenState extends State<SignUpInformationScreen> {
                       radius: 35,
                       backgroundColor: const Color.fromARGB(255, 225, 222, 222),
                       backgroundImage: null, // Add image if selected
-                      child: const Icon(Icons.person, color: Colors.red, size: 45),
+                      child: const Icon(
+                        Icons.person,
+                        color: Colors.red,
+                        size: 45,
+                      ),
                     ),
                     Positioned(
                       bottom: 0,
@@ -186,14 +196,18 @@ class _SignUpInformationScreenState extends State<SignUpInformationScreen> {
                             color: Colors.white,
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.camera_alt, size: 16, color: Colors.black),
+                          child: const Icon(
+                            Icons.camera_alt,
+                            size: 16,
+                            color: Colors.black,
+                          ),
                         ),
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 10),
-                
+
                 Text(
                   'Set New Profile Picture',
                   style: const TextStyle(color: Colors.red, fontSize: 14),
@@ -220,11 +234,17 @@ class _SignUpInformationScreenState extends State<SignUpInformationScreen> {
                         children: [
                           const TextSpan(
                             text: 'You have created your account with ',
-                            style: TextStyle(color: Colors.white70, fontSize: 14),
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 14,
+                            ),
                           ),
                           TextSpan(
                             text: '(+855) $displayNumber',
-                            style: const TextStyle(color: Colors.red, fontSize: 14),
+                            style: const TextStyle(
+                              color: Colors.red,
+                              fontSize: 14,
+                            ),
                           ),
                         ],
                       ),
@@ -240,8 +260,14 @@ class _SignUpInformationScreenState extends State<SignUpInformationScreen> {
                   keyboardType: TextInputType.text,
                   quickClear: false,
                   labelText: 'First Name',
-                  inputFormatters: [FilteringTextInputFormatter.singleLineFormatter],
-                  prefix: const Icon(Icons.person, size: 18, color: Colors.white54),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.singleLineFormatter,
+                  ],
+                  prefix: const Icon(
+                    Icons.person,
+                    size: 18,
+                    color: Colors.white54,
+                  ),
                 ),
                 const SizedBox(height: 16),
                 CustomInputField(
@@ -249,14 +275,24 @@ class _SignUpInformationScreenState extends State<SignUpInformationScreen> {
                   keyboardType: TextInputType.text,
                   quickClear: false,
                   labelText: 'Last Name',
-                  inputFormatters: [FilteringTextInputFormatter.singleLineFormatter],
-                  prefix: const Icon(Icons.person, size: 18, color: Colors.white54),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.singleLineFormatter,
+                  ],
+                  prefix: const Icon(
+                    Icons.person,
+                    size: 18,
+                    color: Colors.white54,
+                  ),
                 ),
                 const SizedBox(height: 16),
                 CustomDateInputField(
                   controller: _birthDateController,
                   labelText: 'Date of Birth',
-                  prefix: const Icon(Icons.cake, size: 18, color: Colors.white54),
+                  prefix: const Icon(
+                    Icons.cake,
+                    size: 18,
+                    color: Colors.white54,
+                  ),
                 ),
               ],
             ),
