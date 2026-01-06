@@ -4,6 +4,7 @@ import '../../../data/services/auth_services.dart';
 import '../../state/auth_state.dart';
 import '../../widgets/app_scaffold.dart';
 import '../../widgets/custom_button.dart';
+import '../../widgets/custom_alert.dart';
 
 class MoreScreen extends StatelessWidget {
   const MoreScreen({super.key});
@@ -250,11 +251,21 @@ class MoreScreen extends StatelessWidget {
                     title: "Logout",
                     icon: Icons.logout,
                     onTap: () async {
-                      final authService = AuthServices();
-                      await authService.signOut();
-                      // Also clear local state
-                      if (context.mounted) {
-                        context.read<AuthState>().clearUserFromStorage();
+                      if (!context.mounted) return;
+
+                      final shouldLogout = await CustomAlert.showConfirm(
+                        context,
+                        title: 'Logout',
+                        message: 'Are you sure you want to logout?',
+                        confirmText: 'Logout',
+                      );
+
+                      if (shouldLogout && context.mounted) {
+                        final authService = AuthServices();
+                        await authService.signOut();
+                        if (context.mounted) {
+                          context.read<AuthState>().clearUserFromStorage();
+                        }
                       }
                     },
                   ),

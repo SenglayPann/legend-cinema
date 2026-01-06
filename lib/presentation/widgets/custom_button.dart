@@ -22,7 +22,10 @@ class CustomButton extends StatelessWidget {
     this.textColor = Colors.white,
     this.borderRadius = 24,
     this.fontSize = 16,
+    this.side,
   });
+
+  final BorderSide? side;
 
   @override
   Widget build(BuildContext context) {
@@ -32,22 +35,26 @@ class CustomButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: onPressed,
         style: ButtonStyle(
-          backgroundColor: WidgetStateProperty.resolveWith<Color>(
-            (states) {
-              if (states.contains(WidgetState.disabled)) {
-                return disabledColor;
-              }
-              return backgroundColor;
-            },
-          ),
+          backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+            if (states.contains(WidgetState.disabled)) {
+              return disabledColor;
+            }
+            return backgroundColor;
+          }),
           foregroundColor: WidgetStateProperty.all(textColor),
           shape: WidgetStateProperty.all(
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(borderRadius)),
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(borderRadius),
+              side: side ?? BorderSide.none,
+            ),
           ),
         ),
         child: Text(
           text,
-          style: TextStyle(fontSize: fontSize, color: onPressed != null ? textColor : const Color(0xFF8D9192)),
+          style: TextStyle(
+            fontSize: fontSize,
+            color: onPressed != null ? textColor : const Color(0xFF8D9192),
+          ),
         ),
       ),
     );

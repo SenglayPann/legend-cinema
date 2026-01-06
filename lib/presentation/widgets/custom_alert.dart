@@ -63,4 +63,81 @@ class CustomAlert {
       },
     );
   }
+
+  /// Shows a confirmation dialog with Title, Message, Confirm and Cancel buttons.
+  /// Returns true if Confirmed, false otherwise.
+  static Future<bool> showConfirm(
+    BuildContext context, {
+    String title = 'Confirm',
+    required String message,
+    String confirmText = 'Confirm',
+    String cancelText = 'Cancel',
+  }) async {
+    final result = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      barrierColor: Colors.black54,
+      builder: (context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: const BorderSide(color: Colors.red, width: 2),
+          ),
+          backgroundColor: const Color(0xFF090909),
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  message,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 16, color: Colors.white70),
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  children: [
+                    Expanded(
+                      child: SizedBox(
+                        height: 48,
+                        child: CustomButton(
+                          text: cancelText,
+                          onPressed: () => Navigator.of(context).pop(false),
+                          backgroundColor: Colors.transparent,
+                          textColor: Colors.white,
+                          side: const BorderSide(color: Colors.white, width: 1),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: SizedBox(
+                        height: 48,
+                        child: CustomButton(
+                          text: confirmText,
+                          onPressed: () => Navigator.of(context).pop(true),
+                          backgroundColor: Colors.red,
+                          textColor: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+    return result ?? false;
+  }
 }
