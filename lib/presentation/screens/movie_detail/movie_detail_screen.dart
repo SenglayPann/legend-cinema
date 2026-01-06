@@ -97,10 +97,15 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
           _availableCinemas = ['All Cinemas', ...uniqueCinemas];
 
           // If current selected cinema is not in available (and not All), reset?
-          // Actually, we want to keep it if possible, or fallback to All.
           if (_selectedCinema != 'All Cinemas' &&
               !_availableCinemas.contains(_selectedCinema)) {
             _selectedCinema = 'All Cinemas';
+          }
+
+          // Set selected date to first available date with showtimes
+          final firstAvailable = _getFirstAvailableDate();
+          if (firstAvailable != null) {
+            _selectedDate = firstAvailable;
           }
 
           _isLoading = false;
@@ -110,6 +115,33 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
       print("Error loading details: $e");
       if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  // Get all dates that have at least one showtime
+  Set<DateTime> get _availableDates {
+    return _allShowtimes.map((s) {
+      final dt = s.showDateTime.toDate();
+      return DateTime(dt.year, dt.month, dt.day);
+    }).toSet();
+  }
+
+  // Find the first date (starting from today) that has showtimes
+  DateTime? _getFirstAvailableDate() {
+    final now = DateTime.now();
+    final dates = List.generate(
+      7,
+      (i) => DateTime(now.year, now.month, now.day).add(Duration(days: i)),
+    );
+
+    for (var date in dates) {
+      if (_availableDates.any(
+        (d) =>
+            d.year == date.year && d.month == date.month && d.day == date.day,
+      )) {
+        return date;
+      }
+    }
+    return null;
   }
 
   List<ShowtimeModel> get _filteredShowtimes {
@@ -241,12 +273,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                             const SizedBox(height: 8),
 
                             // Tags / Screen Types
-                            Row(
-                              children: [
-                                const MovieTag(text: "2D"),
-                                const SizedBox(width: 8),
-                              ],
-                            ),
+                            Row(children: [const SizedBox(width: 8)]),
                             const SizedBox(height: 16),
 
                             // Icons Column
@@ -300,27 +327,32 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                       // 3. Description
                       ExpandableDescription(description: _movie!.description),
 
-                      // 4. Cinema Selector (Filter)
-                      _buildCinemaSelector(),
+                      // Only show booking UI for non-upcoming movies
+                      if (_movie!.status != 'upcoming') ...[
+                        // 4. Cinema Selector (Filter)
+                        _buildCinemaSelector(),
 
-                      const SizedBox(height: 16),
+                        const SizedBox(height: 16),
 
-                      // 5. Date Bar
-                      DateBar(
-                        isNowShowing: true,
-                        onDateSelected: (date) {
-                          setState(() => _selectedDate = date);
-                        },
-                      ),
-                      const SizedBox(height: 16),
+                        // 5. Date Bar
+                        DateBar(
+                          isNowShowing: true,
+                          availableDates: _availableDates,
+                          initialSelectedDate: _selectedDate,
+                          onDateSelected: (date) {
+                            setState(() => _selectedDate = date);
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                      ],
                     ],
                   ),
                 ),
 
                 const SizedBox(height: 16),
 
-                // 6. Showtime List
-                _buildShowtimeList(),
+                // 6. Showtime List (only for non-upcoming movies)
+                if (_movie!.status != 'upcoming') _buildShowtimeList(),
 
                 const SizedBox(height: 50),
               ],

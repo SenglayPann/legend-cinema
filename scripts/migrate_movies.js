@@ -54,7 +54,7 @@ const movies = [
     description:
       "The conflict on Pandora escalates as Jake and Neytiri's family encounter a new, aggressive Na'vi tribe.",
     releaseDate: new Date("2025-12-19"),
-    status: "upcoming",
+    status: "showing",
     popularity: 98,
   },
   {
@@ -71,7 +71,7 @@ const movies = [
     description:
       "Over many missions and against impossible odds, Dom Toretto and his family have outsmarted and outdriven every foe in their path. Now, they must confront the most lethal opponent they've ever faced. Fueled by revenge, a terrifying threat emerges from the shadows of the past to shatter Dom's world and destroy everything -- and everyone -- he loves.",
     releaseDate: new Date("2025-04-04"),
-    status: "upcoming",
+    status: "showing",
     popularity: 89,
   },
   {
@@ -88,7 +88,7 @@ const movies = [
     description:
       "Cat is a solitary animal, but as its home is devastated by a great flood, he finds refuge on a boat populated by various species, and will have to team up with them despite their differences.",
     releaseDate: new Date("2025-12-26"),
-    status: "upcoming",
+    status: "showing",
     popularity: 87,
   },
   {
@@ -122,7 +122,7 @@ const movies = [
     description:
       "Ethan Hunt and the IMF team must track down a terrifying new weapon that threatens all of humanity if it falls into the wrong hands. With control of the future and the fate of the world at stake, a deadly race around the globe begins. Confronted by a mysterious, all-powerful enemy, Ethan is forced to consider that nothing can matter more than the mission -- not even the lives of those he cares about most.",
     releaseDate: new Date("2025-05-23"),
-    status: "upcoming",
+    status: "showing",
     popularity: 94,
   },
   {
@@ -139,7 +139,7 @@ const movies = [
     description:
       "Sonic, Knuckles, and Tails are back for their most epic adventure yet. The team reunite to face a new formidable foe, Shadow, a mysterious hedgehog with powers unlike anything they've seen. Keanu Reeves joins the All-Star cast as the voice of Shadow.",
     releaseDate: new Date("2025-12-19"),
-    status: "upcoming",
+    status: "showing",
     popularity: 90,
   },
   {
@@ -156,7 +156,7 @@ const movies = [
     description:
       "Spider-Man: Beyond the Spider-Verse is an upcoming American animated superhero film based on Marvel Comics featuring the character Miles Morales / Spider-Man.",
     releaseDate: new Date("2025-10-10"),
-    status: "upcoming",
+    status: "showing",
     popularity: 85,
   },
   {
@@ -190,7 +190,7 @@ const movies = [
     description:
       "Batman is called to intervene when the mayor of Gotham City is murdered. Soon, his investigation leads him to uncover a web of corruption, linked to his own dark past.",
     releaseDate: new Date("2025-10-03"),
-    status: "upcoming",
+    status: "showing",
     popularity: 96,
   },
   {

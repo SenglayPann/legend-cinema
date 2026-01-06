@@ -3,6 +3,7 @@ import 'custom_app_bar.dart';
 
 class AppScaffold extends StatelessWidget {
   final String? title;
+  final Widget? titleWidget;
   final Widget body;
   final bool showBackButton;
   final List<Widget>? actions;
@@ -14,6 +15,7 @@ class AppScaffold extends StatelessWidget {
   const AppScaffold({
     super.key,
     this.title,
+    this.titleWidget,
     required this.body,
     this.showBackButton = true,
     this.actions,
@@ -28,6 +30,7 @@ class AppScaffold extends StatelessWidget {
     return Scaffold(
       appBar: CustomAppBar(
         title: title,
+        titleWidget: titleWidget,
         showBackButton: showBackButton,
         actions: actions,
         startColor: appBarStartColor,

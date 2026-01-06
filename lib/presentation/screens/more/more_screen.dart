@@ -1,17 +1,47 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../../data/services/auth_services.dart';
+import '../../state/auth_state.dart';
 import '../../widgets/app_scaffold.dart';
 import '../../widgets/custom_button.dart';
 
 class MoreScreen extends StatelessWidget {
-  final bool isLoggedIn; // Added to simulate login state
-  const MoreScreen({super.key, this.isLoggedIn = false});
+  const MoreScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Watch AuthState for changes
+    final authState = context.watch<AuthState>();
+    final isLoggedIn = authState.isLoggedIn;
+    final user = authState.currentUser;
+
     return AppScaffold(
       backgroundColor: const Color(0xFF0F0F0F),
       title: "Account",
       showBackButton: false,
+      // Add Avatar to the actions if logged in
+      actions: isLoggedIn
+          ? [
+              Padding(
+                padding: const EdgeInsets.only(right: 16.0),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(context, '/editProfile');
+                  },
+                  child: CircleAvatar(
+                    radius: 18, // Adjust size as needed
+                    backgroundColor: const Color(0xFF2A2A2A),
+                    // You could use NetworkImage if user.imageUrl exists
+                    child: const Icon(
+                      Icons.person,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ),
+                ),
+              ),
+            ]
+          : null,
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -41,6 +71,25 @@ class MoreScreen extends StatelessWidget {
                       ),
                     ),
                   ],
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
+
+            // Show User Info Greeting if logged in (Optional but nice)
+            if (isLoggedIn && user != null) ...[
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                child: Text(
+                  "Hello, ${user.firstName}".trim(),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
               const SizedBox(height: 20),
@@ -200,9 +249,13 @@ class MoreScreen extends StatelessWidget {
                     context,
                     title: "Logout",
                     icon: Icons.logout,
-                    onTap: () {
-                      // Handle logout logic here
-                      print("User logged out");
+                    onTap: () async {
+                      final authService = AuthServices();
+                      await authService.signOut();
+                      // Also clear local state
+                      if (context.mounted) {
+                        context.read<AuthState>().clearUserFromStorage();
+                      }
                     },
                   ),
               ],

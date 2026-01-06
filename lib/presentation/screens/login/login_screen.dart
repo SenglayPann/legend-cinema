@@ -10,14 +10,14 @@ import '../../widgets/custom_input_field.dart';
 import '../../widgets/app_scaffold.dart';
 import '../../widgets/loading_overlay.dart';
 
-class SignUpScreen extends StatefulWidget {
-  const SignUpScreen({super.key});
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
   @override
-  State<SignUpScreen> createState() => _SignUpScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _SignUpScreenState extends State<SignUpScreen> {
+class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   bool _isPhoneValid = false;
   final TextEditingController _phoneController = TextEditingController();
@@ -62,22 +62,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
     final user = await _authService.postSignIn(userCredential);
     if (mounted) context.read<AuthState>().setUser(user);
 
-    final isNewUser = userCredential.additionalUserInfo?.isNewUser ?? false;
-
     if (mounted) LoadingOverlay().hide(context);
+    // Removed SnackBar as per request
+
+    await Future.delayed(const Duration(milliseconds: 300));
+
     if (mounted) {
-      if (isNewUser) {
-        Navigator.pushNamed(
-          context,
-          '/signUpInformation',
-          arguments: {
-            'phoneNumber': _phoneController.text.trim(),
-            'userId': user.id ?? userCredential.user?.uid ?? '',
-          },
-        );
-      } else {
-        Navigator.of(context).pushNamedAndRemoveUntil('/main', (_) => false);
-      }
+      Navigator.of(context).pushNamedAndRemoveUntil('/main', (_) => false);
     }
   }
 
@@ -127,14 +118,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
     try {
       final exists = await _authService.checkUserExists(phoneNumber);
-      if (exists) {
+      if (!exists) {
         LoadingOverlay().hide(context);
         if (mounted) {
           CustomAlert.show(
             context,
-            title: 'Account Exists',
+            title: 'Account Not Found',
             message:
-                'This phone number is already registered. Please login instead.',
+                'This phone number is not registered. Please sign up first.',
           );
         }
         return;
@@ -175,8 +166,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Widget build(BuildContext context) {
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
     return AppScaffold(
-      // title: 'sign up',
-      showBackButton: false, // Removed back button
+      showBackButton: false,
       backgroundColor: const Color(0xFF090909),
       body: SafeArea(
         child: GestureDetector(
@@ -188,18 +178,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // const SizedBox(height: 48),
                   const Text(
-                    'Sign Up',
+                    'Login',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.w600,
                       color: Colors.white,
                     ),
                   ),
-                  // const SizedBox(height: 24),
                   const Text(
-                    'Enter your phone number and get verification code',
+                    'Enter your phone number to login',
                     style: TextStyle(color: Colors.white70),
                   ),
                   const SizedBox(height: 24),
@@ -236,19 +224,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                   const SizedBox(height: 20),
 
-                  // Login Link
+                  // Sign Up Link
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const Text(
-                        "Already have an account? ",
+                        "Don't have an account? ",
                         style: TextStyle(color: Colors.white70),
                       ),
                       GestureDetector(
                         onTap: () =>
-                            Navigator.pushReplacementNamed(context, '/login'),
+                            Navigator.pushReplacementNamed(context, '/signUp'),
                         child: const Text(
-                          "Login",
+                          "Sign Up",
                           style: TextStyle(
                             color: Colors.red,
                             fontWeight: FontWeight.bold,
@@ -272,7 +260,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           child: SizedBox(
             height: 48,
             child: CustomButton(
-              text: 'Get OTP',
+              text: 'Login',
               onPressed: _isPhoneValid ? _onGetOtp : null,
             ),
           ),

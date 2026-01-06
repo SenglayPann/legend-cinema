@@ -8,6 +8,7 @@ import '../../state/seat_selection_state.dart';
 import '../../widgets/glass_container.dart';
 import '../../widgets/gradient_divider.dart';
 import '../../widgets/custom_button.dart';
+import '../../widgets/custom_alert.dart';
 import 'checkout_screen.dart';
 
 class OrderDetailScreen extends StatefulWidget {
@@ -46,10 +47,14 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         _timer?.cancel();
         // Session expired - navigate back
         if (mounted) {
-          ScaffoldMessenger.of(
+          CustomAlert.show(
             context,
-          ).showSnackBar(const SnackBar(content: Text('Session expired')));
-          Navigator.of(context).popUntil((route) => route.isFirst);
+            title: 'Session Expired',
+            message: 'Your session has expired.',
+          ).then((_) {
+            if (mounted)
+              Navigator.of(context).popUntil((route) => route.isFirst);
+          });
         }
       }
     });

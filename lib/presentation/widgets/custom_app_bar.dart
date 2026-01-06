@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String? title;
+  final Widget? titleWidget;
   final bool centerTitle;
   final List<Widget>? actions;
   final bool showBackButton;
@@ -16,6 +17,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({
     super.key,
     this.title,
+    this.titleWidget,
     this.centerTitle = true,
     this.actions,
     this.showBackButton = true,
@@ -31,9 +33,11 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget? titleTextWidget;
-    if (title != null) {
-      titleTextWidget = Text(
+    Widget? titleDisplayWidget;
+    if (titleWidget != null) {
+      titleDisplayWidget = titleWidget;
+    } else if (title != null) {
+      titleDisplayWidget = Text(
         title!,
         style: const TextStyle(
           color: Colors.white,
@@ -54,7 +58,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               onPressed: () => Navigator.of(context).maybePop(),
             )
           : null,
-      title: titleTextWidget,
+      title: titleDisplayWidget,
       centerTitle: showBackButton, // Center title only if back button is shown
       titleSpacing: showBackButton ? NavigationToolbar.kMiddleSpacing : 16.0,
       actions: actions,

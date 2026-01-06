@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../data/models/movie_model.dart';
 import '../../data/models/offer_model.dart';
+import '../../data/models/showtime_model.dart';
 import 'shared/movie_card.dart';
 import 'shared/promotion_card.dart';
 import 'date_bar.dart';
@@ -9,6 +10,7 @@ import '../screens/movie_detail/movie_detail_screen.dart';
 
 class MovieGrid extends StatefulWidget {
   final List<MovieModel> movies;
+  final Map<String, List<ShowtimeModel>> movieShowtimes;
   final String selectedCinema;
   final bool isComingSoon;
   final List<OfferModel> offers;
@@ -16,6 +18,7 @@ class MovieGrid extends StatefulWidget {
   const MovieGrid({
     super.key,
     required this.movies,
+    this.movieShowtimes = const {},
     this.selectedCinema = 'All Cinemas',
     this.isComingSoon = false,
     this.offers = const [],
@@ -26,7 +29,25 @@ class MovieGrid extends StatefulWidget {
 }
 
 class _MovieGridState extends State<MovieGrid> {
-  DateTime _selectedDate = DateTime.now();
+  late DateTime _selectedDate;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedDate = _getFirstAvailableDate() ?? DateTime.now();
+  }
+
+  @override
+  void didUpdateWidget(covariant MovieGrid oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Update selected date when movieShowtimes changes
+    if (oldWidget.movieShowtimes != widget.movieShowtimes) {
+      final firstAvailable = _getFirstAvailableDate();
+      if (firstAvailable != null) {
+        setState(() => _selectedDate = firstAvailable);
+      }
+    }
+  }
 
   void _onDateSelected(DateTime date) {
     setState(() {
@@ -34,11 +55,51 @@ class _MovieGridState extends State<MovieGrid> {
     });
   }
 
+  // Get all dates that have at least one showtime
+  Set<DateTime> get _availableDates {
+    final Set<DateTime> dates = {};
+    for (var showtimes in widget.movieShowtimes.values) {
+      for (var showtime in showtimes) {
+        final dt = showtime.showDateTime.toDate();
+        dates.add(DateTime(dt.year, dt.month, dt.day));
+      }
+    }
+    return dates;
+  }
+
+  // Find the first date (starting from today) that has showtimes
+  DateTime? _getFirstAvailableDate() {
+    if (!widget.isComingSoon) {
+      final now = DateTime.now();
+      final dates = List.generate(
+        7,
+        (i) => DateTime(now.year, now.month, now.day).add(Duration(days: i)),
+      );
+
+      for (var date in dates) {
+        if (_availableDates.any(
+          (d) =>
+              d.year == date.year && d.month == date.month && d.day == date.day,
+        )) {
+          return date;
+        }
+      }
+    }
+    return null;
+  }
+
   List<MovieModel> _getFilteredMovies() {
     if (!widget.isComingSoon) {
-      // For "Now Showing", we assume movies are available daily as we lack showtime data.
-      // So we return all movies regardless of the selected day.
-      return widget.movies;
+      // For "Now Showing", filter by movies that have showtimes on the selected date
+      return widget.movies.where((movie) {
+        final showtimes = widget.movieShowtimes[movie.id] ?? [];
+        return showtimes.any((showtime) {
+          final showDate = showtime.showDateTime.toDate();
+          return showDate.year == _selectedDate.year &&
+              showDate.month == _selectedDate.month &&
+              showDate.day == _selectedDate.day;
+        });
+      }).toList();
     } else {
       // For "Coming Soon", filter by month and year.
       return widget.movies.where((movie) {
@@ -58,6 +119,8 @@ class _MovieGridState extends State<MovieGrid> {
       children: [
         DateBar(
           isNowShowing: !widget.isComingSoon,
+          availableDates: widget.isComingSoon ? null : _availableDates,
+          initialSelectedDate: widget.isComingSoon ? null : _selectedDate,
           onDateSelected: _onDateSelected,
         ),
         const SizedBox(height: 16),

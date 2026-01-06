@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:legend_cinema/data/models/user_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../data/services/auth_services.dart';
 
 class AuthState extends ChangeNotifier {
   UserModel? _currentUser;
@@ -51,5 +53,35 @@ class AuthState extends ChangeNotifier {
     _currentUser = user;
     saveUserToStorage(user);
     notifyListeners();
+  }
+
+  // ───────────────────────────────────────────────────────────────
+  // 🔹 Update user profile
+  Future<void> updateUserProfile({
+    required String firstName,
+    required String lastName,
+    DateTime? dob,
+  }) async {
+    if (_currentUser == null) return;
+
+    // Create updated user object
+    final updatedUser = _currentUser!.copyWith(
+      firstName: firstName,
+      lastName: lastName,
+      userName: '$firstName $lastName',
+      dateOfBirth: dob != null ? Timestamp.fromDate(dob) : null,
+    );
+
+    try {
+      // Update in Firestore
+      final authService = AuthServices();
+      await authService.updateUser(updatedUser);
+
+      // Update local state
+      setUser(updatedUser);
+    } catch (e) {
+      debugPrint('Error updating user profile: $e');
+      rethrow;
+    }
   }
 }

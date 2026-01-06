@@ -63,8 +63,10 @@ class _SignUpInformationScreenState extends State<SignUpInformationScreen> {
     final lastName = _lastNameController.text.trim();
 
     if (firstName.isEmpty || lastName.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter both first and last name.')),
+      CustomAlert.show(
+        context,
+        title: 'Missing Information',
+        message: 'Please enter both first and last name.',
       );
       return;
     }
@@ -121,8 +123,10 @@ class _SignUpInformationScreenState extends State<SignUpInformationScreen> {
       // Read back the updated document
       final snapshot = await docRef.get();
       if (!snapshot.exists) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to update user profile.')),
+        CustomAlert.show(
+          context,
+          title: 'Error',
+          message: 'Failed to update user profile.',
         );
         return;
       }
@@ -132,17 +136,15 @@ class _SignUpInformationScreenState extends State<SignUpInformationScreen> {
       // Update app-wide AuthState (this will save to SharedPreferences)
       authState.setUser(updatedUser);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Profile updated successfully.')),
-      );
-
       // Navigate to example screen (main area)
       Navigator.of(context).pushNamedAndRemoveUntil('/main', (_) => false);
     } catch (e, st) {
       debugPrint('Error updating profile: $e\n$st');
-      ScaffoldMessenger.of(
+      CustomAlert.show(
         context,
-      ).showSnackBar(SnackBar(content: Text('Error updating profile: $e')));
+        title: 'Error',
+        message: 'Error updating profile: $e',
+      );
     }
   }
 

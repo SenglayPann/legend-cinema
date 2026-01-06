@@ -110,4 +110,28 @@ class UserModel {
       bookingCount: json['bookingCount'] ?? 0,
     );
   }
+
+  UserModel copyWith({
+    String? id,
+    String? userName,
+    String? firstName,
+    String? lastName,
+    String? email,
+    String? phone,
+    Timestamp? createdAt,
+    Timestamp? dateOfBirth,
+    int? bookingCount,
+  }) {
+    return UserModel(
+      id: id ?? this.id,
+      userName: userName ?? this.userName,
+      firstName: firstName ?? this.firstName,
+      lastName: lastName ?? this.lastName,
+      email: email ?? this.email,
+      phone: phone ?? this.phone,
+      createdAt: createdAt ?? this.createdAt,
+      dateOfBirth: dateOfBirth ?? this.dateOfBirth,
+      bookingCount: bookingCount ?? this.bookingCount,
+    );
+  }
 }

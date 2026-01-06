@@ -33,17 +33,37 @@ class MovieService {
     }
   }
 
-  // Fetch Now Showing Movies
+  // Fetch Now Showing Movies (only movies with at least one upcoming showtime)
   Future<List<MovieModel>> getNowShowingMovies() async {
     try {
-      final snapshot = await _firestore
+      // First get all movies with status 'showing'
+      final moviesSnapshot = await _firestore
           .collection('movies')
           .where('status', isEqualTo: 'showing')
           .get();
 
-      return snapshot.docs
+      final allMovies = moviesSnapshot.docs
           .map((doc) => MovieModel.fromMap(doc.data(), doc.id))
           .toList();
+
+      // Filter to only movies that have at least one upcoming showtime
+      final now = Timestamp.now();
+      final moviesWithUpcomingShowtimes = <MovieModel>[];
+
+      for (var movie in allMovies) {
+        final showtimeSnapshot = await _firestore
+            .collection('showtimes')
+            .where('movieId', isEqualTo: movie.id)
+            .where('showDateTime', isGreaterThanOrEqualTo: now)
+            .limit(1) // We only need to check if at least one exists
+            .get();
+
+        if (showtimeSnapshot.docs.isNotEmpty) {
+          moviesWithUpcomingShowtimes.add(movie);
+        }
+      }
+
+      return moviesWithUpcomingShowtimes;
     } catch (e) {
       print("Error fetching now showing movies: $e");
       return [];

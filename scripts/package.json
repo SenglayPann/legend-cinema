@@ -12,7 +12,9 @@
     "get-cinemas-kvp": "node get_cinemas_kvp.js",
     "get-movies": "node get_movies.js",
     "migrate-offer": "node migrate_offers.js",
-    "migrate-showtimes": "node migrate_showtimes.js"
+    "migrate-showtimes": "node migrate_showtimes.js",
+    "update-showtime-dates": "node update_showtime_dates.js",
+    "migrate-upcoming-movies": "node migrate_upcoming_movies.js"
   },
   "dependencies": {
     "firebase-admin": "^11.0.0"

@@ -47,7 +47,11 @@ class _TrailerPlayerScreenState extends State<TrailerPlayerScreen> {
       ),
       builder: (context, player) {
         return AppScaffold(
-          title: "Trailer",
+          titleWidget: Image.asset(
+            "lib/assets/images/legend_cinema_logo_crop.png",
+            height: 35,
+            fit: BoxFit.contain,
+          ),
           body: Center(child: player),
         );
       },

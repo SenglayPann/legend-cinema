@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
-
 import 'package:intl/intl.dart';
 
 class DateBar extends StatefulWidget {
   final bool isNowShowing;
   final Function(DateTime) onDateSelected;
+  final Set<DateTime>? availableDates; // Dates that have showtimes
+  final DateTime? initialSelectedDate; // Default selected date
 
   const DateBar({
     super.key,
     required this.isNowShowing,
     required this.onDateSelected,
+    this.availableDates,
+    this.initialSelectedDate,
   });
 
   @override
@@ -24,6 +27,7 @@ class _DateBarState extends State<DateBar> {
   void initState() {
     super.initState();
     _generateDates();
+    _setInitialSelectedIndex();
   }
 
   @override
@@ -31,11 +35,14 @@ class _DateBarState extends State<DateBar> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.isNowShowing != widget.isNowShowing) {
       _generateDates();
-      selectedIndex = 0;
-      // Notify parent of the first date/month when switching modes
-      if (dates.isNotEmpty) {
-        widget.onDateSelected(dates[0]);
+      _setInitialSelectedIndex();
+      // Notify parent of the selected date when switching modes
+      if (dates.isNotEmpty && selectedIndex < dates.length) {
+        widget.onDateSelected(dates[selectedIndex]);
       }
+    } else if (oldWidget.availableDates != widget.availableDates ||
+        oldWidget.initialSelectedDate != widget.initialSelectedDate) {
+      _setInitialSelectedIndex();
     }
   }
 
@@ -50,6 +57,41 @@ class _DateBarState extends State<DateBar> {
         return DateTime(now.year, now.month + index, 1);
       });
     }
+  }
+
+  void _setInitialSelectedIndex() {
+    if (widget.initialSelectedDate != null && widget.isNowShowing) {
+      // Find the index of the initial selected date
+      for (int i = 0; i < dates.length; i++) {
+        if (_isSameDay(dates[i], widget.initialSelectedDate!)) {
+          selectedIndex = i;
+          return;
+        }
+      }
+    }
+
+    // Default to first available date if availableDates is provided
+    if (widget.availableDates != null &&
+        widget.availableDates!.isNotEmpty &&
+        widget.isNowShowing) {
+      for (int i = 0; i < dates.length; i++) {
+        if (_isDateAvailable(dates[i])) {
+          selectedIndex = i;
+          return;
+        }
+      }
+    }
+
+    selectedIndex = 0;
+  }
+
+  bool _isSameDay(DateTime a, DateTime b) {
+    return a.year == b.year && a.month == b.month && a.day == b.day;
+  }
+
+  bool _isDateAvailable(DateTime date) {
+    if (widget.availableDates == null) return true;
+    return widget.availableDates!.any((d) => _isSameDay(d, date));
   }
 
   @override
@@ -67,27 +109,34 @@ class _DateBarState extends State<DateBar> {
             final isToday = index == 0;
             final dayName = isToday ? "Today" : DateFormat('E').format(date);
             final dayNumber = date.day.toString();
+            final isAvailable = _isDateAvailable(date);
 
             return GestureDetector(
-              onTap: () {
-                setState(() => selectedIndex = index);
-                widget.onDateSelected(date);
-              },
+              onTap: isAvailable
+                  ? () {
+                      setState(() => selectedIndex = index);
+                      widget.onDateSelected(date);
+                    }
+                  : null,
               child: _SelectablePill(
                 width: 60,
                 height: 80,
                 isSelected: selectedIndex == index,
+                isDisabled: !isAvailable,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
                       dayName,
-                      style: const TextStyle(color: Colors.white, fontSize: 12),
+                      style: TextStyle(
+                        color: isAvailable ? Colors.white : Colors.white38,
+                        fontSize: 12,
+                      ),
                     ),
                     Text(
                       dayNumber,
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: isAvailable ? Colors.white : Colors.white38,
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                       ),
@@ -141,6 +190,7 @@ class _DateBarState extends State<DateBar> {
 class _SelectablePill extends StatelessWidget {
   final Widget child;
   final bool isSelected;
+  final bool isDisabled;
   final double? width;
   final double? height;
   final EdgeInsets? padding;
@@ -148,6 +198,7 @@ class _SelectablePill extends StatelessWidget {
   const _SelectablePill({
     required this.child,
     required this.isSelected,
+    this.isDisabled = false,
     this.width,
     this.height,
     this.padding,
@@ -160,10 +211,12 @@ class _SelectablePill extends StatelessWidget {
       height: height,
       padding: padding,
       decoration: BoxDecoration(
-        color: Colors.black,
+        color: isDisabled ? Colors.grey.shade900 : Colors.black,
         borderRadius: BorderRadius.circular(5),
         border: Border.all(
-          color: isSelected ? Colors.red : Colors.grey.shade700,
+          color: isDisabled
+              ? Colors.grey.shade800
+              : (isSelected ? Colors.red : Colors.grey.shade700),
           width: isSelected ? 2 : 1,
         ),
       ),

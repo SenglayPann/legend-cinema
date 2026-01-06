@@ -36,7 +36,6 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   int _secondsRemaining = 60;
   Timer? _timer;
   final _authService = AuthServices();
-  
 
   @override
   void initState() {
@@ -70,16 +69,11 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     );
 
     final user = await _authService.postSignIn(userCredential);
-    context.read<AuthState>().setUser(user); 
+    context.read<AuthState>().setUser(user);
 
     final isNewUser = userCredential.additionalUserInfo?.isNewUser ?? false;
 
-    LoadingOverlay().hide(context);
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Verification successful!')),
-    );
-
-    await Future.delayed(const Duration(milliseconds: 300));
+    if (mounted) LoadingOverlay().hide(context);
 
     if (isNewUser) {
       Navigator.pushNamed(
@@ -91,7 +85,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
         },
       );
     } else {
-      Navigator.of(context).pushNamedAndRemoveUntil('/example', (_) => false);
+      Navigator.of(context).pushNamedAndRemoveUntil('/main', (_) => false);
     }
   }
 
@@ -102,17 +96,16 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
         _verificationId = verificationId;
         _resendToken = resendToken;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Code resent successfully!')),
-      );
+      // Removed success snackbar as per request
       _startResendTimer();
     }
   }
 
   void _onFailed(e) {
-    CustomAlert.show(context, title: 'Failed', message: 'Failed resend token');
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Failed to resend: ${e.message}')),
+    CustomAlert.show(
+      context,
+      title: 'Failed',
+      message: 'Failed to resend: ${e.message}',
     );
   }
 
@@ -133,7 +126,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
         onCodeSent: _onCodeSent,
         onFailed: _onFailed,
         onTimeout: _onTimeout,
-        forceResendingToken: _resendToken
+        forceResendingToken: _resendToken,
       );
     } finally {
       if (mounted) {
@@ -143,7 +136,6 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     }
   }
 
-
   Future<void> _onOtpComplete(BuildContext context, String otp) async {
     // ...
     try {
@@ -151,20 +143,19 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
         verificationId: widget.verificationId,
         smsCode: otp,
       );
-      
+
       // Call the improved postSignIn, which returns a complete user model
       final user = await _authServices.postSignIn(userCred);
 
       // Save the user and update the shared AuthState provided at app root
       // Use the Provider instance so the rest of the app (ExampleScreen etc.) sees the change
-      context.read<AuthState>().setUser(user); // setUser calls saveUserToStorage automatically
+      context.read<AuthState>().setUser(
+        user,
+      ); // setUser calls saveUserToStorage automatically
 
       if (!mounted) return;
 
       LoadingOverlay().hide(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Verification successful!')),
-      );
 
       await Future.delayed(const Duration(milliseconds: 300));
 
@@ -173,7 +164,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
       if (isNewUser) {
         Navigator.pushReplacementNamed(context, '/signUpInformation');
       } else {
-        Navigator.of(context).pushNamedAndRemoveUntil('/example', (_) => false);
+        Navigator.of(context).pushNamedAndRemoveUntil('/main', (_) => false);
       }
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
@@ -193,7 +184,6 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
       if (mounted) setState(() => _isLoading = false);
     }
   }
-
 
   @override
   void dispose() {
@@ -267,16 +257,10 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                     defaultPinTheme: defaultPinTheme,
                     focusedPinTheme: focusedPinTheme,
                     separatorBuilder: (index) => const SizedBox(width: 12),
-                    cursor: Container(
-                      width: 2,
-                      height: 20,
-                      color: Colors.red,
-                    ),
+                    cursor: Container(width: 2, height: 20, color: Colors.red),
                     hapticFeedbackType: HapticFeedbackType.lightImpact,
                     onCompleted: (pin) => _onOtpComplete(context, pin),
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                    ],
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     keyboardType: TextInputType.number,
                   ),
                 ),
@@ -301,9 +285,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                             ? 'Resend'
                             : 'Resend in $_secondsRemaining s',
                         style: TextStyle(
-                          color: _canResend
-                              ? Colors.red
-                              : Colors.white54,
+                          color: _canResend ? Colors.red : Colors.white54,
                           fontWeight: FontWeight.w600,
                         ),
                       ),

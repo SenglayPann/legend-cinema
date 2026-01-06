@@ -2,8 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../../data/models/movie_model.dart';
 import '../../../data/models/cinema_model.dart';
+import '../../../data/models/showtime_model.dart';
 import '../../../data/services/movie_service.dart';
 import '../../../data/services/cinema_service.dart';
+import '../../../data/services/showtime_service.dart';
 import '../../../data/models/offer_model.dart';
 import '../../../data/services/offer_service.dart';
 import '../../widgets/movie_tabs.dart';
@@ -27,10 +29,12 @@ class _HomeScreenState extends State<HomeScreen> {
   final MovieService _movieService = MovieService();
   final CinemaService _cinemaService = CinemaService();
   final OfferService _offerService = OfferService();
+  final ShowtimeService _showtimeService = ShowtimeService();
 
   List<MovieModel> banners = [];
   List<CinemaModel> cinemaLocations = [];
   List<MovieModel> nowShowing = [];
+  Map<String, List<ShowtimeModel>> movieShowtimes = {}; // movieId -> showtimes
   List<MovieModel> comingSoon = [];
   List<OfferModel> offers = [];
   bool isLoading = true;
@@ -59,11 +63,21 @@ class _HomeScreenState extends State<HomeScreen> {
       final fetchedComingSoon = await _movieService.getComingSoonMovies();
       final fetchedOffers = await _offerService.getOffers();
 
+      // Fetch showtimes for all Now Showing movies
+      final Map<String, List<ShowtimeModel>> showtimesMap = {};
+      for (var movie in fetchedNowShowing) {
+        final showtimes = await _showtimeService.getShowtimesForMovie(movie.id);
+        if (showtimes.isNotEmpty) {
+          showtimesMap[movie.id] = showtimes;
+        }
+      }
+
       if (mounted) {
         setState(() {
           banners = fetchedBanners;
           cinemaLocations = fetchedCinemas;
           nowShowing = fetchedNowShowing;
+          movieShowtimes = showtimesMap;
           comingSoon = fetchedComingSoon;
           offers = fetchedOffers;
           isLoading = false;
@@ -119,9 +133,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
             MovieTabs(
               nowShowing: nowShowing,
+              movieShowtimes: movieShowtimes,
               comingSoon: comingSoon,
               offers: offers,
               selectedTabIndex: _selectedTabIndex,
+              selectedCinema: _selectedCinema,
               onTabChanged: (i) => setState(() => _selectedTabIndex = i),
             ),
             const SizedBox(height: 16),

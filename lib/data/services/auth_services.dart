@@ -1,4 +1,3 @@
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/user_model.dart'; // adjust import path if needed
@@ -44,7 +43,7 @@ class AuthServices {
 
   // ───────────────────────────────────────────────────────────────
   // 🔹 Post sign-in logic — create or update user record
- // The user model returned from postSignIn now contains the full data
+  // The user model returned from postSignIn now contains the full data
   Future<UserModel> postSignIn(UserCredential userCredential) async {
     final user = userCredential.user;
 
@@ -55,10 +54,10 @@ class AuthServices {
     final userSnapshot = await userDocRef.get();
 
     if (userSnapshot.exists) {
-        // Existing user: return the data from Firestore.
-        return UserModel.fromMap(userSnapshot.data()!, user.uid);
+      // Existing user: return the data from Firestore.
+      return UserModel.fromMap(userSnapshot.data()!, user.uid);
     } else {
-    // New user: create a new user and return it.
+      // New user: create a new user and return it.
       final newUser = UserModel(
         id: user.uid,
         userName: user.displayName ?? '',
@@ -82,16 +81,43 @@ class AuthServices {
     return UserModel.fromMap(data, doc.id);
   }
 
+  // ───────────────────────────────────────────────────────────────
+  // 🔹 Auth state helpers
 
-  // // ───────────────────────────────────────────────────────────────
-  // // 🔹 Optional: get current logged-in user model
-  // Future<UserModel?> getCurrentUser() async {
-  //   final user = _auth.currentUser;
-  //   if (user == null) return null;
+  /// Stream of auth state changes (user or null)
+  Stream<User?> get authStateChanges => _auth.authStateChanges();
 
-  //   final doc = await _firestore.collection('users').doc(user.uid).get();
-  //   if (!doc.exists) return null;
+  /// Get current logged-in Firebase user (synchronous)
+  User? get currentUser => _auth.currentUser;
 
-  //   return UserModel.fromMap(doc.data()!, doc.id);
-  // }
+  /// Check if a user is currently logged in
+  bool get isLoggedIn => _auth.currentUser != null;
+
+  /// Sign out the current user
+  Future<void> signOut() async {
+    await _auth.signOut();
+  }
+
+  /// Update user data in Firestore
+  Future<void> updateUser(UserModel user) async {
+    final userDocRef = _firestore.collection('users').doc(user.id);
+    await userDocRef.set(user.toMap(), SetOptions(merge: true));
+  }
+
+  /// Check if a user with the given phone number already exists
+  Future<bool> checkUserExists(String phoneNumber) async {
+    try {
+      final querySnapshot = await _firestore
+          .collection('users')
+          .where('phone', isEqualTo: phoneNumber)
+          .limit(1)
+          .get();
+      return querySnapshot.docs.isNotEmpty;
+    } catch (e) {
+      // In case of error (e.g. offline), we might want to default to false or rethrow
+      // For now, let's log and rethrow to be safe
+      print('Error checking user existence: $e');
+      rethrow;
+    }
+  }
 }
