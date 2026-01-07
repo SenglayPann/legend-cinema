@@ -1,5 +1,8 @@
+import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:http/http.dart' as http;
 
 /// Service for handling Stripe payments
 class StripeService {
@@ -18,144 +21,119 @@ class StripeService {
     await Stripe.instance.applySettings();
   }
 
-  /// Create a payment sheet and process payment
-  /// In production, the paymentIntentClientSecret should come from your backend
+  // ───────────────────────────────────────────────────────────────
+  // 🔹 Real Payment Flow
+  // ───────────────────────────────────────────────────────────────
+
+  /// 1. Create PaymentIntent on the Backend
+  Future<Map<String, dynamic>?> _createPaymentIntent(
+    double amount,
+    String currency,
+  ) async {
+    try {
+      // Ngrok URL - Works anywhere (Mobile Data, different Wi-Fi)
+      const backendUrl =
+          'https://sharita-oligopsonistic-unintently.ngrok-free.dev/create-payment-intent';
+
+      // Convert amount to cents (integer)
+      final amountInCents = (amount * 100).toInt();
+
+      final response = await http.post(
+        Uri.parse(backendUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({'amount': amountInCents, 'currency': currency}),
+      );
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        debugPrint('Backend error: ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error creating payment intent: $e');
+      return null;
+    }
+  }
+
+  /// 2. Initialize Payment Sheet
+  Future<bool> _initializePaymentSheet(String clientSecret) async {
+    try {
+      await Stripe.instance.initPaymentSheet(
+        paymentSheetParameters: SetupPaymentSheetParameters(
+          paymentIntentClientSecret: clientSecret,
+          merchantDisplayName: 'Legend Cinema',
+          style: ThemeMode.dark,
+          appearance: const PaymentSheetAppearance(
+            colors: PaymentSheetAppearanceColors(
+              background: Color(0xFF1A1A2E),
+              primary: Colors.red,
+              componentBackground: Color(0xFF090909),
+              componentText: Colors.white,
+              secondaryText: Colors.white54,
+              placeholderText: Colors.white30,
+            ),
+          ),
+        ),
+      );
+      return true;
+    } catch (e) {
+      debugPrint('Error initializing payment sheet: $e');
+      return false;
+    }
+  }
+
+  /// 3. Present Payment Sheet
+  Future<bool> _presentPaymentSheet() async {
+    try {
+      await Stripe.instance.presentPaymentSheet();
+      return true;
+    } catch (e) {
+      debugPrint('Error presenting payment sheet: $e');
+      if (e is StripeException) {
+        // Handle cancellations or specific errors if needed
+        debugPrint('Stripe Error: ${e.error.localizedMessage}');
+      }
+      return false;
+    }
+  }
+
+  /// Main method to process payment (Step 1 -> 2 -> 3)
   Future<bool> processPayment({
     required double amount,
     required String currency,
     required BuildContext context,
   }) async {
     try {
-      // In production, you would call your backend to create a PaymentIntent
-      // and get the client secret. For now, we'll show the demo flow.
-
-      // This is a placeholder - in real implementation:
-      // 1. Call your backend API to create PaymentIntent
-      // 2. Get the client_secret from the response
-      // 3. Initialize the payment sheet with that secret
-
-      // For demo purposes, show a simulated card input
-      await _showDemoPaymentSheet(context, amount, currency);
-
-      return true;
-    } catch (e) {
-      debugPrint('Stripe payment error: $e');
-      if (e is StripeException) {
-        _showErrorDialog(context, e.error.localizedMessage ?? 'Payment failed');
-      } else {
-        _showErrorDialog(context, 'An unexpected error occurred');
+      // Step 1: Create Payment Intent
+      final data = await _createPaymentIntent(amount, currency);
+      if (data == null || !data.containsKey('clientSecret')) {
+        _showErrorDialog(
+          context,
+          'Failed to create payment intent. Ensure backend is running.',
+        );
+        return false;
       }
+      final clientSecret = data['clientSecret'];
+
+      // Step 2: Initialize Sheet
+      final isInitialized = await _initializePaymentSheet(clientSecret);
+      if (!isInitialized) {
+        _showErrorDialog(context, 'Failed to initialize payment.');
+        return false;
+      }
+
+      // Step 3: Present Sheet
+      final isSuccess = await _presentPaymentSheet();
+      return isSuccess;
+    } catch (e) {
+      _showErrorDialog(context, 'An unexpected error occurred: $e');
       return false;
     }
   }
 
-  /// Demo payment sheet (replace with real implementation)
-  Future<void> _showDemoPaymentSheet(
-    BuildContext context,
-    double amount,
-    String currency,
-  ) async {
-    // Show a demo dialog since we don't have a real backend
-    final result = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF1A1A2E),
-        title: const Text(
-          'Card Payment',
-          style: TextStyle(color: Colors.white),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Column(
-                children: [
-                  const TextField(
-                    style: TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      labelText: 'Card Number',
-                      labelStyle: TextStyle(color: Colors.white54),
-                      hintText: '4242 4242 4242 4242',
-                      hintStyle: TextStyle(color: Colors.white30),
-                      border: InputBorder.none,
-                      prefixIcon: Icon(
-                        Icons.credit_card,
-                        color: Colors.white54,
-                      ),
-                    ),
-                    keyboardType: TextInputType.number,
-                  ),
-                  const Divider(color: Colors.white24),
-                  Row(
-                    children: const [
-                      Expanded(
-                        child: TextField(
-                          style: TextStyle(color: Colors.white),
-                          decoration: InputDecoration(
-                            labelText: 'MM/YY',
-                            labelStyle: TextStyle(color: Colors.white54),
-                            border: InputBorder.none,
-                          ),
-                          keyboardType: TextInputType.datetime,
-                        ),
-                      ),
-                      SizedBox(width: 16),
-                      Expanded(
-                        child: TextField(
-                          style: TextStyle(color: Colors.white),
-                          decoration: InputDecoration(
-                            labelText: 'CVC',
-                            labelStyle: TextStyle(color: Colors.white54),
-                            border: InputBorder.none,
-                          ),
-                          keyboardType: TextInputType.number,
-                          obscureText: true,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Amount: \$${amount.toStringAsFixed(2)} $currency',
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text(
-              'Cancel',
-              style: TextStyle(color: Colors.white54),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Pay Now', style: TextStyle(color: Colors.white)),
-          ),
-        ],
-      ),
-    );
-
-    if (result != true) {
-      throw Exception('Payment cancelled');
-    }
-  }
-
   void _showErrorDialog(BuildContext context, String message) {
+    if (!context.mounted) return;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -170,42 +148,5 @@ class StripeService {
         ],
       ),
     );
-  }
-
-  /// Initialize Stripe Payment Sheet with real PaymentIntent
-  /// Use this when you have a backend
-  Future<bool> initPaymentSheet({
-    required String paymentIntentClientSecret,
-    required String merchantDisplayName,
-    String? customerId,
-    String? customerEphemeralKeySecret,
-  }) async {
-    try {
-      await Stripe.instance.initPaymentSheet(
-        paymentSheetParameters: SetupPaymentSheetParameters(
-          paymentIntentClientSecret: paymentIntentClientSecret,
-          merchantDisplayName: merchantDisplayName,
-          customerId: customerId,
-          customerEphemeralKeySecret: customerEphemeralKeySecret,
-          style: ThemeMode.dark,
-          appearance: const PaymentSheetAppearance(
-            colors: PaymentSheetAppearanceColors(
-              background: Color(0xFF1A1A2E),
-              primary: Colors.red,
-              componentBackground: Color(0xFF090909),
-              componentText: Colors.white,
-              secondaryText: Colors.white54,
-              placeholderText: Colors.white30,
-            ),
-          ),
-        ),
-      );
-
-      await Stripe.instance.presentPaymentSheet();
-      return true;
-    } catch (e) {
-      debugPrint('Stripe payment sheet error: $e');
-      return false;
-    }
   }
 }
