@@ -41,16 +41,24 @@ class _BannerCarouselState extends State<BannerCarousel> {
     return Stack(
       children: [
         // -------- BLURRED BACKGROUND --------
+        // -------- BLURRED BACKGROUND --------
         SizedBox(
           width: double.infinity,
           height: 820,
           child: Stack(
             fit: StackFit.expand,
             children: [
-              Image.network(
-                backdropImage,
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Container(color: Colors.black),
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 500),
+                child: CachedNetworkImage(
+                  key: ValueKey(backdropImage),
+                  imageUrl: backdropImage,
+                  fit: BoxFit.cover,
+                  height: 820,
+                  width: double.infinity,
+                  errorWidget: (_, __, ___) => Container(color: Colors.black),
+                  placeholder: (_, __) => Container(color: Colors.black),
+                ),
               ),
               // blur overlay
               BackdropFilter(
