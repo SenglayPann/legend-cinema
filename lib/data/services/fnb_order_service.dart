@@ -1,52 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../models/fnb_model.dart';
-
-/// Model for an FnB item with quantity in an order
-class FnbOrderItem {
-  final String fnbId;
-  final String name;
-  final double price;
-  final String imageUrl;
-  final int quantity;
-
-  FnbOrderItem({
-    required this.fnbId,
-    required this.name,
-    required this.price,
-    required this.imageUrl,
-    required this.quantity,
-  });
-
-  factory FnbOrderItem.fromFnbModel(FnbModel model, int quantity) {
-    return FnbOrderItem(
-      fnbId: model.id,
-      name: model.name,
-      price: model.price,
-      imageUrl: model.imageUrl,
-      quantity: quantity,
-    );
-  }
-
-  Map<String, dynamic> toMap() => {
-    'fnbId': fnbId,
-    'name': name,
-    'price': price,
-    'imageUrl': imageUrl,
-    'quantity': quantity,
-  };
-
-  factory FnbOrderItem.fromMap(Map<String, dynamic> data) {
-    return FnbOrderItem(
-      fnbId: data['fnbId'] ?? '',
-      name: data['name'] ?? '',
-      price: (data['price'] ?? 0).toDouble(),
-      imageUrl: data['imageUrl'] ?? '',
-      quantity: data['quantity'] ?? 1,
-    );
-  }
-
-  double get totalPrice => price * quantity;
-}
+import '../models/fnb_order_model.dart';
+// Removed unused fnb_model import
 
 /// Service for managing FnB orders in Firestore
 class FnbOrderService {
@@ -106,6 +60,33 @@ class FnbOrderService {
     } catch (e) {
       print('Error updating FnB order status: $e');
       return false;
+    }
+  }
+
+  /// Get standalone FnB orders (not attached to any booking) for a user
+  Future<List<FnbOrderModel>> getUserStandaloneFnbOrders(String userId) async {
+    try {
+      final snapshot = await _firestore
+          .collection('fnb_orders')
+          .where('userId', isEqualTo: userId)
+          // Ideally we would check for bookingId == null, but Firestore queries on null can be tricky if the field is missing.
+          // However, we explicitly save it as null if not present in createFnbOrder (actually we just omit it or save null).
+          // Let's filter client-side if needed, but 'bookingId' == null usually works if field exists and is null.
+          // Or just fetch all and filter client side since user won't have millions of orders.
+          .get();
+
+      final orders = snapshot.docs
+          .map((doc) => FnbOrderModel.fromMap(doc.data(), doc.id))
+          .where((order) => order.bookingId == null || order.bookingId!.isEmpty)
+          .toList();
+
+      // Sort by creation date descending
+      orders.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+      return orders;
+    } catch (e) {
+      print('Error fetching user FnB orders: $e');
+      return [];
     }
   }
 }

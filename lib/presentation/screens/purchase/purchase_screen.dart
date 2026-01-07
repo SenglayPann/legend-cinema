@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import '../../../data/models/booking_model.dart';
+import '../../../data/models/fnb_order_model.dart';
 import '../../../data/services/booking_service.dart';
+import '../../../data/services/fnb_order_service.dart';
 import '../../state/auth_state.dart';
 import '../../widgets/app_scaffold.dart';
 import '../../widgets/glass_container.dart';
+import './booking_detail_screen.dart';
+import './fnb_order_detail_screen.dart';
 
 class PurchaseScreen extends StatefulWidget {
   const PurchaseScreen({super.key});
@@ -18,9 +21,13 @@ class _PurchaseScreenState extends State<PurchaseScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final BookingService _bookingService = BookingService();
+  final FnbOrderService _fnbOrderService = FnbOrderService();
 
   List<BookingModel> _upcomingBookings = [];
   List<BookingModel> _historyBookings = [];
+  List<FnbOrderModel> _activeFnbOrders = [];
+  List<FnbOrderModel> _historyFnbOrders = [];
+
   bool _isLoading = true;
 
   @override
@@ -29,7 +36,7 @@ class _PurchaseScreenState extends State<PurchaseScreen>
     _tabController = TabController(length: 2, vsync: this);
     // Defer to after the first frame to ensure context is ready
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _fetchBookings();
+      _fetchData();
     });
   }
 
@@ -39,53 +46,62 @@ class _PurchaseScreenState extends State<PurchaseScreen>
     super.dispose();
   }
 
-  Future<void> _fetchBookings() async {
+  Future<void> _fetchData() async {
     final authState = context.read<AuthState>();
     final userId = authState.currentUser?.id;
 
-    print('userId: $userId');
-
     if (userId == null) {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) setState(() => _isLoading = false);
       return;
     }
 
     try {
+      // Fetch Bookings
       final bookings = await _bookingService.getUserBookings(userId);
-
-      print('bookings: $bookings');
       final now = DateTime.now();
 
-      // Separate upcoming and history based on showDateTime
-      final upcoming = <BookingModel>[];
-      final history = <BookingModel>[];
+      final upcomingBookings = <BookingModel>[];
+      final historyBookings = <BookingModel>[];
 
       for (var booking in bookings) {
         final showDate = booking.showDateTime.toDate();
         if (showDate.isAfter(now) && booking.bookingStatus == 'confirmed') {
-          upcoming.add(booking);
+          upcomingBookings.add(booking);
         } else {
-          history.add(booking);
+          historyBookings.add(booking);
         }
       }
 
-      // Sort upcoming by date (nearest first)
-      upcoming.sort((a, b) => a.showDateTime.compareTo(b.showDateTime));
-      // Sort history by date (most recent first)
-      history.sort((a, b) => b.showDateTime.compareTo(a.showDateTime));
+      upcomingBookings.sort((a, b) => a.showDateTime.compareTo(b.showDateTime));
+      historyBookings.sort((a, b) => b.showDateTime.compareTo(a.showDateTime));
 
-      setState(() {
-        _upcomingBookings = upcoming;
-        _historyBookings = history;
-        _isLoading = false;
-      });
+      // Fetch F&B Orders
+      final fnbOrders = await _fnbOrderService.getUserStandaloneFnbOrders(
+        userId,
+      );
+      final activeFnb = <FnbOrderModel>[];
+      final historyFnb = <FnbOrderModel>[];
+
+      for (var order in fnbOrders) {
+        if (['pending', 'preparing', 'ready'].contains(order.status)) {
+          activeFnb.add(order);
+        } else {
+          historyFnb.add(order);
+        }
+      }
+
+      if (mounted) {
+        setState(() {
+          _upcomingBookings = upcomingBookings;
+          _historyBookings = historyBookings;
+          _activeFnbOrders = activeFnb;
+          _historyFnbOrders = historyFnb;
+          _isLoading = false;
+        });
+      }
     } catch (e) {
-      debugPrint('Error fetching bookings: $e');
-      setState(() {
-        _isLoading = false;
-      });
+      debugPrint('Error fetching data: $e');
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -122,7 +138,8 @@ class _PurchaseScreenState extends State<PurchaseScreen>
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const Text('Upcoming'),
-                      if (_upcomingBookings.isNotEmpty) ...[
+                      if (_upcomingBookings.isNotEmpty ||
+                          _activeFnbOrders.isNotEmpty) ...[
                         const SizedBox(width: 6),
                         Container(
                           padding: const EdgeInsets.symmetric(
@@ -134,7 +151,7 @@ class _PurchaseScreenState extends State<PurchaseScreen>
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Text(
-                            '${_upcomingBookings.length}',
+                            '${_upcomingBookings.length + _activeFnbOrders.length}',
                             style: const TextStyle(fontSize: 12),
                           ),
                         ),
@@ -157,9 +174,19 @@ class _PurchaseScreenState extends State<PurchaseScreen>
                     controller: _tabController,
                     children: [
                       // Upcoming Tab
-                      _buildBookingList(_upcomingBookings, isUpcoming: true),
+                      _buildListContent(
+                        bookings: _upcomingBookings,
+                        fnbOrders: _activeFnbOrders,
+                        isUpcoming: true,
+                        emptyMessage: 'No booking/order found',
+                      ),
                       // History Tab
-                      _buildBookingList(_historyBookings, isUpcoming: false),
+                      _buildListContent(
+                        bookings: _historyBookings,
+                        fnbOrders: _historyFnbOrders,
+                        isUpcoming: false,
+                        emptyMessage: 'No history found',
+                      ),
                     ],
                   ),
           ),
@@ -168,11 +195,13 @@ class _PurchaseScreenState extends State<PurchaseScreen>
     );
   }
 
-  Widget _buildBookingList(
-    List<BookingModel> bookings, {
+  Widget _buildListContent({
+    required List<BookingModel> bookings,
+    required List<FnbOrderModel> fnbOrders,
     required bool isUpcoming,
+    required String emptyMessage,
   }) {
-    if (bookings.isEmpty) {
+    if (bookings.isEmpty && fnbOrders.isEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -184,194 +213,308 @@ class _PurchaseScreenState extends State<PurchaseScreen>
             ),
             const SizedBox(height: 16),
             Text(
-              isUpcoming ? 'No upcoming tickets' : 'No booking history',
+              emptyMessage,
               style: const TextStyle(color: Colors.white54, fontSize: 16),
             ),
-            if (isUpcoming) ...[
-              const SizedBox(height: 8),
-              const Text(
-                'Book a movie to see your tickets here',
-                style: TextStyle(color: Colors.white38, fontSize: 14),
-              ),
-            ],
           ],
         ),
       );
     }
 
     return RefreshIndicator(
-      onRefresh: _fetchBookings,
+      onRefresh: _fetchData,
       color: Colors.red,
-      child: ListView.builder(
+      child: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        itemCount: bookings.length,
-        itemBuilder: (context, index) {
-          return _buildBookingCard(bookings[index], isUpcoming: isUpcoming);
-        },
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (bookings.isNotEmpty) ...[
+              if (fnbOrders.isNotEmpty)
+                const Padding(
+                  padding: EdgeInsets.only(bottom: 8.0, top: 8.0),
+                  child: Text(
+                    'Movie Tickets',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ...bookings
+                  .map(
+                    (booking) =>
+                        _buildBookingCard(booking, isUpcoming: isUpcoming),
+                  )
+                  .toList(),
+            ],
+
+            if (bookings.isNotEmpty && fnbOrders.isNotEmpty)
+              const SizedBox(height: 16),
+
+            if (fnbOrders.isNotEmpty) ...[
+              if (bookings.isNotEmpty)
+                const Padding(
+                  padding: EdgeInsets.only(bottom: 8.0),
+                  child: Text(
+                    'F&B Orders',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ...fnbOrders.map((order) => _buildFnbOrderCard(order)).toList(),
+            ],
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildBookingCard(BookingModel booking, {required bool isUpcoming}) {
-    return GlassContainer(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: EdgeInsets.zero,
-      borderRadius: BorderRadius.circular(16),
-      child: Column(
-        children: [
-          // Movie Info Row
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Movie Poster
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Container(
-                    width: 70,
-                    height: 100,
-                    color: Colors.grey[800],
-                    child: CachedNetworkImage(
-                      imageUrl: '', // moviePosterUrl not in BookingModel
-                      fit: BoxFit.cover,
-                      placeholder: (_, __) => Container(
-                        color: Colors.grey[800],
-                        child: const Icon(
-                          Icons.movie,
-                          color: Colors.white24,
-                          size: 32,
-                        ),
-                      ),
-                      errorWidget: (_, __, ___) => Container(
-                        color: Colors.grey[800],
-                        child: const Icon(
-                          Icons.movie,
-                          color: Colors.white24,
-                          size: 32,
-                        ),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => BookingDetailScreen(booking: booking),
+          ),
+        );
+      },
+      child: GlassContainer(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: EdgeInsets.zero,
+        borderRadius: BorderRadius.circular(16),
+        child: Column(
+          children: [
+            // Movie Info Row
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Movie Poster
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Container(
+                      width: 70,
+                      height: 100,
+                      color: Colors.grey[800],
+                      child: const Icon(
+                        Icons.movie,
+                        color: Colors.white24,
+                        size: 32,
                       ),
                     ),
                   ),
+                  const SizedBox(width: 12),
+
+                  // Movie Details
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          booking.movieTitle,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          booking.cinemaName,
+                          style: const TextStyle(
+                            color: Colors.white54,
+                            fontSize: 12,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            _buildInfoChip(
+                              Icons.calendar_today,
+                              booking.showDate,
+                            ),
+                            const SizedBox(width: 8),
+                            _buildInfoChip(Icons.access_time, booking.showTime),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            _buildInfoChip(
+                              Icons.chair,
+                              'Hall ${booking.hallNumber}',
+                            ),
+                            const SizedBox(width: 8),
+                            _buildInfoChip(
+                              Icons.confirmation_number,
+                              '${booking.seatCount} seat${booking.seatCount > 1 ? 's' : ''}',
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Divider
+            Container(
+              height: 1,
+              margin: const EdgeInsets.symmetric(horizontal: 12),
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: Colors.white.withOpacity(0.1),
+                    width: 1,
+                    style: BorderStyle.solid,
+                  ),
+                ),
+              ),
+            ),
+
+            // Bottom Row
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Booking Code
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.qr_code,
+                        color: Colors.white54,
+                        size: 16,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        booking.bookingCode,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  // Status Badge
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: _getStatusColor(booking.bookingStatus, isUpcoming),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      _getStatusText(booking.bookingStatus, isUpcoming),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFnbOrderCard(FnbOrderModel order) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => FnbOrderDetailScreen(order: order)),
+        );
+      },
+      child: GlassContainer(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(12),
+        borderRadius: BorderRadius.circular(16),
+        child: Column(
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Icon
+                Container(
+                  width: 50,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(
+                    Icons.fastfood,
+                    color: Colors.white,
+                    size: 24,
+                  ),
                 ),
                 const SizedBox(width: 12),
-
-                // Movie Details
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        booking.movieTitle,
+                        order.cinemaName,
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        booking.cinemaName,
+                        '${order.items.length} items • \$${order.totalAmount.toStringAsFixed(2)}',
                         style: const TextStyle(
-                          color: Colors.white54,
-                          fontSize: 12,
+                          color: Colors.white70,
+                          fontSize: 13,
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          _buildInfoChip(
-                            Icons.calendar_today,
-                            booking.showDate,
-                          ),
-                          const SizedBox(width: 8),
-                          _buildInfoChip(Icons.access_time, booking.showTime),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          _buildInfoChip(
-                            Icons.chair,
-                            'Hall ${booking.hallNumber}',
-                          ),
-                          const SizedBox(width: 8),
-                          _buildInfoChip(
-                            Icons.confirmation_number,
-                            '${booking.seatCount} seat${booking.seatCount > 1 ? 's' : ''}',
-                          ),
-                        ],
                       ),
                     ],
                   ),
                 ),
-              ],
-            ),
-          ),
-
-          // Divider with ticket tear effect
-          Container(
-            height: 1,
-            margin: const EdgeInsets.symmetric(horizontal: 12),
-            decoration: BoxDecoration(
-              border: Border(
-                bottom: BorderSide(
-                  color: Colors.white.withOpacity(0.1),
-                  width: 1,
-                  style: BorderStyle.solid,
-                ),
-              ),
-            ),
-          ),
-
-          // Bottom Row: Booking Code & Status
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Booking Code
-                Row(
-                  children: [
-                    const Icon(Icons.qr_code, color: Colors.white54, size: 16),
-                    const SizedBox(width: 4),
-                    Text(
-                      booking.bookingCode,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1,
-                      ),
-                    ),
-                  ],
-                ),
-
-                // Status Badge
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 10,
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: _getStatusColor(booking.bookingStatus, isUpcoming),
+                    color: _getFnbStatusColor(order.status),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
-                    _getStatusText(booking.bookingStatus, isUpcoming),
+                    order.status.toUpperCase(),
                     style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
               ],
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -416,6 +559,19 @@ class _PurchaseScreenState extends State<PurchaseScreen>
         return 'Pending';
       default:
         return status.toUpperCase();
+    }
+  }
+
+  Color _getFnbStatusColor(String status) {
+    switch (status) {
+      case 'ready':
+      case 'collected':
+        return Colors.green;
+      case 'pending':
+      case 'preparing':
+        return Colors.orange;
+      default:
+        return Colors.grey;
     }
   }
 }

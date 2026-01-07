@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/booking_model.dart';
 import '../models/fnb_model.dart';
+import '../models/fnb_order_model.dart';
 import '../models/showtime_model.dart';
 import '../../presentation/state/seat_selection_state.dart';
 import 'fnb_order_service.dart';

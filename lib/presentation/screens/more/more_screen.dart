@@ -5,6 +5,7 @@ import '../../state/auth_state.dart';
 import '../../widgets/app_scaffold.dart';
 import '../../widgets/custom_button.dart';
 import '../../widgets/custom_alert.dart';
+import '../../../core/constants/app_routes.dart';
 
 class MoreScreen extends StatelessWidget {
   const MoreScreen({super.key});
@@ -225,7 +226,7 @@ class MoreScreen extends StatelessWidget {
                   context,
                   title: "About us",
                   icon: Icons.info,
-                  route: null,
+                  route: AppRoutes.aboutUs,
                 ),
                 _menuTile(
                   context,
@@ -237,13 +238,13 @@ class MoreScreen extends StatelessWidget {
                   context,
                   title: "Privacy Policy",
                   icon: Icons.privacy_tip,
-                  route: null,
+                  route: AppRoutes.privacyPolicy,
                 ),
                 _menuTile(
                   context,
                   title: "Term & Conditions",
                   icon: Icons.article,
-                  route: null,
+                  route: AppRoutes.termsConditions,
                 ),
                 if (isLoggedIn)
                   _menuTile(

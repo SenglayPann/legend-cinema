@@ -40,5 +40,18 @@
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.717156180391-fur2hl4cbgepttp9o1pdagdusbmmnnuf</string>
+			</array>
+		</dict>
+	</array>
+	<key>NSFaceIDUsageDescription</key>
+	<string>We use FaceID to authenticate you easily.</string>
 </dict>
 </plist>

@@ -16,6 +16,9 @@ import 'package:legend_cinema/presentation/screens/main/main_screen.dart';
 import 'package:legend_cinema/presentation/screens/fnb_checkout/checkout_screen.dart';
 import 'package:legend_cinema/presentation/screens/fnb_checkout/order_detail_screen.dart';
 import 'package:legend_cinema/data/models/showtime_model.dart';
+import 'package:legend_cinema/presentation/screens/more/about_us_screen.dart';
+import 'package:legend_cinema/presentation/screens/more/privacy_policy_screen.dart';
+import 'package:legend_cinema/presentation/screens/more/terms_and_conditions_screen.dart';
 
 class AppRouter {
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
@@ -93,6 +96,17 @@ class AppRouter {
 
       case AppRoutes.example:
         return MaterialPageRoute(builder: (_) => const ExampleScreen());
+
+      case AppRoutes.aboutUs:
+        return MaterialPageRoute(builder: (_) => const AboutUsScreen());
+
+      case AppRoutes.privacyPolicy:
+        return MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen());
+
+      case AppRoutes.termsConditions:
+        return MaterialPageRoute(
+          builder: (_) => const TermsAndConditionsScreen(),
+        );
 
       default:
         return _errorRoute(settings);

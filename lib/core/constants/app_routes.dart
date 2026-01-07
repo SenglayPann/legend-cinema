@@ -17,4 +17,7 @@ class AppRoutes {
   static const String checkout = '/checkout';
   static const String orderDetail = '/orderDetail';
   static const String movieDetail = '/movieDetail';
+  static const String aboutUs = '/aboutUs';
+  static const String privacyPolicy = '/privacyPolicy';
+  static const String termsConditions = '/termsConditions';
 }
