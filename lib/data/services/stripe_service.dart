@@ -1,8 +1,11 @@
 import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+import '../../presentation/state/auth_state.dart';
 
 /// Service for handling Stripe payments
 class StripeService {
@@ -29,6 +32,7 @@ class StripeService {
   Future<Map<String, dynamic>?> _createPaymentIntent(
     double amount,
     String currency,
+    String userId,
   ) async {
     try {
       // Ngrok URL - Works anywhere (Mobile Data, different Wi-Fi)
@@ -41,7 +45,11 @@ class StripeService {
       final response = await http.post(
         Uri.parse(backendUrl),
         headers: {'Content-Type': 'application/json'},
-        body: json.encode({'amount': amountInCents, 'currency': currency}),
+        body: json.encode({
+          'amount': amountInCents,
+          'currency': currency,
+          'userId': userId,
+        }),
       );
 
       if (response.statusCode == 200) {
@@ -103,10 +111,13 @@ class StripeService {
     required double amount,
     required String currency,
     required BuildContext context,
+    required List<Map<String, dynamic>> items,
   }) async {
     try {
+      final userId =
+          Provider.of<AuthState>(context, listen: false).currentUser?.id ?? '';
       // Step 1: Create Payment Intent
-      final data = await _createPaymentIntent(amount, currency);
+      final data = await _createPaymentIntent(amount, currency, userId);
       if (data == null || !data.containsKey('clientSecret')) {
         _showErrorDialog(
           context,
@@ -125,11 +136,85 @@ class StripeService {
 
       // Step 3: Present Sheet
       final isSuccess = await _presentPaymentSheet();
+
+      if (isSuccess) {
+        // 1. Save Notification Locally
+        final notificationId = await _saveNotification(userId, items, amount);
+
+        // 2. Notify Backend (with ID)
+        if (notificationId != null) {
+          await _notifyPaymentSuccess(userId, notificationId);
+        }
+      }
+
       return isSuccess;
     } catch (e) {
       _showErrorDialog(context, 'An unexpected error occurred: $e');
       return false;
     }
+  }
+
+  // Save notification to Firestore and return the ID
+  Future<String?> _saveNotification(
+    String userId,
+    List<Map<String, dynamic>> items,
+    double amount,
+  ) async {
+    try {
+      final docRef = await FirebaseFirestore.instance
+          .collection('notifications')
+          .add({
+            'userId': userId,
+            'title': 'Payment Successful',
+            'body': _buildNotificationBody(items, amount),
+            'isRead': false,
+            'createdAt': FieldValue.serverTimestamp(),
+            'payload': {'items': items, 'total': amount},
+          });
+      return docRef.id;
+    } catch (e) {
+      debugPrint('Error saving notification: $e');
+      return null;
+    }
+  }
+
+  Future<void> _notifyPaymentSuccess(
+    String userId,
+    String notificationId,
+  ) async {
+    try {
+      const backendUrl =
+          'https://sharita-oligopsonistic-unintently.ngrok-free.dev/payment-success';
+      await http.post(
+        Uri.parse(backendUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({'userId': userId, 'notificationId': notificationId}),
+      );
+    } catch (e) {
+      debugPrint('Failed to notify backend of success: $e');
+    }
+  }
+
+  String _buildNotificationBody(
+    List<Map<String, dynamic>> items,
+    double amount,
+  ) {
+    if (items.isEmpty) return 'Payment Successful';
+    final buffer = StringBuffer();
+    // List first 2 items then "+ X more"
+    for (int i = 0; i < items.length; i++) {
+      if (i > 0) buffer.write(', ');
+      final item = items[i];
+      final name = item['name'] ?? 'Item';
+      final qty = item['qty'] ?? 1;
+      // If name already contains (...) like "Tickets (2)" don't add qty, otherwise add xN
+      if (name.toString().contains('(')) {
+        buffer.write(name);
+      } else {
+        buffer.write('$name x$qty');
+      }
+    }
+    return '${buffer.toString()}. Total: \$${amount.toStringAsFixed(2)}';
   }
 
   void _showErrorDialog(BuildContext context, String message) {

@@ -20,4 +20,6 @@ class AppRoutes {
   static const String aboutUs = '/aboutUs';
   static const String privacyPolicy = '/privacyPolicy';
   static const String termsConditions = '/termsConditions';
+  static const String notificationDetail = '/notification-detail';
+  static const String notificationList = '/notifications';
 }

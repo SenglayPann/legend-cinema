@@ -3,6 +3,7 @@ import 'package:legend_cinema/core/constants/app_routes.dart';
 import 'package:legend_cinema/presentation/screens/cinema/cinema_screen.dart';
 import 'package:legend_cinema/presentation/screens/fnb/fnb_screen.dart';
 import 'package:legend_cinema/presentation/screens/more/more_screen.dart';
+import 'package:legend_cinema/presentation/screens/notification/notification_list_screen.dart';
 import 'package:legend_cinema/presentation/screens/offer/offer_screen.dart';
 import 'package:legend_cinema/presentation/screens/more/edit_profile_screen.dart';
 import 'package:legend_cinema/presentation/screens/login/login_screen.dart';
@@ -19,6 +20,7 @@ import 'package:legend_cinema/data/models/showtime_model.dart';
 import 'package:legend_cinema/presentation/screens/more/about_us_screen.dart';
 import 'package:legend_cinema/presentation/screens/more/privacy_policy_screen.dart';
 import 'package:legend_cinema/presentation/screens/more/terms_and_conditions_screen.dart';
+import 'package:legend_cinema/presentation/screens/notification/notification_detail_screen.dart';
 
 class AppRouter {
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
@@ -106,6 +108,20 @@ class AppRouter {
       case AppRoutes.termsConditions:
         return MaterialPageRoute(
           builder: (_) => const TermsAndConditionsScreen(),
+        );
+
+      case AppRoutes.notificationDetail:
+        final args = settings.arguments as String?;
+        if (args != null) {
+          return MaterialPageRoute(
+            builder: (_) => NotificationDetailScreen(notificationId: args),
+          );
+        }
+        return _errorRoute(settings);
+
+      case AppRoutes.notificationList:
+        return MaterialPageRoute(
+          builder: (_) => const NotificationListScreen(),
         );
 
       default:

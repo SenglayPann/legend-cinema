@@ -573,10 +573,21 @@ class _FnbOrderSummaryScreenState extends State<FnbOrderSummaryScreen> {
       switch (_selectedMethod) {
         case PaymentMethod.card:
           final stripeService = StripeService();
+
+          // Prepare items for notification from CartState
+          final items = cart.items.values.map((cartItem) {
+            return {
+              'name': cartItem.item.name,
+              'qty': cartItem.quantity,
+              'price': cartItem.item.price * cartItem.quantity,
+            };
+          }).toList();
+
           paymentSuccess = await stripeService.processPayment(
             amount: cart.totalAmount,
             currency: 'USD',
             context: context,
+            items: items,
           );
           break;
 

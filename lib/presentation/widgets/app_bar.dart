@@ -1,5 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
+import '../../presentation/state/auth_state.dart';
+import '../../core/constants/app_routes.dart';
 
 class HomeAppBar extends StatelessWidget {
   final ValueListenable<bool> isScrolledListenable;
@@ -37,10 +41,82 @@ class HomeAppBar extends StatelessWidget {
                   Positioned(
                     right: 0,
                     child: Row(
-                      children: const [
-                        Icon(Icons.search, color: Colors.white),
-                        SizedBox(width: 16),
-                        Icon(Icons.notifications_none, color: Colors.white),
+                      children: [
+                        const Icon(Icons.search, color: Colors.white),
+                        const SizedBox(width: 16),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(
+                              context,
+                              AppRoutes.notificationList,
+                            );
+                          },
+                          child: Stack(
+                            children: [
+                              const Padding(
+                                padding: EdgeInsets.all(4.0),
+                                child: Icon(
+                                  Icons.notifications_none,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              // Notification Badge
+                              StreamBuilder<QuerySnapshot>(
+                                stream: () {
+                                  try {
+                                    final userId = Provider.of<AuthState>(
+                                      context,
+                                      listen: false,
+                                    ).currentUser?.id;
+                                    if (userId == null) {
+                                      return const Stream<
+                                        QuerySnapshot
+                                      >.empty();
+                                    }
+                                    return FirebaseFirestore.instance
+                                        .collection('notifications')
+                                        .where('userId', isEqualTo: userId)
+                                        .where('isRead', isEqualTo: false)
+                                        .snapshots();
+                                  } catch (e) {
+                                    return const Stream<QuerySnapshot>.empty();
+                                  }
+                                }(),
+                                builder: (context, snapshot) {
+                                  if (!snapshot.hasData ||
+                                      snapshot.data!.docs.isEmpty) {
+                                    return const SizedBox.shrink();
+                                  }
+                                  final count = snapshot.data!.docs.length;
+                                  return Positioned(
+                                    right: 0,
+                                    top: 0,
+                                    child: Container(
+                                      padding: const EdgeInsets.all(4),
+                                      decoration: const BoxDecoration(
+                                        color: Colors.red,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      constraints: const BoxConstraints(
+                                        minWidth: 16,
+                                        minHeight: 16,
+                                      ),
+                                      child: Text(
+                                        count > 9 ? '9+' : count.toString(),
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   ),

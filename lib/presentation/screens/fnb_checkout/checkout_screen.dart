@@ -514,10 +514,35 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         case PaymentMethod.card:
           paymentMethodName = 'card';
           final stripeService = StripeService();
+          final state = context.read<SeatSelectionState>();
+
+          // Prepare items for notification
+          final items = <Map<String, dynamic>>[];
+          // Tickets
+          if (state.selectedCount > 0) {
+            items.add({
+              'name': 'Tickets (${state.selectedCount})',
+              'qty': state.selectedCount,
+              'price': state.totalPrice,
+            });
+          }
+          // F&B
+          for (final item in state.fnbItems.values) {
+            final qty = state.fnbQuantities[item.id] ?? 0;
+            if (qty > 0) {
+              items.add({
+                'name': item.name,
+                'qty': qty,
+                'price': item.price * qty,
+              });
+            }
+          }
+
           paymentSuccess = await stripeService.processPayment(
             amount: amount,
             currency: 'USD',
             context: context,
+            items: items,
           );
           break;
 

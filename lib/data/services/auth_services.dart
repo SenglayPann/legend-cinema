@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/user_model.dart'; // adjust import path if needed
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 class AuthServices {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -55,6 +56,8 @@ class AuthServices {
 
     if (userSnapshot.exists) {
       // Existing user: return the data from Firestore.
+      // Link OneSignal User
+      OneSignal.login(user.uid);
       return UserModel.fromMap(userSnapshot.data()!, user.uid);
     } else {
       // New user: create a new user and return it.
@@ -69,6 +72,8 @@ class AuthServices {
         bookingCount: 0,
       );
       await userDocRef.set(newUser.toMap());
+      // Link OneSignal User
+      OneSignal.login(user.uid);
       return newUser;
     }
   }
@@ -96,6 +101,7 @@ class AuthServices {
   /// Sign out the current user
   Future<void> signOut() async {
     await _auth.signOut();
+    OneSignal.logout();
   }
 
   /// Update user data in Firestore

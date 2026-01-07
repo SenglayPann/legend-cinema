@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:legend_cinema/core/themes/screen_transition.dart';
 import 'package:legend_cinema/presentation/state/auth_state.dart';
 import 'package:legend_cinema/presentation/routes/app_router.dart';
@@ -14,6 +15,28 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await StripeService.initialize();
+
+  // OneSignal Initialization
+  // REMOVE THIS LINE IF YOU DON'T HAVE AN APP ID YET
+  // OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
+  OneSignal.initialize("a4621ef1-ec80-407f-95ca-c9f89b731e1c");
+  // The promptForPushNotificationsWithUserResponse function will show the iOS or Android push notification prompt.
+  // We recommend removing the following code and instead using an In-App Message to prompt for notification permission
+  OneSignal.Notifications.requestPermission(true);
+
+  // Handle Notification Click
+  OneSignal.Notifications.addClickListener((event) {
+    final data = event.notification.additionalData;
+    if (data != null && data.containsKey('id')) {
+      final notificationId = data['id'];
+      // Reset navigation stack to root (Home) then push detail
+      navigatorKey.currentState?.popUntil((route) => route.isFirst);
+      navigatorKey.currentState?.pushNamed(
+        AppRoutes.notificationDetail,
+        arguments: notificationId,
+      );
+    }
+  });
 
   // 1. Create and initialize a SINGLE instance of AuthState
   final authState = AuthState();
