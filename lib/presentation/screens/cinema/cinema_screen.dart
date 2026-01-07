@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../widgets/app_scaffold.dart';
+import '../../../core/constants/app_routes.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../data/models/cinema_model.dart';
@@ -156,106 +157,116 @@ class _CinemaScreenState extends State<CinemaScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       itemBuilder: (context, index) {
                         final cinema = _filteredCinemas[index];
-                        return Container(
-                          margin: const EdgeInsets.only(bottom: 16),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF090909),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: Colors.white.withOpacity(0.5),
-                              width: 0.5,
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(
+                              context,
+                              AppRoutes.cinemaDetail,
+                              arguments: cinema,
+                            );
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.only(bottom: 16),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF090909),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: Colors.white.withOpacity(0.5),
+                                width: 0.5,
+                              ),
                             ),
-                          ),
-                          clipBehavior: Clip.antiAlias,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Cinema Image (5:3 ratio)
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: AspectRatio(
-                                  aspectRatio: 5 / 3,
-                                  child: CachedNetworkImage(
-                                    imageUrl: cinema.imageUrl,
-                                    imageBuilder: (context, imageProvider) =>
-                                        Container(
-                                          decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(
-                                              8,
-                                            ),
-                                            image: DecorationImage(
-                                              image: imageProvider,
-                                              fit: BoxFit.cover,
+                            clipBehavior: Clip.antiAlias,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Cinema Image (5:3 ratio)
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: AspectRatio(
+                                    aspectRatio: 5 / 3,
+                                    child: CachedNetworkImage(
+                                      imageUrl: cinema.imageUrl,
+                                      imageBuilder: (context, imageProvider) =>
+                                          Container(
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                              image: DecorationImage(
+                                                image: imageProvider,
+                                                fit: BoxFit.cover,
+                                              ),
                                             ),
                                           ),
+                                      placeholder: (context, url) => Container(
+                                        decoration: BoxDecoration(
+                                          color: Colors.grey[900],
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
                                         ),
-                                    placeholder: (context, url) => Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey[900],
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      child: const Center(
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
+                                        child: const Center(
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                          ),
                                         ),
                                       ),
+                                      errorWidget: (context, url, error) =>
+                                          Container(
+                                            decoration: BoxDecoration(
+                                              color: Colors.grey[900],
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                            child: const Icon(
+                                              Icons.error,
+                                              color: Colors.white,
+                                            ),
+                                          ),
                                     ),
-                                    errorWidget: (context, url, error) =>
-                                        Container(
-                                          decoration: BoxDecoration(
-                                            color: Colors.grey[900],
-                                            borderRadius: BorderRadius.circular(
-                                              8,
-                                            ),
-                                          ),
-                                          child: const Icon(
-                                            Icons.error,
-                                            color: Colors.white,
-                                          ),
-                                        ),
                                   ),
                                 ),
-                              ),
-                              // Cinema Name and Location
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                  left: 16.0,
-                                  right: 16.0,
-                                  bottom: 16.0,
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      cinema.name,
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w900,
+                                // Cinema Name and Location
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                    left: 16.0,
+                                    right: 16.0,
+                                    bottom: 16.0,
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        cinema.name,
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w900,
+                                        ),
                                       ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Row(
-                                      children: [
-                                        const Icon(
-                                          Icons.location_on,
-                                          color: Colors.red,
-                                          size: 16,
-                                        ),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          cinema.city,
-                                          style: const TextStyle(
-                                            color: Colors.white70,
-                                            fontSize: 14,
+                                      const SizedBox(height: 8),
+                                      Row(
+                                        children: [
+                                          const Icon(
+                                            Icons.location_on,
+                                            color: Colors.red,
+                                            size: 16,
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            cinema.city,
+                                            style: const TextStyle(
+                                              color: Colors.white70,
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         );
                       },

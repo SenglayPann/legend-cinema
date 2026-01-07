@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:legend_cinema/core/constants/app_routes.dart';
+import 'package:legend_cinema/data/models/cinema_model.dart';
+import 'package:legend_cinema/presentation/screens/cinema/cinema_detail_screen.dart';
 import 'package:legend_cinema/presentation/screens/cinema/cinema_screen.dart';
 import 'package:legend_cinema/presentation/screens/fnb/fnb_screen.dart';
 import 'package:legend_cinema/presentation/screens/more/more_screen.dart';
@@ -9,6 +11,7 @@ import 'package:legend_cinema/presentation/screens/more/edit_profile_screen.dart
 import 'package:legend_cinema/presentation/screens/login/login_screen.dart';
 import 'package:legend_cinema/presentation/screens/otpVerification/otp_verification.dart';
 import 'package:legend_cinema/presentation/screens/splash/splash_screen.dart';
+import 'package:legend_cinema/presentation/screens/search/search_screen.dart';
 import 'package:legend_cinema/presentation/screens/home/home_screen.dart';
 import 'package:legend_cinema/presentation/screens/signUp/sign_up_screen.dart';
 import 'package:legend_cinema/presentation/screens/signUpInformation/sign_up_information_screen.dart';
@@ -67,8 +70,17 @@ class AppRouter {
       case AppRoutes.editProfile:
         return MaterialPageRoute(builder: (_) => const EditProfileScreen());
 
+      case AppRoutes.search:
+        return MaterialPageRoute(builder: (_) => const SearchScreen());
+
       case AppRoutes.cinema:
         return MaterialPageRoute(builder: (_) => const CinemaScreen());
+
+      case AppRoutes.cinemaDetail:
+        final cinema = settings.arguments as CinemaModel;
+        return MaterialPageRoute(
+          builder: (_) => CinemaDetailScreen(cinema: cinema),
+        );
 
       case AppRoutes.offer:
         return MaterialPageRoute(builder: (_) => const OfferScreen());

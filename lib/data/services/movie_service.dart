@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/movie_model.dart';
+import '../models/showtime_model.dart';
 
 class MovieService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -7,12 +8,10 @@ class MovieService {
   // Fetch Banners (Movies)
   Future<List<MovieModel>> getBanners() async {
     try {
-      // Fetch movies that are flagged as banners, or just fetch some movies
-      // For now, we'll just fetch the first few movies from the 'movies' collection
-      final snapshot = await _firestore.collection('movies').limit(5).get();
-      return snapshot.docs
-          .map((doc) => MovieModel.fromMap(doc.data(), doc.id))
-          .toList();
+      // Reuse getNowShowingMovies to ensure banners are watchable
+      // We can limit the number of banners if needed, e.g., top 5
+      final nowShowing = await getNowShowingMovies();
+      return nowShowing;
     } catch (e) {
       print("Error fetching banners: $e");
       return [];
@@ -98,6 +97,25 @@ class MovieService {
     } catch (e) {
       print("Error fetching movie by id: $e");
       return null;
+    }
+  }
+
+  // Fetch Showtimes for a Movie
+  Future<List<ShowtimeModel>> getShowtimes(String movieId) async {
+    try {
+      final now = Timestamp.now();
+      final snapshot = await _firestore
+          .collection('showtimes')
+          .where('movieId', isEqualTo: movieId)
+          .where('showDateTime', isGreaterThanOrEqualTo: now)
+          .get();
+
+      return snapshot.docs
+          .map((doc) => ShowtimeModel.fromMap(doc.data(), doc.id))
+          .toList();
+    } catch (e) {
+      print("Error fetching showtimes: $e");
+      return [];
     }
   }
 }

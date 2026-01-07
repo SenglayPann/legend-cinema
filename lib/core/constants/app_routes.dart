@@ -9,8 +9,10 @@ class AppRoutes {
   static const String editProfile = '/editProfile';
   static const String more = '/more';
   static const String cinema = '/cinema';
+  static const String cinemaDetail = '/cinemaDetail';
   static const String offer = '/offer';
   static const String fnb = '/fnb';
+  static const String search = '/search';
   static const String example = '/example';
 
   // Routes usually navigated to with arguments, previously maybe direct MaterialPageRoute

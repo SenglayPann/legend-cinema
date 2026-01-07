@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:legend_cinema/core/constants/app_routes.dart';
+import 'package:legend_cinema/presentation/state/auth_state.dart';
 import 'package:provider/provider.dart';
-import '../../presentation/state/auth_state.dart';
-import '../../core/constants/app_routes.dart';
 
 class HomeAppBar extends StatelessWidget {
   final ValueListenable<bool> isScrolledListenable;
@@ -42,7 +42,12 @@ class HomeAppBar extends StatelessWidget {
                     right: 0,
                     child: Row(
                       children: [
-                        const Icon(Icons.search, color: Colors.white),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(context, AppRoutes.search);
+                          },
+                          child: const Icon(Icons.search, color: Colors.white),
+                        ),
                         const SizedBox(width: 16),
                         GestureDetector(
                           onTap: () {

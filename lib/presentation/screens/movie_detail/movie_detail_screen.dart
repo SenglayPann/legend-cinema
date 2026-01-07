@@ -20,11 +20,13 @@ import '../../widgets/movie_detail/cinema_showtime_list_tile.dart';
 class MovieDetailScreen extends StatefulWidget {
   final String movieId;
   final String cinemaName; // Initial cinema selection or context
+  final DateTime? selectedDate;
 
   const MovieDetailScreen({
     super.key,
     required this.movieId,
     required this.cinemaName,
+    this.selectedDate,
   });
 
   @override
@@ -102,10 +104,14 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
             _selectedCinema = 'All Cinemas';
           }
 
-          // Set selected date to first available date with showtimes
-          final firstAvailable = _getFirstAvailableDate();
-          if (firstAvailable != null) {
-            _selectedDate = firstAvailable;
+          // Set selected date
+          if (widget.selectedDate != null) {
+            _selectedDate = widget.selectedDate!;
+          } else {
+            final firstAvailable = _getFirstAvailableDate();
+            if (firstAvailable != null) {
+              _selectedDate = firstAvailable;
+            }
           }
 
           _isLoading = false;

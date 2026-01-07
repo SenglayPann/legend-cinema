@@ -156,6 +156,7 @@ class _MovieGridState extends State<MovieGrid> {
                       builder: (_) => MovieDetailScreen(
                         movieId: movie.id,
                         cinemaName: widget.selectedCinema,
+                        selectedDate: _selectedDate,
                       ),
                     ),
                   );
