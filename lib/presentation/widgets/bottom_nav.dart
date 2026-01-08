@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class BottomNav extends StatelessWidget {
   final int selectedIndex;
@@ -13,6 +14,8 @@ class BottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Force rebuild on locale change
+    context.locale;
     return ClipRect(
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 100),
@@ -25,11 +28,11 @@ class BottomNav extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _item(Icons.home, "Home", 0),
-              _item(Icons.local_offer_outlined, "Offers", 1),
-              _item(Icons.location_on_outlined, "Cinemas", 2),
+              _item(Icons.home, "home".tr(), 0),
+              _item(Icons.local_offer_outlined, "offer".tr(), 1),
+              _item(Icons.location_on_outlined, "cinema".tr(), 2),
               _item(Icons.fastfood, "F&B", 3),
-              _item(Icons.grid_view, "More", 4),
+              _item(Icons.grid_view, "more".tr(), 4),
             ],
           ),
         ),

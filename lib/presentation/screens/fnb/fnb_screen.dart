@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/services.dart';
 import '../../widgets/app_scaffold.dart';
 
@@ -55,7 +56,7 @@ class _FnBScreenState extends State<FnBScreen> {
     return AppScaffold(
       backgroundColor: const Color(0xFF090909),
       showBackButton: false,
-      title: 'F&B',
+      title: 'fnb_title'.tr(),
       body: Stack(
         children: [
           // Background Image with Blur
@@ -115,9 +116,9 @@ class _FnBScreenState extends State<FnBScreen> {
                                 horizontal: 16.0,
                                 vertical: 12,
                               ),
-                              child: const Text(
-                                "Choose Cinema",
-                                style: TextStyle(
+                              child: Text(
+                                "choose_cinema".tr(),
+                                style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,

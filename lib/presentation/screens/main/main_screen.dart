@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:legend_cinema/presentation/screens/cinema/cinema_screen.dart';
@@ -12,28 +13,36 @@ class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
 
   @override
-  State<MainScreen> createState() => _MainScreenState();
+  @override
+  State<MainScreen> createState() => MainScreenState();
 }
 
-class _MainScreenState extends State<MainScreen> {
+class MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
 
-  final List<Widget> _screens = [
+  List<Widget> get _screens => [
     const HomeScreen(),
     const OfferScreen(),
     const CinemaScreen(),
     const FnBScreen(),
-    const MoreScreen(),
+    MoreScreen(), // Remove const to ensure rebuild
   ];
 
-  void _onItemTapped(int index) {
+  void switchTab(int index) {
     setState(() {
       _currentIndex = index;
     });
   }
 
+  void _onItemTapped(int index) {
+    switchTab(index);
+  }
+
   @override
   Widget build(BuildContext context) {
+    // This line forces a rebuild when locale changes
+    context.locale;
+
     return Scaffold(
       backgroundColor: const Color(0xFF090909),
       extendBody: true, // Important for glass effect

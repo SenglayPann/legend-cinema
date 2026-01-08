@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:legend_cinema/core/themes/screen_transition.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:legend_cinema/presentation/state/auth_state.dart';
 import 'package:legend_cinema/presentation/routes/app_router.dart';
 import 'package:legend_cinema/core/constants/app_routes.dart';
@@ -15,6 +16,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await StripeService.initialize();
+  await EasyLocalization.ensureInitialized();
 
   // OneSignal Initialization
   // REMOVE THIS LINE IF YOU DON'T HAVE AN APP ID YET
@@ -43,13 +45,18 @@ void main() async {
   await authState.loadUserFromStorage();
 
   runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => CartState()),
-        // 2. Provide the initialized instance to the widget tree
-        ChangeNotifierProvider.value(value: authState),
-      ],
-      child: const MyApp(),
+    EasyLocalization(
+      supportedLocales: const [Locale('en'), Locale('km')],
+      path: 'assets/translations',
+      fallbackLocale: const Locale('en'),
+      child: MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => CartState()),
+          // 2. Provide the initialized instance to the widget tree
+          ChangeNotifierProvider.value(value: authState),
+        ],
+        child: const MyApp(),
+      ),
     ),
   );
 }
@@ -63,6 +70,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       navigatorKey: navigatorKey,
+      localizationsDelegates: context.localizationDelegates,
+      supportedLocales: context.supportedLocales,
+      locale: context.locale,
       theme: ThemeData(
         pageTransitionsTheme: PageTransitionsTheme(
           builders: {

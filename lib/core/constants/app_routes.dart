@@ -13,6 +13,9 @@ class AppRoutes {
   static const String offer = '/offer';
   static const String fnb = '/fnb';
   static const String search = '/search';
+  static const String purchase = '/purchase';
+  static const String notificationSettings = '/notification-settings';
+  static const String languageSettings = '/language-settings';
   static const String example = '/example';
 
   // Routes usually navigated to with arguments, previously maybe direct MaterialPageRoute

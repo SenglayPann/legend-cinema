@@ -6,6 +6,7 @@ import '../../widgets/app_scaffold.dart';
 import '../../widgets/custom_button.dart';
 import '../../widgets/custom_alert.dart';
 import '../../../core/constants/app_routes.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class MoreScreen extends StatelessWidget {
   const MoreScreen({super.key});
@@ -19,7 +20,7 @@ class MoreScreen extends StatelessWidget {
 
     return AppScaffold(
       backgroundColor: const Color(0xFF0F0F0F),
-      title: "Account",
+      title: "account".tr(),
       showBackButton: false,
       // Add Avatar to the actions if logged in
       actions: isLoggedIn
@@ -56,7 +57,7 @@ class MoreScreen extends StatelessWidget {
                   children: [
                     Expanded(
                       child: CustomButton(
-                        text: "Login",
+                        text: "login".tr(),
                         onPressed: () => Navigator.pushNamed(context, '/login'),
                         height: 48,
                         borderRadius: 30,
@@ -65,7 +66,7 @@ class MoreScreen extends StatelessWidget {
                     const SizedBox(width: 12),
                     Expanded(
                       child: CustomButton(
-                        text: "Signup",
+                        text: "signup".tr(),
                         onPressed: () =>
                             Navigator.pushNamed(context, '/signUp'),
                         height: 48,
@@ -86,7 +87,7 @@ class MoreScreen extends StatelessWidget {
                   vertical: 8,
                 ),
                 child: Text(
-                  "Hello, ${user.firstName}".trim(),
+                  "${'hello'.tr()}, ${user.firstName}".trim(),
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 22,
@@ -97,168 +98,92 @@ class MoreScreen extends StatelessWidget {
               const SizedBox(height: 20),
             ],
 
-            // Membership Card
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: const Color(0xFF1E1E1E),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: Colors.white12,
-                    width: 1,
-                  ), // Added border
-                ),
-                padding: const EdgeInsets.all(16),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          Text(
-                            "Legend Membership",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          Text(
-                            "Getting many benefits from our membership card. Take one now at your nearby Legend Cinema!",
-                            style: TextStyle(
-                              color: Colors.white70,
-                              fontSize: 13,
-                            ),
-                          ),
-                          SizedBox(height: 12),
-                          // Learn more button and Activate button
-                          Row(
-                            children: [
-                              _ActivateButton(), // New Activate button
-                              SizedBox(width: 10),
-                              _LearnMoreButton(),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Container(
-                      width: 80,
-                      height: 80,
-                      alignment: Alignment.center,
-                      child: Icon(
-                        Icons.card_membership, // Updated icon
-                        color: Colors.redAccent,
-                        size: 56,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
+            // Membership Card Removed
             const SizedBox(height: 20),
 
             // Tickets Section
-            _sectionTitle("Tickets"),
+            _sectionTitle("tickets".tr()),
             _MenuSection(
               children: [
                 _menuTile(
                   context,
-                  title: "Purchase",
+                  title: "purchase".tr(),
                   icon: Icons.confirmation_number,
-                  route: null,
+                  route: AppRoutes.purchase,
                 ),
               ],
             ),
             const SizedBox(height: 20),
 
             // Languages Section
-            _sectionTitle("Languages"),
+            _sectionTitle("languages".tr()),
             _MenuSection(
               children: [
                 _menuTile(
                   context,
-                  title: "English",
+                  title: "languages".tr(),
                   icon: Icons.language,
-                  route: null,
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-
-            // What's new? Section
-            _sectionTitle("What's new?"),
-            _MenuSection(
-              children: [
-                _menuTile(
-                  context,
-                  title: "News & Activity",
-                  icon: Icons.new_releases,
-                  route: null,
+                  route: AppRoutes.languageSettings,
                 ),
               ],
             ),
             const SizedBox(height: 20),
 
             // Notifications Section
-            _sectionTitle("Notifications"),
+            _sectionTitle("notifications".tr()),
             _MenuSection(
               children: [
                 _menuTile(
                   context,
-                  title: "Notifications",
+                  title: "notifications".tr(),
                   icon: Icons.notifications,
-                  route: null,
+                  route: AppRoutes.notificationSettings,
                 ),
               ],
             ),
             const SizedBox(height: 20),
 
             // About us Section
-            _sectionTitle("About us"),
+            _sectionTitle("about_us".tr()),
             _MenuSection(
               children: [
                 _menuTile(
                   context,
-                  title: "About us",
+                  title: "about_us".tr(),
                   icon: Icons.info,
                   route: AppRoutes.aboutUs,
                 ),
                 _menuTile(
                   context,
-                  title: "Contact us",
+                  title: "contact_us".tr(),
                   icon: Icons.call,
                   route: null,
                 ),
                 _menuTile(
                   context,
-                  title: "Privacy Policy",
+                  title: "privacy_policy".tr(),
                   icon: Icons.privacy_tip,
                   route: AppRoutes.privacyPolicy,
                 ),
                 _menuTile(
                   context,
-                  title: "Term & Conditions",
+                  title: "term_conditions".tr(),
                   icon: Icons.article,
                   route: AppRoutes.termsConditions,
                 ),
                 if (isLoggedIn)
                   _menuTile(
                     context,
-                    title: "Logout",
+                    title: "logout".tr(),
                     icon: Icons.logout,
                     onTap: () async {
                       if (!context.mounted) return;
 
                       final shouldLogout = await CustomAlert.showConfirm(
                         context,
-                        title: 'Logout',
-                        message: 'Are you sure you want to logout?',
-                        confirmText: 'Logout',
+                        title: 'logout_confirm_title'.tr(),
+                        message: 'logout_confirm_message'.tr(),
+                        confirmText: 'logout'.tr(),
                       );
 
                       if (shouldLogout && context.mounted) {
@@ -343,59 +268,6 @@ class _MenuSection extends StatelessWidget {
       ),
       clipBehavior: Clip.antiAlias, // Clip children to rounded corners
       child: Column(children: children),
-    );
-  }
-}
-
-class _LearnMoreButton extends StatelessWidget {
-  const _LearnMoreButton();
-
-  @override
-  Widget build(BuildContext context) {
-    return OutlinedButton(
-      // Changed to OutlinedButton
-      onPressed: () {
-        // Handle learn more action
-      },
-      style: OutlinedButton.styleFrom(
-        foregroundColor: Colors.white, // Text color
-        side: const BorderSide(
-          color: Colors.white,
-          width: 0.8,
-        ), // Smaller border width
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        padding: const EdgeInsets.symmetric(horizontal: 14),
-        minimumSize: const Size(0, 28), // Maintain height
-      ),
-      child: const Text(
-        "Learn More",
-        style: TextStyle(fontWeight: FontWeight.bold),
-      ),
-    );
-  }
-}
-
-class _ActivateButton extends StatelessWidget {
-  const _ActivateButton();
-
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton(
-      // New button for "Activate"
-      onPressed: () {
-        // Handle activate action
-      },
-      style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xFFCC0000), // Background color
-        foregroundColor: Colors.white, // Text color
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        padding: const EdgeInsets.symmetric(horizontal: 14),
-        minimumSize: const Size(0, 28), // Maintain height
-      ),
-      child: const Text(
-        "Activate",
-        style: TextStyle(fontWeight: FontWeight.bold),
-      ),
     );
   }
 }

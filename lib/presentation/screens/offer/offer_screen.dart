@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'offer_detail_screen.dart';
@@ -47,18 +48,18 @@ class _OfferScreenState extends State<OfferScreen> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const AppScaffold(
-        backgroundColor: Color(0xFF090909),
+      return AppScaffold(
+        backgroundColor: const Color(0xFF090909),
         showBackButton: false,
-        title: 'Offers',
-        body: Center(child: CircularProgressIndicator(color: Colors.red)),
+        title: 'offer'.tr(),
+        body: const Center(child: CircularProgressIndicator(color: Colors.red)),
       );
     }
 
     return AppScaffold(
       backgroundColor: const Color(0xFF090909),
       showBackButton: false,
-      title: 'Offers',
+      title: 'offer'.tr(),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -80,11 +81,14 @@ class _OfferScreenState extends State<OfferScreen> {
                 ),
 
               // 2. "What's we offer" Title
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 16,
+                ),
                 child: Text(
-                  "What's we offer",
-                  style: TextStyle(
+                  "whats_we_offer".tr(),
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
@@ -183,11 +187,14 @@ class _OfferScreenState extends State<OfferScreen> {
               const SizedBox(height: 16),
 
               // 4. "Premium Benefits" Title
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 16,
+                ),
                 child: Text(
-                  "Premium Benefits",
-                  style: TextStyle(
+                  "premium_benefits".tr(),
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
@@ -221,11 +228,11 @@ class _OfferScreenState extends State<OfferScreen> {
                       child: Stack(
                         children: [
                           // Description at the top
-                          const Align(
+                          Align(
                             alignment: Alignment.topLeft,
                             child: Text(
-                              'Special Offer Description goes here. Enjoy exclusive benefits!',
-                              style: TextStyle(
+                              'special_offer_desc'.tr(),
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,

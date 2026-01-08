@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../../data/models/movie_model.dart';
 import '../../../data/models/cinema_model.dart';
 import '../../../data/models/showtime_model.dart';
@@ -8,6 +9,9 @@ import '../../../data/services/cinema_service.dart';
 import '../../../data/services/showtime_service.dart';
 import '../../../data/models/offer_model.dart';
 import '../../../data/services/offer_service.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import '../../widgets/app_scaffold.dart';
+import '../main/main_screen.dart';
 import '../../widgets/movie_tabs.dart';
 import '../../widgets/app_bar.dart';
 import '../../widgets/banner_carousel.dart';
@@ -151,7 +155,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       borderRadius: BorderRadius.circular(0),
                       image: const DecorationImage(
                         image: NetworkImage(
-                          'https://drive.google.com/uc?export=view&id=17H44tOWhHxL1dtTbpGu7GUeHpA_mxLRT',
+                          'https://lh3.googleusercontent.com/d/17H44tOWhHxL1dtTbpGu7GUeHpA_mxLRT',
                         ),
                         fit: BoxFit.cover,
                       ),
@@ -186,10 +190,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        const Text(
-                          "Want to watch your favorite movie at nearby cinema? Explore now to see more cinema around you",
+                        Text(
+                          "home_banner_text".tr(),
                           textAlign: TextAlign.center,
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 16,
                             fontWeight: FontWeight.normal,
@@ -197,9 +201,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         const SizedBox(height: 10),
                         CustomButton(
-                          text: "Explore more",
+                          text: "explore_more".tr(),
                           onPressed: () {
-                            // TODO: Implement navigation or action
+                            context
+                                .findAncestorStateOfType<MainScreenState>()
+                                ?.switchTab(2);
                           },
                           width: 160,
                           height: 40,

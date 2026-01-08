@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../data/models/showtime_model.dart';
@@ -49,8 +50,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         if (mounted) {
           CustomAlert.show(
             context,
-            title: 'Session Expired',
-            message: 'Your session has expired.',
+            title: 'session_expired'.tr(),
+            message: 'session_expired_msg'.tr(),
           ).then((_) {
             if (mounted)
               Navigator.of(context).popUntil((route) => route.isFirst);
@@ -153,9 +154,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
           ),
 
           // Title
-          const Text(
-            'Order Details',
-            style: TextStyle(
+          Text(
+            'order_details'.tr(),
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -268,19 +269,22 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
 
           // Booking details rows
           _buildInfoRow(
-            'Format',
+            'format'.tr(),
             widget.showtime.screenType.isNotEmpty
                 ? widget.showtime.screenType
                 : '2D',
           ),
           const SizedBox(height: 12),
-          _buildInfoRow('Hall', 'Hall ${widget.showtime.hallNumber}'),
+          _buildInfoRow('hall'.tr(), 'Hall ${widget.showtime.hallNumber}'),
           const SizedBox(height: 12),
-          _buildInfoRow('Seats', seatLabels),
+          _buildInfoRow('seats'.tr(), seatLabels),
           const SizedBox(height: 12),
-          _buildInfoRow('Tickets', '${state.selectedCount}'),
+          _buildInfoRow('tickets'.tr(), '${state.selectedCount}'),
           const SizedBox(height: 12),
-          _buildInfoRow('Price', '\$${state.totalPrice.toStringAsFixed(2)}'),
+          _buildInfoRow(
+            'price'.tr(),
+            '\$${state.totalPrice.toStringAsFixed(2)}',
+          ),
 
           const SizedBox(height: 16),
           const GradientDivider(),
@@ -290,9 +294,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'Total',
-                style: TextStyle(
+              Text(
+                'total'.tr(),
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -333,9 +337,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Foods & Drinks',
-            style: TextStyle(
+          Text(
+            'fnb_orders'.tr(),
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -428,9 +432,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'Subtotal',
-                style: TextStyle(color: Colors.white70, fontSize: 14),
+              Text(
+                'subtotal'.tr(),
+                style: const TextStyle(color: Colors.white70, fontSize: 14),
               ),
               Text(
                 '\$${state.fnbTotalPrice.toStringAsFixed(2)}',
@@ -458,7 +462,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         child: SafeArea(
           top: false,
           child: CustomButton(
-            text: 'Checkout',
+            text: 'checkout'.tr(),
             onPressed: () {
               final state = context.read<SeatSelectionState>();
               Navigator.push(

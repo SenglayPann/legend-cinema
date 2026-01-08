@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/services.dart';
 import 'package:legend_cinema/data/services/auth_services.dart';
 import 'package:legend_cinema/presentation/screens/otpVerification/otp_verification.dart';
@@ -94,7 +95,7 @@ class _LoginScreenState extends State<LoginScreen> {
     LoadingOverlay().hide(context);
     CustomAlert.show(
       context,
-      title: 'Failed',
+      title: 'failed'.tr(),
       message: e.message ?? 'Failed to sent OTP code.',
     );
   }
@@ -105,8 +106,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
     CustomAlert.show(
       context,
-      title: 'Failed',
-      message: 'OTP request timed out',
+      title: 'failed'.tr(),
+      message: 'otp_timeout'.tr(),
     );
   }
 
@@ -123,9 +124,8 @@ class _LoginScreenState extends State<LoginScreen> {
         if (mounted) {
           CustomAlert.show(
             context,
-            title: 'Account Not Found',
-            message:
-                'This phone number is not registered. Please sign up first.',
+            title: 'account_not_found'.tr(),
+            message: 'account_not_registered'.tr(),
           );
         }
         return;
@@ -144,8 +144,8 @@ class _LoginScreenState extends State<LoginScreen> {
       if (mounted) {
         CustomAlert.show(
           context,
-          title: 'Error',
-          message: 'Failed to verify phone number. Please try again.',
+          title: 'error'.tr(),
+          message: 'verify_failed'.tr(),
         );
       }
     }
@@ -153,11 +153,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
   String? _validatePhone(String? value) {
     if (value == null || value.trim().isEmpty) {
-      return 'Please enter your phone number';
+      return 'enter_phone'.tr();
     }
     final digits = value.replaceAll(RegExp(r'\D'), '');
     if (digits.length < 6 || digits.length > 9) {
-      return 'Enter a valid Cambodian phone number';
+      return 'valid_phone'.tr();
     }
     return null;
   }
@@ -178,22 +178,22 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Login',
-                    style: TextStyle(
+                  Text(
+                    'login_title'.tr(),
+                    style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.w600,
                       color: Colors.white,
                     ),
                   ),
-                  const Text(
-                    'Enter your phone number to login',
-                    style: TextStyle(color: Colors.white70),
+                  Text(
+                    'login_subtitle'.tr(),
+                    style: const TextStyle(color: Colors.white70),
                   ),
                   const SizedBox(height: 24),
                   CustomInputField(
                     controller: _phoneController,
-                    labelText: 'Phone Number',
+                    labelText: 'phone_number'.tr(),
                     keyboardType: TextInputType.phone,
                     maxLength: 9,
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -228,16 +228,16 @@ class _LoginScreenState extends State<LoginScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text(
-                        "Don't have an account? ",
-                        style: TextStyle(color: Colors.white70),
+                      Text(
+                        'dont_have_account'.tr(),
+                        style: const TextStyle(color: Colors.white70),
                       ),
                       GestureDetector(
                         onTap: () =>
                             Navigator.pushReplacementNamed(context, '/signUp'),
-                        child: const Text(
-                          "Sign Up",
-                          style: TextStyle(
+                        child: Text(
+                          'sign_up_link'.tr(),
+                          style: const TextStyle(
                             color: Colors.red,
                             fontWeight: FontWeight.bold,
                           ),
@@ -260,7 +260,7 @@ class _LoginScreenState extends State<LoginScreen> {
           child: SizedBox(
             height: 48,
             child: CustomButton(
-              text: 'Login',
+              text: 'login_link'.tr(),
               onPressed: _isPhoneValid ? _onGetOtp : null,
             ),
           ),

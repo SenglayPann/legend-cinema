@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
 import '../../../data/models/booking_model.dart';
 import '../../../data/models/fnb_order_model.dart';
@@ -108,7 +109,7 @@ class _PurchaseScreenState extends State<PurchaseScreen>
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      title: 'My Tickets',
+      title: 'my_tickets'.tr(),
       body: Column(
         children: [
           // Tab Bar
@@ -137,7 +138,7 @@ class _PurchaseScreenState extends State<PurchaseScreen>
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text('Upcoming'),
+                      Text('upcoming'.tr()),
                       if (_upcomingBookings.isNotEmpty ||
                           _activeFnbOrders.isNotEmpty) ...[
                         const SizedBox(width: 6),
@@ -159,7 +160,7 @@ class _PurchaseScreenState extends State<PurchaseScreen>
                     ],
                   ),
                 ),
-                const Tab(text: 'History'),
+                Tab(text: 'history'.tr()),
               ],
             ),
           ),
@@ -178,14 +179,14 @@ class _PurchaseScreenState extends State<PurchaseScreen>
                         bookings: _upcomingBookings,
                         fnbOrders: _activeFnbOrders,
                         isUpcoming: true,
-                        emptyMessage: 'No booking/order found',
+                        emptyMessage: 'no_booking_order_found'.tr(),
                       ),
                       // History Tab
                       _buildListContent(
                         bookings: _historyBookings,
                         fnbOrders: _historyFnbOrders,
                         isUpcoming: false,
-                        emptyMessage: 'No history found',
+                        emptyMessage: 'no_history_found'.tr(),
                       ),
                     ],
                   ),
@@ -232,11 +233,11 @@ class _PurchaseScreenState extends State<PurchaseScreen>
           children: [
             if (bookings.isNotEmpty) ...[
               if (fnbOrders.isNotEmpty)
-                const Padding(
-                  padding: EdgeInsets.only(bottom: 8.0, top: 8.0),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0, top: 8.0),
                   child: Text(
-                    'Movie Tickets',
-                    style: TextStyle(
+                    'movie_tickets'.tr(),
+                    style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -256,11 +257,11 @@ class _PurchaseScreenState extends State<PurchaseScreen>
 
             if (fnbOrders.isNotEmpty) ...[
               if (bookings.isNotEmpty)
-                const Padding(
-                  padding: EdgeInsets.only(bottom: 8.0),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
                   child: Text(
-                    'F&B Orders',
-                    style: TextStyle(
+                    'fnb_orders'.tr(),
+                    style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -352,12 +353,12 @@ class _PurchaseScreenState extends State<PurchaseScreen>
                           children: [
                             _buildInfoChip(
                               Icons.chair,
-                              'Hall ${booking.hallNumber}',
+                              '${'hall'.tr()} ${booking.hallNumber}',
                             ),
                             const SizedBox(width: 8),
                             _buildInfoChip(
                               Icons.confirmation_number,
-                              '${booking.seatCount} seat${booking.seatCount > 1 ? 's' : ''}',
+                              '${booking.seatCount} ${booking.seatCount > 1 ? 'seats'.tr() : 'seat'.tr()}',
                             ),
                           ],
                         ),
@@ -484,7 +485,7 @@ class _PurchaseScreenState extends State<PurchaseScreen>
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '${order.items.length} items • \$${order.totalAmount.toStringAsFixed(2)}',
+                        '${order.items.length} ${'items'.tr()} • \$${order.totalAmount.toStringAsFixed(2)}',
                         style: const TextStyle(
                           color: Colors.white70,
                           fontSize: 13,
@@ -503,7 +504,7 @@ class _PurchaseScreenState extends State<PurchaseScreen>
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
-                    order.status.toUpperCase(),
+                    order.status.tr(),
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 10,
@@ -548,15 +549,15 @@ class _PurchaseScreenState extends State<PurchaseScreen>
 
   String _getStatusText(String status, bool isUpcoming) {
     if (isUpcoming && status == 'confirmed') {
-      return 'Active';
+      return 'active'.tr();
     }
     switch (status) {
       case 'confirmed':
-        return 'Completed';
+        return 'completed'.tr();
       case 'cancelled':
-        return 'Cancelled';
+        return 'cancelled'.tr();
       case 'pending':
-        return 'Pending';
+        return 'pending'.tr();
       default:
         return status.toUpperCase();
     }

@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../data/models/fnb_model.dart';
@@ -386,7 +387,7 @@ class _FnbSelectionScreenState extends State<FnbSelectionScreen> {
           totalPrice: state.grandTotal,
           isCartExpanded: _isCartExpanded,
           onToggleCart: _toggleCartDetails,
-          buttonText: state.hasFnbItems ? 'Continue' : 'Skip',
+          buttonText: state.hasFnbItems ? 'continue'.tr() : 'skip'.tr(),
           onContinue: () {
             Navigator.push(
               context,

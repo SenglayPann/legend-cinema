@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/services.dart';
 import '../../widgets/app_scaffold.dart';
 import '../../../core/constants/app_routes.dart';
@@ -70,7 +71,7 @@ class _CinemaScreenState extends State<CinemaScreen> {
     return AppScaffold(
       backgroundColor: const Color(0xFF090909),
       showBackButton: false,
-      title: 'Cinema',
+      title: 'cinema'.tr(),
       body: SafeArea(
         child: Column(
           children: [
@@ -81,7 +82,7 @@ class _CinemaScreenState extends State<CinemaScreen> {
                 controller: _searchController,
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
-                  hintText: 'Search cinema...',
+                  hintText: 'search_cinema'.tr(),
                   hintStyle: const TextStyle(color: Colors.white),
                   suffixIcon: _searchController.text.isEmpty
                       ? const Icon(Icons.search, color: Colors.white54)
@@ -133,16 +134,16 @@ class _CinemaScreenState extends State<CinemaScreen> {
                   ? Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          Icon(
+                        children: [
+                          const Icon(
                             Icons.search_off,
                             size: 64,
                             color: Colors.white24,
                           ),
-                          SizedBox(height: 16),
+                          const SizedBox(height: 16),
                           Text(
-                            "No cinemas found",
-                            style: TextStyle(
+                            "no_cinemas_found".tr(),
+                            style: const TextStyle(
                               color: Colors.white54,
                               fontSize: 16,
                             ),

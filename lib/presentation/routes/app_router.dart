@@ -13,6 +13,9 @@ import 'package:legend_cinema/presentation/screens/otpVerification/otp_verificat
 import 'package:legend_cinema/presentation/screens/splash/splash_screen.dart';
 import 'package:legend_cinema/presentation/screens/search/search_screen.dart';
 import 'package:legend_cinema/presentation/screens/home/home_screen.dart';
+import 'package:legend_cinema/presentation/screens/purchase/purchase_screen.dart';
+import 'package:legend_cinema/presentation/screens/notification/notification_settings_screen.dart';
+import 'package:legend_cinema/presentation/screens/language/language_settings_screen.dart';
 import 'package:legend_cinema/presentation/screens/signUp/sign_up_screen.dart';
 import 'package:legend_cinema/presentation/screens/signUpInformation/sign_up_information_screen.dart';
 import 'package:legend_cinema/presentation/screens/example_screen.dart';
@@ -72,6 +75,19 @@ class AppRouter {
 
       case AppRoutes.search:
         return MaterialPageRoute(builder: (_) => const SearchScreen());
+
+      case AppRoutes.purchase:
+        return MaterialPageRoute(builder: (_) => const PurchaseScreen());
+
+      case AppRoutes.notificationSettings:
+        return MaterialPageRoute(
+          builder: (_) => const NotificationSettingsScreen(),
+        );
+
+      case AppRoutes.languageSettings:
+        return MaterialPageRoute(
+          builder: (_) => const LanguageSettingsScreen(),
+        );
 
       case AppRoutes.cinema:
         return MaterialPageRoute(builder: (_) => const CinemaScreen());

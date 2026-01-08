@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/foundation.dart'; // Add this for ValueListenable
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:intl/intl.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
@@ -39,7 +40,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
 
   MovieModel? _movie;
   List<ShowtimeModel> _allShowtimes = [];
-  List<String> _availableCinemas = ['All Cinemas'];
+  List<String> _availableCinemas = ['all_cinemas'.tr()];
 
   bool _isLoading = true;
 
@@ -54,7 +55,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
     super.initState();
     _selectedCinema = widget.cinemaName.isNotEmpty
         ? widget.cinemaName
-        : 'All Cinemas';
+        : 'all_cinemas'.tr();
     _scrollController = ScrollController()
       ..addListener(() {
         if (_scrollController.offset > 50 && !_isScrolledNotifier.value) {
@@ -96,12 +97,12 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
               .toSet()
               .toList();
           uniqueCinemas.sort();
-          _availableCinemas = ['All Cinemas', ...uniqueCinemas];
+          _availableCinemas = ['all_cinemas'.tr(), ...uniqueCinemas];
 
           // If current selected cinema is not in available (and not All), reset?
-          if (_selectedCinema != 'All Cinemas' &&
+          if (_selectedCinema != 'all_cinemas'.tr() &&
               !_availableCinemas.contains(_selectedCinema)) {
-            _selectedCinema = 'All Cinemas';
+            _selectedCinema = 'all_cinemas'.tr();
           }
 
           // Set selected date
@@ -162,7 +163,8 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
       if (!isSameDay) return false;
 
       // Cinema Check
-      if (_selectedCinema != 'All Cinemas' && s.cinemaName != _selectedCinema) {
+      if (_selectedCinema != 'all_cinemas'.tr() &&
+          s.cinemaName != _selectedCinema) {
         return false;
       }
 
@@ -180,10 +182,13 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
     }
 
     if (_movie == null) {
-      return const Scaffold(
+      return Scaffold(
         backgroundColor: Colors.black,
         body: Center(
-          child: Text("Movie not found", style: TextStyle(color: Colors.white)),
+          child: Text(
+            "movie_not_found".tr(),
+            style: const TextStyle(color: Colors.white),
+          ),
         ),
       );
     }
@@ -290,7 +295,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                                   icon: Icons.category,
                                   text: _movie!.genres.isNotEmpty
                                       ? _movie!.genres.first
-                                      : "Action",
+                                      : "action_genre".tr(),
                                 ),
                                 const SizedBox(height: 8),
                                 MovieInfoIcon(
@@ -437,9 +442,9 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            const Text(
-              "Select Cinema",
-              style: TextStyle(
+            Text(
+              "select_cinema".tr(),
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -485,12 +490,12 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
     final showtimes = _filteredShowtimes;
 
     if (showtimes.isEmpty) {
-      return const Center(
+      return Center(
         child: Padding(
-          padding: EdgeInsets.all(32.0),
+          padding: const EdgeInsets.all(32.0),
           child: Text(
-            "No showtimes available.",
-            style: TextStyle(color: Colors.white54),
+            "no_showtimes_available".tr(),
+            style: const TextStyle(color: Colors.white54),
           ),
         ),
       );

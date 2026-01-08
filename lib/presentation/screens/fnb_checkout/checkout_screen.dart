@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../data/models/showtime_model.dart';
@@ -30,8 +31,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   Timer? _timer;
   bool _isProcessing = false;
 
-  // Default payment method is ABA KHQR
-  PaymentMethod _selectedMethod = PaymentMethod.abaKhqr;
+  // Default payment method is Card
+  PaymentMethod _selectedMethod = PaymentMethod.card;
 
   @override
   void initState() {
@@ -56,8 +57,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         if (mounted) {
           CustomAlert.show(
             context,
-            title: 'Session Expired',
-            message: 'Your session has expired.',
+            title: 'session_expired'.tr(),
+            message: 'session_expired_msg'.tr(),
           ).then((_) {
             if (mounted)
               Navigator.of(context).popUntil((route) => route.isFirst);
@@ -117,11 +118,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                             const SizedBox(height: 16),
 
                             // Payment Methods Title
-                            const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 16),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                              ),
                               child: Text(
-                                'Payment Method',
-                                style: TextStyle(
+                                'payment_method'.tr(),
+                                style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
@@ -131,6 +134,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                             const SizedBox(height: 16),
 
                             // Payment Methods List
+                            /*
                             _buildPaymentMethod(
                               PaymentMethod.memberPoint,
                               'Member Point',
@@ -145,9 +149,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                               null,
                             ),
                             const SizedBox(height: 12),
+                            */
                             _buildPaymentMethod(
                               PaymentMethod.card,
-                              'Debit/Credit Card',
+                              'debit_credit_card'.tr(),
                               Icons.credit_card,
                               null,
                             ),
@@ -196,9 +201,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           ),
 
           // Title
-          const Text(
-            'Checkout',
-            style: TextStyle(
+          Text(
+            'checkout'.tr(),
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -329,16 +334,20 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
-                          '10% Discount',
-                          style: TextStyle(
+                        Text(
+                          'discount_10_percent'.tr(),
+                          style: const TextStyle(
                             color: Colors.green,
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         Text(
-                          'Save \$${discountAmount?.toStringAsFixed(2) ?? '0.00'}',
+                          'save_amount'.tr(
+                            args: [
+                              '\$${discountAmount?.toStringAsFixed(2) ?? '0.00'}',
+                            ],
+                          ),
                           style: const TextStyle(
                             color: Colors.green,
                             fontSize: 14,
@@ -348,9 +357,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       ],
                     ),
                     const SizedBox(height: 4),
-                    const Text(
-                      'Get 10% off on tickets with membership',
-                      style: TextStyle(color: Colors.white54, fontSize: 12),
+                    Text(
+                      'member_discount_desc'.tr(),
+                      style: const TextStyle(
+                        color: Colors.white54,
+                        fontSize: 12,
+                      ),
                     ),
                   ],
                 ),
@@ -374,9 +386,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Order Summary',
-            style: TextStyle(
+          Text(
+            'order_summary'.tr(),
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -389,7 +401,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Tickets (${state.selectedCount})',
+                'tickets_count'.tr(args: ['${state.selectedCount}']),
                 style: const TextStyle(color: Colors.white54, fontSize: 14),
               ),
               Text(
@@ -406,7 +418,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Foods & Drinks (${state.fnbTotalItems})',
+                  'fnb_count'.tr(args: ['${state.fnbTotalItems}']),
                   style: const TextStyle(color: Colors.white54, fontSize: 14),
                 ),
                 Text(
@@ -423,9 +435,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Member Discount (10%)',
-                  style: TextStyle(color: Colors.green, fontSize: 14),
+                Text(
+                  'member_discount_label'.tr(),
+                  style: const TextStyle(color: Colors.green, fontSize: 14),
                 ),
                 Text(
                   '-\$${discountAmount.toStringAsFixed(2)}',
@@ -443,9 +455,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'Total',
-                style: TextStyle(
+              Text(
+                'total'.tr(),
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -487,8 +499,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           top: false,
           child: CustomButton(
             text: _isProcessing
-                ? 'Processing...'
-                : 'Pay \$${finalTotal.toStringAsFixed(2)}',
+                ? 'processing'.tr()
+                : 'pay_amount'.tr(args: ['\$${finalTotal.toStringAsFixed(2)}']),
             onPressed: _isProcessing
                 ? () {}
                 : () => _handlePayment(context, finalTotal),
@@ -521,7 +533,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           // Tickets
           if (state.selectedCount > 0) {
             items.add({
-              'name': 'Tickets (${state.selectedCount})',
+              'name': 'tickets_count'.tr(args: ['${state.selectedCount}']),
               'qty': state.selectedCount,
               'price': state.totalPrice,
             });
@@ -569,8 +581,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       if (mounted) {
         CustomAlert.show(
           context,
-          title: 'Payment Failed',
-          message: 'Error: $e',
+          title: 'payment_failed'.tr(),
+          message: '${'error'.tr()}: $e',
         );
       }
     } finally {
@@ -617,7 +629,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     } else if (mounted) {
       CustomAlert.show(
         context,
-        title: 'Booking Failed',
+        title: 'Booking Failed', // Need key if not already
         message: result.error ?? 'Unknown error',
       );
     }
@@ -634,18 +646,18 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           children: [
             const Icon(Icons.check_circle, color: Colors.green, size: 64),
             const SizedBox(height: 16),
-            const Text(
-              'Payment Successful!',
-              style: TextStyle(
+            Text(
+              'payment_success'.tr(),
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
-              'Your booking has been confirmed.',
-              style: TextStyle(color: Colors.white54),
+            Text(
+              'booking_confirmed'.tr(),
+              style: const TextStyle(color: Colors.white54),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
@@ -683,9 +695,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             onPressed: () {
               Navigator.of(context).popUntil((route) => route.isFirst);
             },
-            child: const Text(
-              'Done',
-              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+            child: Text(
+              'done'.tr(),
+              style: const TextStyle(
+                color: Colors.red,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ],

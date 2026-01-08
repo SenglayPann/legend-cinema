@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:legend_cinema/data/models/movie_model.dart';
 import 'package:legend_cinema/data/services/movie_service.dart';
 import 'package:legend_cinema/presentation/widgets/app_scaffold.dart';
@@ -78,7 +79,7 @@ class _SearchScreenState extends State<SearchScreen> {
     return AppScaffold(
       backgroundColor: const Color(0xFF090909),
       showBackButton: true,
-      title: 'Search',
+      title: 'search_title'.tr(),
       // title: 'Search', // We'll use custom title in body or just app bar title
       body: SafeArea(
         child: Column(
@@ -91,7 +92,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 autofocus: true,
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
-                  hintText: 'Search movies...',
+                  hintText: 'search_hint'.tr(),
                   hintStyle: const TextStyle(color: Colors.white54),
                   prefixIcon: const Icon(Icons.search, color: Colors.white54),
                   suffixIcon: _searchController.text.isNotEmpty
@@ -121,16 +122,16 @@ class _SearchScreenState extends State<SearchScreen> {
                   ? Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          Icon(
+                        children: [
+                          const Icon(
                             Icons.search_off,
                             size: 64,
                             color: Colors.white24,
                           ),
-                          SizedBox(height: 16),
+                          const SizedBox(height: 16),
                           Text(
-                            "No movies found",
-                            style: TextStyle(
+                            "no_movies_found".tr(),
+                            style: const TextStyle(
                               color: Colors.white54,
                               fontSize: 16,
                             ),
